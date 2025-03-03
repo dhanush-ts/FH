@@ -198,3 +198,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes lottie-bottom-grow {
+  0% {
+    transform: translateY(100%) scale(0.5);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-lottie-bottom-grow {
+  animation: lottie-bottom-grow 2s ease-in-out forwards;
+}
