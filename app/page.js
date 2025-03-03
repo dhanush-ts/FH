@@ -6,22 +6,7 @@ export default function Home() {
     <main>
       <Banner />
 
-      {/* Rest of the page content would go here */}
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">
-            TRUSTED BY THE WORLD'S LEADING ORGANIZATIONS
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-8 items-center">
-            {/* Placeholder for company logos */}
-            <div className="h-8 w-24 bg-slate-100 rounded"></div>
-            <div className="h-8 w-24 bg-slate-100 rounded"></div>
-            <div className="h-8 w-24 bg-slate-100 rounded"></div>
-            <div className="h-8 w-24 bg-slate-100 rounded"></div>
-            <div className="h-8 w-24 bg-slate-100 rounded"></div>
-          </div>
-        </div>
-
         <div className="mt-16">
           <div className="relative">
             <div className="flex items-center">

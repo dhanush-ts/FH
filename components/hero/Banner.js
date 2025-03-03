@@ -34,7 +34,7 @@ export default function Banner() {
 
             {/* Right side - Lottie animations - Hidden on mobile */}
             <div className="hidden md:flex absolute right-0 bottom-0 overflow-hidden h-full w-full md:w-2/3 justify-end">
-              <div className="flex flex-row scale-150 -mb-54 transform-gpu origin-bottom">
+              <div className="flex flex-row transform-gpu origin-bottom">
                 {/* <div className="w-[400px] h-full overflow-y-hidden relative">
                   <DotLottieReact
                     src="https://lottie.host/504971d7-b4d8-4693-96db-3542620a5840/CCaklii2uA.lottie"
@@ -43,7 +43,7 @@ export default function Banner() {
                     className="w-full h-full object-cover bottom-0 transform translate-y-[10%]"
                   />
                 </div> */}
-                <div className="h-full overflow-y-hidden relative">
+                <div className="overflow-y-hidden relative">
                   <DotLottieReact
                     src="https://lottie.host/1a152ffb-afc9-4e30-a3e2-ab79a9e67355/wqdhYEEymI.lottie"
                     loop
