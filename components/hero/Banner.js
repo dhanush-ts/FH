@@ -17,7 +17,7 @@ export default function Banner() {
                 <span className="relative inline-block">
                   <RotatingText 
                   texts={['Hackathons','Symposiums', 'Fests']} 
-                  mainClassName="px-2 sm:px-2 md:px-3 text-white bg-green-500 text-black overflow-hidden py-0.5 sm:py-1 md:py-1.5 justify-center rounded-lg"
+                  mainClassName="px-2 sm:px-2 md:px-3  bg-green-500 text-black overflow-hidden py-0.5 sm:py-1 md:py-1.5 justify-center rounded-lg"
                   staggerFrom={"last"}
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
