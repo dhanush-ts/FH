@@ -2,17 +2,35 @@
 import { DotLottieReact } from "@lottiefiles/dotlottie-react"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import RotatingText from "../ui/RotatingText/RotatingText"
 
 export default function Banner() {
+
   return (
     <div className="w-full bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-[400px] max-w-7xl m-auto md:h-[400px] relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
             <div className="flex flex-col justify-center space-y-4 z-10">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">The home for hackathons</h1>
-              <p className="text-slate-600 max-w-md md:text-xl">
-                Where organizations and developers come together to build, inspire, and innovate.
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
+                Welcome to FindHacks <br /> Your hub for{" "}
+                <span className="relative inline-block">
+                  <RotatingText 
+                  texts={['Hackathons','Symposiums', 'Fests']} 
+                  mainClassName="px-2 sm:px-2 md:px-3 text-white bg-green-500 text-black overflow-hidden py-0.5 sm:py-1 md:py-1.5 justify-center rounded-lg"
+                  staggerFrom={"last"}
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "-120%" }}
+                  staggerDuration={0.025}
+                  splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+                  transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                  rotationInterval={3000}
+                  />
+                  </span>
+              </h1>
+              <p className="text-slate-600 lg:text-nowrap max-w-md md:text-xl">
+              Discover, connect, and grow. Join the innovation wave today!”
               </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link
@@ -33,7 +51,7 @@ export default function Banner() {
             </div>
 
             {/* Right side - Lottie animations - Hidden on mobile */}
-            <div className="hidden md:flex absolute right-0 bottom-0 overflow-hidden h-full w-full md:w-2/3 justify-end">
+            <div className="hidden md:flex absolute -right-48 bottom-0 overflow-hidden h-full w-full justify-end">
               <div className="flex flex-row transform-gpu origin-bottom">
                 {/* <div className="w-[400px] h-full overflow-y-hidden relative">
                   <DotLottieReact
