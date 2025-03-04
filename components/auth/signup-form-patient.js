@@ -24,7 +24,7 @@ async function handleSignUp(formData) {
     password: formData.get("password"),
   };
 
-  const { toast } = useToast();
+  ;
 
   const response = await fetch(`${api}auth/create-patient/`, {
     method: "POST",

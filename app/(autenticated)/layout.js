@@ -1,5 +1,6 @@
 import "../globals.css";
 import { Header } from "@/components/layout/Header";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata = {
   title: "Find Hacks",
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
       <body style={{fontFamily: 'Poppins'}} className={`font-poppins antialiased`}>
         <Header />
         {children}
+        <Toaster />
       </body>
     </html>
   );
