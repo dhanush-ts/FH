@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { getCookie } from "cookies-next"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import Banner2 from "@/components/hero/Banner2"
 import BasicInfo from "@/components/profile/BasicInfo"
 import Education from "@/components/profile/Education"
@@ -14,19 +14,15 @@ import { toast } from "sonner"
 
 export default function Profile() {
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState("education")
 
   // Check for JWT token
   useEffect(() => {
     const token = getCookie("jwt")
     if (!token) {
-      toast(
-        "Authentication Error"
-        // description: "Please login to view your profile",
-        // variant: "destructive",
-      )
+      toast("Authentication Error")
     }
-  }, [toast])
+  }, [])
 
   // Simulate loading state
   useEffect(() => {
@@ -47,17 +43,27 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 bg-white dark:bg-gray-900 rounded-full"></div>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <Banner2 />
 
-      <motion.div className="container mx-auto px-4 py-8" initial="hidden" animate="visible" variants={fadeIn}>
+      <motion.div 
+        className="container mx-auto px-4 py-8" 
+        initial="hidden" 
+        animate="visible" 
+        variants={fadeIn}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left sidebar with basic and additional info */}
           <div className="lg:col-span-1 space-y-6">
@@ -67,30 +73,59 @@ export default function Profile() {
 
           {/* Main content area */}
           <div className="lg:col-span-2 space-y-6">
-            <Tabs defaultValue="education" className="w-full">
-              <TabsList className="grid grid-cols-3 mb-8">
-                <TabsTrigger value="education">Education</TabsTrigger>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-                <TabsTrigger value="achievements">Achievements</TabsTrigger>
-              </TabsList>
+            <Tabs 
+              defaultValue={activeTab} 
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm mb-6">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger 
+                    value="education"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+                  >
+                    Education
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="projects"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+                  >
+                    Projects
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="achievements"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+                  >
+                    Achievements
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TabsContent value="education" className="space-y-4 mt-0">
+                    <Education />
+                  </TabsContent>
 
-              <TabsContent value="education" className="space-y-4">
-                <Education />
-              </TabsContent>
+                  <TabsContent value="projects" className="space-y-4 mt-0">
+                    <Projects />
+                  </TabsContent>
 
-              <TabsContent value="projects" className="space-y-4">
-                <Projects />
-              </TabsContent>
-
-              <TabsContent value="achievements" className="space-y-4">
-                <Achievements />
-              </TabsContent>
+                  <TabsContent value="achievements" className="space-y-4 mt-0">
+                    <Achievements />
+                  </TabsContent>
+                </motion.div>
+              </AnimatePresence>
             </Tabs>
           </div>
         </div>
       </motion.div>
-
     </main>
   )
 }
-

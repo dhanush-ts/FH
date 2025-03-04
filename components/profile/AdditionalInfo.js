@@ -1,10 +1,8 @@
 "use client"
 
-import React from "react"
-
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Edit, Save, X, Globe, Linkedin, Github, Phone } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Edit, Save, X, Globe, Linkedin, Github, Phone, Info, Link2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,7 +14,6 @@ import { toast } from "sonner"
 import { fetchData, updateData } from "@/lib/api"
 
 export default function AdditionalInfo() {
-  
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [additionalInfo, setAdditionalInfo] = useState(null)
@@ -27,22 +24,18 @@ export default function AdditionalInfo() {
     const getAdditionalInfo = async () => {
       try {
         setLoading(true)
-        const data = await fetchData("user/additional-info/");
+        const data = await fetchData("user/additional-info/")
         setAdditionalInfo(data)
         setFormData(data)
       } catch (error) {
-        toast(
-           "Error"
-          // description: "Failed to load additional information",
-          // variant: "destructive",
-        )
+        toast("Error")
       } finally {
         setLoading(false)
       }
     }
 
     getAdditionalInfo()
-  }, [toast])
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -63,57 +56,67 @@ export default function AdditionalInfo() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-  
+    e.preventDefault()
+
     try {
-      setLoading(true);
-  
+      setLoading(true)
+
       // Get only changed values
       const changedData = Object.keys(formData).reduce((acc, key) => {
         if (formData[key] !== additionalInfo[key]) {
-          acc[key] = formData[key];
+          acc[key] = formData[key]
         }
-        return acc;
-      }, {});
-  
+        return acc
+      }, {})
+
       // If no changes, don't send a request
       if (Object.keys(changedData).length === 0) {
-        toast("No changes detected");
-        setIsEditing(false);
-        setLoading(false);
-        return;
+        toast("No changes detected")
+        setIsEditing(false)
+        setLoading(false)
+        return
       }
-  
+
       // Send only changed fields in the request
-      const updatedData = await updateData("user/additional-info/", changedData);
-  
-      setAdditionalInfo(updatedData);
-      setIsEditing(false);
-      toast("Success", { description: "Additional information updated successfully" });
-  
+      const updatedData = await updateData("user/additional-info/", changedData)
+
+      setAdditionalInfo(updatedData)
+      setIsEditing(false)
+      toast("Success", { description: "Additional information updated successfully" })
     } catch (error) {
-      toast("Error", { description: "Failed to update additional information", variant: "destructive" });
-  
+      toast("Error", { description: "Failed to update additional information", variant: "destructive" })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-  
+  }
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.5,
+        delay: 0.2,
+        ease: "easeOut"
+      }
+    }
+  }
 
   if (loading && !additionalInfo) {
     return (
-      <Card className="w-full">
-        <CardHeader>
+      <Card className="w-full overflow-hidden border-none shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
           <CardTitle>Additional Information</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
             <div className="flex justify-center">
-              <div className="h-24 w-24 rounded-full bg-gray-200"></div>
+              <div className="h-24 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div>
             </div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
           </div>
         </CardContent>
       </Card>
@@ -122,66 +125,120 @@ export default function AdditionalInfo() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
     >
-      <Card className="w-full">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Additional Information</CardTitle>
+      <Card className="w-full overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 p-6">
+          <CardTitle className="flex items-center text-xl font-bold">
+            <Info className="h-5 w-5 mr-2 text-primary" />
+            Additional Information
+          </CardTitle>
           {!isEditing ? (
-            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsEditing(true)}
+              className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
               <Edit className="h-4 w-4" />
             </Button>
           ) : (
-            <Button variant="ghost" size="icon" onClick={() => setIsEditing(false)}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsEditing(false)}
+              className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
               <X className="h-4 w-4" />
             </Button>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {!isEditing ? (
             <div className="space-y-6">
               <div className="flex flex-col items-center">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={additionalInfo?.profile_photo} alt="Profile" />
-                  <AvatarFallback>{additionalInfo?.id.toString().charAt(0)}</AvatarFallback>
-                </Avatar>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
+                    <AvatarImage src={additionalInfo?.profile_photo} alt="Profile" />
+                    <AvatarFallback className="bg-gradient-to-br from-primary/80 to-primary text-white text-xl">
+                      {additionalInfo?.id.toString().charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </motion.div>
               </div>
-
+              
               {additionalInfo?.bio && (
-                <div className="space-y-2">
+                <motion.div 
+                  className="space-y-2 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
                   <h3 className="text-sm font-medium text-muted-foreground">Bio</h3>
-                  <p className="text-sm">{additionalInfo.bio}</p>
-                </div>
+                  <p className="text-sm italic">{additionalInfo.bio}</p>
+                </motion.div>
               )}
-
+              
               {additionalInfo?.phone && (
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                <motion.div 
+                  className="flex items-center space-x-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-md transition-colors"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Phone className="h-4 w-4 text-primary" />
                   <span>{additionalInfo.phone}</span>
-                </div>
+                </motion.div>
               )}
-
+              
               {additionalInfo?.skills && additionalInfo.skills.length > 0 && (
-                <div className="space-y-2">
+                <motion.div 
+                  className="space-y-2"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
                   <h3 className="text-sm font-medium text-muted-foreground">Skills</h3>
                   <div className="flex flex-wrap gap-2">
-                    {additionalInfo.skills.map((skill, index) => (
-                      <Badge key={index} variant="secondary">
-                        {skill}
-                      </Badge>
-                    ))}
+                    <AnimatePresence>
+                      {additionalInfo.skills.map((skill, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileHover={{ y: -2, scale: 1.05 }}
+                        >
+                          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                            {skill}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               )}
-
-              <div className="space-y-2">
+              
+              <motion.div 
+                className="space-y-3 mt-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
                 <h3 className="text-sm font-medium text-muted-foreground">Links</h3>
                 <div className="space-y-2">
                   {additionalInfo?.website_url && (
-                    <div className="flex items-center space-x-2">
-                      <Globe className="h-4 w-4 text-muted-foreground" />
+                    <motion.div 
+                      className="flex items-center space-x-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-md transition-colors"
+                      whileHover={{ x: 2 }}
+                    >
+                      <Globe className="h-4 w-4 text-primary" />
                       <a
                         href={additionalInfo.website_url}
                         target="_blank"
@@ -190,12 +247,15 @@ export default function AdditionalInfo() {
                       >
                         Website
                       </a>
-                    </div>
+                    </motion.div>
                   )}
-
+                  
                   {additionalInfo?.linkedin_url && (
-                    <div className="flex items-center space-x-2">
-                      <Linkedin className="h-4 w-4 text-muted-foreground" />
+                    <motion.div 
+                      className="flex items-center space-x-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-md transition-colors"
+                      whileHover={{ x: 2 }}
+                    >
+                      <Linkedin className="h-4 w-4 text-primary" />
                       <a
                         href={additionalInfo.linkedin_url}
                         target="_blank"
@@ -204,12 +264,15 @@ export default function AdditionalInfo() {
                       >
                         LinkedIn
                       </a>
-                    </div>
+                    </motion.div>
                   )}
-
+                  
                   {additionalInfo?.github_url && (
-                    <div className="flex items-center space-x-2">
-                      <Github className="h-4 w-4 text-muted-foreground" />
+                    <motion.div 
+                      className="flex items-center space-x-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-md transition-colors"
+                      whileHover={{ x: 2 }}
+                    >
+                      <Github className="h-4 w-4 text-primary" />
                       <a
                         href={additionalInfo.github_url}
                         target="_blank"
@@ -218,51 +281,67 @@ export default function AdditionalInfo() {
                       >
                         GitHub
                       </a>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <motion.form 
+              onSubmit={handleSubmit} 
+              className="space-y-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio" className="text-sm font-medium">Bio</Label>
                 <Textarea
                   id="bio"
                   name="bio"
                   placeholder="Tell us about yourself"
                   value={formData.bio || ""}
                   onChange={handleChange}
-                  className="min-h-[100px]"
+                  className="min-h-[100px] border-gray-300 focus:ring-primary focus:border-primary resize-none"
                 />
               </div>
-
+              
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone" className="text-sm font-medium">Phone</Label>
                 <Input
                   id="phone"
                   name="phone"
                   placeholder="Your phone number"
                   value={formData.phone || ""}
                   onChange={handleChange}
+                  className="border-gray-300 focus:ring-primary focus:border-primary"
                 />
               </div>
-
+              
               <div className="space-y-2">
-                <Label>Skills</Label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.skills?.map((skill, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="ml-1 rounded-full hover:bg-muted p-1"
+                <Label className="text-sm font-medium">Skills</Label>
+                <div className="flex flex-wrap gap-2 mb-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md min-h-[40px]">
+                  <AnimatePresence>
+                    {formData.skills?.map((skill, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8, y: -10 }}
                       >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
+                        <Badge variant="secondary" className="flex items-center gap-1 bg-primary/10 text-primary">
+                          {skill}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSkill(skill)}
+                            className="ml-1 rounded-full hover:bg-primary/20 p-1 transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
                 <div className="flex gap-2">
                   <Input
@@ -275,47 +354,69 @@ export default function AdditionalInfo() {
                         handleAddSkill()
                       }
                     }}
+                    className="border-gray-300 focus:ring-primary focus:border-primary"
                   />
-                  <Button type="button" variant="outline" onClick={handleAddSkill}>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleAddSkill}
+                    className="border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
                     Add
                   </Button>
                 </div>
               </div>
-
+              
               <div className="space-y-2">
-                <Label htmlFor="website_url">Website URL</Label>
+                <Label htmlFor="website_url" className="text-sm font-medium flex items-center">
+                  <Globe className="h-4 w-4 mr-1 text-muted-foreground" />
+                  Website URL
+                </Label>
                 <Input
                   id="website_url"
                   name="website_url"
                   placeholder="https://yourwebsite.com"
                   value={formData.website_url || ""}
                   onChange={handleChange}
+                  className="border-gray-300 focus:ring-primary focus:border-primary"
                 />
               </div>
-
+              
               <div className="space-y-2">
-                <Label htmlFor="linkedin_url">LinkedIn URL</Label>
+                <Label htmlFor="linkedin_url" className="text-sm font-medium flex items-center">
+                  <Linkedin className="h-4 w-4 mr-1 text-muted-foreground" />
+                  LinkedIn URL
+                </Label>
                 <Input
                   id="linkedin_url"
                   name="linkedin_url"
                   placeholder="https://linkedin.com/in/yourusername"
                   value={formData.linkedin_url || ""}
                   onChange={handleChange}
+                  className="border-gray-300 focus:ring-primary focus:border-primary"
                 />
               </div>
-
+              
               <div className="space-y-2">
-                <Label htmlFor="github_url">GitHub URL</Label>
+                <Label htmlFor="github_url" className="text-sm font-medium flex items-center">
+                  <Github className="h-4 w-4 mr-1 text-muted-foreground" />
+                  GitHub URL
+                </Label>
                 <Input
                   id="github_url"
                   name="github_url"
                   placeholder="https://github.com/yourusername"
                   value={formData.github_url || ""}
                   onChange={handleChange}
+                  className="border-gray-300 focus:ring-primary focus:border-primary"
                 />
               </div>
-
-              <Button type="submit" disabled={loading} className="w-full">
+              
+              <Button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full mt-6 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary transition-all duration-300"
+              >
                 {loading ? (
                   <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 ) : (
@@ -323,11 +424,10 @@ export default function AdditionalInfo() {
                 )}
                 Save Changes
               </Button>
-            </form>
+            </motion.form>
           )}
         </CardContent>
       </Card>
     </motion.div>
   )
 }
-
