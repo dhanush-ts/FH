@@ -10,9 +10,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 
 
 export function UserProfile({ user, onLogout }) {
+  const router = useRouter();
   const getInitials = () => {
     return user.first_name.charAt(0).toUpperCase()
   }
@@ -66,7 +68,7 @@ export function UserProfile({ user, onLogout }) {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer py-2">
+        <DropdownMenuItem onClick={() => router.push("/profile")} className="flex items-center gap-2 cursor-pointer py-2">
           <User className="h-4 w-4 text-slate-500" />
           <span>My Profile</span>
         </DropdownMenuItem>
