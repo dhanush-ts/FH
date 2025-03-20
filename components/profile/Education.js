@@ -41,7 +41,6 @@ export default function Education() {
     getEducationData()
   }, [])
 
-  // Scroll to the form when it appears
   useEffect(() => {
     if (isAddingNew && newFormRef.current) {
       setTimeout(() => {
@@ -76,8 +75,6 @@ export default function Education() {
     try {
       setLoading(true)
       const newEducation = await createData("user/education/", formData)
-
-      // Optimistically update UI
       setEducationList((prev) => [...prev, newEducation])
       setIsAddingNew(false)
       resetForm()

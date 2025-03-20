@@ -1,5 +1,4 @@
 "use client";
-
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
@@ -14,7 +13,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom hook to use auth context
 export function useAuth() {
   return useContext(AuthContext);
 }
