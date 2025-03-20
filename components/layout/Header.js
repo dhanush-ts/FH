@@ -38,7 +38,9 @@ export function Header() {
         })
         if (response.ok) {
           const data = await response.json()
-          setProfile(data)
+          setProfile(data);
+          console.log(data)
+          setIsAuthenticated(true);
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
@@ -69,7 +71,7 @@ export function Header() {
     document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     setIsAuthenticated(false)
     setProfile(null)
-    window.location.reload();
+    // window.location.reload();
     router.push("/login");
   }
 
@@ -343,4 +345,3 @@ const ListItem = React.forwardRef(({ className, title, children, ...props }, ref
   )
 })
 ListItem.displayName = "ListItem"
-

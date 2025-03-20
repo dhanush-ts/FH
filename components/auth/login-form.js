@@ -42,7 +42,6 @@ export async function handleLogin(formData) {
       sameSite: "Strict",
       path: "/",
     });
-
     redirect(`/`);
   } else {
     throw new Error("Wrong credentials");
