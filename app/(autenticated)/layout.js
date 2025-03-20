@@ -1,6 +1,5 @@
 
 import "../globals.css";
-import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/sonner"
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -18,12 +17,9 @@ export default async function RootLayout({ children }) {
     redirect("/")
   }
   return (
-    <html lang="en">
-      <body style={{fontFamily: 'Poppins'}} className={`font-poppins antialiased`}>
-        <Header />
+      <div>
         {children}
         <Toaster />
-      </body>
-    </html>
+      </div>
   );
 }
