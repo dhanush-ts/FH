@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/app/providers"
 
 export function Header() {
+  const [loading, setLoading] = React.useState(true)
   const { isAuthenticated,setIsAuthenticated } = useAuth();
   const [isScrolled, setIsScrolled] = React.useState(false)
   const router = useRouter()
@@ -34,7 +35,7 @@ export function Header() {
       try {
         const response = await fetch(`${api}user/basic-profile/`,{
           headers: {
-            Authorization: `Bearer ${jwtCookie.split("=")[1]}`,
+            Authorization: `Bearer ${jwtCookie?.split("=")[1]}`,
           },
         })
         if (response.ok) {
@@ -45,18 +46,20 @@ export function Header() {
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
+      }finally{
+        setLoading(false)
       }
     }
 
-    // if (typeof document !== "undefined") {
       const cookies = document?.cookie ? document?.cookie?.split("; ") : []
       const jwtCookie = cookies.find((row) => row.startsWith("jwt="))
 
       if (jwtCookie) {
         setIsAuthenticated(true)
         getProfile(jwtCookie)
+      }else{
+        setLoading(false)
       }
-    // }
   }, [])
 
   React.useEffect(() => {
@@ -64,14 +67,12 @@ export function Header() {
       try {
         const response = await fetch(`${api}user/basic-profile/`,{
           headers: {
-            Authorization: `Bearer ${jwtCookie.split("=")[1]}`,
+            Authorization: `Bearer ${jwtCookie?.split("=")[1]}`,
           },
         })
         if (response.ok) {
           const data = await response.json()
           setProfile(data);
-          console.log(data)
-          setIsAuthenticated(true);
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
@@ -80,7 +81,7 @@ export function Header() {
 
     if (isAuthenticated) {
       console.log("reached")
-      const cookies = document?.cookie ? document?.cookie?.split("; ") : []
+      const cookies = document.cookie.split("; ")
       const jwtCookie = cookies.find((row) => row.startsWith("jwt="))
       getProfile(jwtCookie)
     }
@@ -99,9 +100,10 @@ export function Header() {
     document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     setIsAuthenticated(false)
     setProfile(null)
-    // window.location.reload();
     router.push("/login");
   }
+
+  if(loading) return null;
 
   return (
     <header
