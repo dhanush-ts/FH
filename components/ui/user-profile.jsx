@@ -20,12 +20,13 @@ export function UserProfile({ user, onLogout }) {
   }
 
   return (
+  <div className="flex">
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           className="relative h-10 w-10 rounded-full p-0 transition-all duration-200 hover:bg-accent/50 hover:scale-105"
-        >
+          >
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarImage
               src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.first_name} ${user.last_name}`}
@@ -35,11 +36,12 @@ export function UserProfile({ user, onLogout }) {
               {getInitials()}
             </AvatarFallback>
           </Avatar>
-          {!user.is_verified && (
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 border-2 border-white" />
-          )}
+          <span className="">
+            {user?.first_name} {user?.last_name}
+        </span>
         </Button>
       </DropdownMenuTrigger>
+         
       <DropdownMenuContent align="end" className="w-64 p-2">
         <div className="flex items-center gap-3 p-2">
           <Avatar className="h-12 w-12 border-2 border-primary/10">
@@ -94,6 +96,7 @@ export function UserProfile({ user, onLogout }) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  </div>
   )
 }
 

@@ -112,7 +112,7 @@ export function Header() {
         isScrolled ? "bg-white/95 backdrop-blur-sm border-b shadow-sm py-2" : "bg-white border-b py-3",
       )}
     >
-      <div className="flex h-16 mx-auto px-4 items-center justify-between">
+      <div className="flex h-16 mx-auto px-4 sm:px-8 md:px-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center mr-8">
             <span className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 text-transparent bg-clip-text transition-all duration-300 hover:scale-105">
@@ -192,13 +192,13 @@ export function Header() {
 
           {isAuthenticated && profile ? (
             <div className="flex items-center">
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <UserProfile user={profile} onLogout={handleLogout} />
               </div>
 
               <div className="lg:hidden">
                 <Button variant="ghost" className="h-10 w-10 rounded-full p-0" onClick={handleLogout}>
-                  <Avatar className="h-8 w-8 border-2 border-primary/10">
+                  <Avatar className="h-10 w-10 border-2 border-primary/10">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name} ${profile.last_name}`}
                       alt={profile.first_name}
@@ -234,7 +234,7 @@ export function Header() {
               <Button
                 variant="outline"
                 size="icon"
-                className="lg:hidden transition-all duration-200 hover:scale-110 rounded-full"
+                className="lg:hidden h-10 w-10 border-2 border-primary/10 transition-all duration-200 hover:scale-110 rounded-md"
               >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
@@ -242,7 +242,7 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="p-6">
               <DialogDescription></DialogDescription>
-              <div className="flex flex-col gap-8 py-6">
+              <div className="flex flex-col gap-8 py-2">
                 <Link href="/" className="flex items-center">
                   <span className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 text-transparent bg-clip-text">
                     FINDHACKS
@@ -270,10 +270,10 @@ export function Header() {
                   </div>
                 )}
 
-                <div className="relative mb-6">
+                {/* <div className="relative mb-6">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input type="search" placeholder="Search hackathons..." className="w-full pl-10 h-10 rounded-full" />
-                </div>
+                </div> */}
 
                 <nav className="flex flex-col space-y-6">
                   <Link href="/" className="font-medium text-lg transition-colors duration-200 hover:text-primary">

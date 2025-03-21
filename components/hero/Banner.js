@@ -71,7 +71,7 @@ export default function Banner() {
           />
 
           {/* Animated slicing lines */}
-          <motion.div
+          {/* <motion.div
             className="absolute inset-0 z-0 overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -92,7 +92,7 @@ export default function Banner() {
                 }}
               />
             ))}
-          </motion.div>
+          </motion.div> */}
 
           {/* Mobile Lottie animation */}
           {/* <motion.div
