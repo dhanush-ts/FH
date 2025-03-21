@@ -571,7 +571,7 @@ export default function EducationTimeline() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className={`hidden md:block absolute top-0 ${index % 2 === 0 ? "right-0 pr-[calc(5%+1rem)]" : "left-0 pl-[calc(5%+1rem)]"}`}
+                  className={`hidden md:block absolute top-0 ${index % 2 === 0 ? "right-1/3" : "left-1/3"}`}
                 >
                   <div
                     className={`font-bold text-lg px-3 py-1 rounded-full ${index % 2 === 0 ? "bg-primary/10 text-primary" : "bg-primary text-white"} flex items-center gap-1 shadow-sm`}
@@ -589,7 +589,7 @@ export default function EducationTimeline() {
                   className={cn(
                     "bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 border border-gray-200 dark:border-gray-700",
                     expandedId === entry.id ? "ring-2 ring-primary shadow-xl" : "shadow-md",
-                    "md:max-w-[85%] md:w-[85%]",
+                    "md:max-w-[45%] md:w-[45%]",
                     index % 2 === 0 ? "ml-0" : "mr-0",
                   )}
                   style={{

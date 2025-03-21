@@ -42,16 +42,7 @@ export default function Profile() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="relative">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-8 h-8 bg-white dark:bg-gray-900 rounded-full"></div>
-          </div>
-        </div>
-      </div>
-    )
+    return null;
   }
 
   return (
