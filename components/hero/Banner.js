@@ -6,7 +6,7 @@ import Btn09 from "../ui/get-started-button"
 export default function Banner() {
   return (
     <div className="relative w-full bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="h-[300px] max-w-7xl mx-auto md:h-[450px] relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
             {/* Left Content */}

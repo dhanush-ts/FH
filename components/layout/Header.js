@@ -112,7 +112,7 @@ export function Header() {
         isScrolled ? "bg-white/95 backdrop-blur-sm border-b shadow-sm py-2" : "bg-white border-b py-3",
       )}
     >
-      <div className="container flex h-16 mx-auto px-4 items-center justify-between">
+      <div className="flex h-16 mx-auto px-4 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center mr-8">
             <span className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 text-transparent bg-clip-text transition-all duration-300 hover:scale-105">
@@ -120,7 +120,7 @@ export function Header() {
             </span>
           </Link>
 
-          <NavigationMenu className="hidden md:flex">
+          <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList className="gap-1">
               <NavigationMenuItem>
                 <Link href="/" legacyBehavior passHref>
@@ -181,14 +181,14 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex relative">
+          {/* <div className="hidden lg:flex relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-200" />
             <Input
               type="search"
               placeholder="Search hackathons..."
               className="w-[200px] lg:w-[300px] pl-10 pr-4 transition-all duration-300 focus:w-[250px] lg:focus:w-[350px] h-10 rounded-full"
             />
-          </div>
+          </div> */}
 
           {isAuthenticated && profile ? (
             <div className="flex items-center">
@@ -196,7 +196,7 @@ export function Header() {
                 <UserProfile user={profile} onLogout={handleLogout} />
               </div>
 
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <Button variant="ghost" className="h-10 w-10 rounded-full p-0" onClick={handleLogout}>
                   <Avatar className="h-8 w-8 border-2 border-primary/10">
                     <AvatarImage
@@ -211,7 +211,7 @@ export function Header() {
               </div>
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               <Button
                 variant="outline"
                 asChild
@@ -234,7 +234,7 @@ export function Header() {
               <Button
                 variant="outline"
                 size="icon"
-                className="md:hidden transition-all duration-200 hover:scale-110 rounded-full"
+                className="lg:hidden transition-all duration-200 hover:scale-110 rounded-full"
               >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>

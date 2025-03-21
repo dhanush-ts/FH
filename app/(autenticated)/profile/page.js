@@ -5,7 +5,7 @@ import { getCookie } from "cookies-next"
 import { motion, AnimatePresence } from "framer-motion"
 import Banner2 from "@/components/hero/Banner2"
 import BasicInfo from "@/components/profile/BasicInfo"
-import Education from "@/components/profile/Education"
+import EducationTimeline from "@/components/profile/Education"
 import AdditionalInfo from "@/components/profile/AdditionalInfo"
 import Projects from "@/components/profile/Projects"
 import Achievements from "@/components/profile/Achievements"
@@ -110,7 +110,7 @@ export default function Profile() {
                   transition={{ duration: 0.3 }}
                 >
                   <TabsContent value="education" className="space-y-4 mt-0">
-                    <Education />
+                    <EducationTimeline />
                   </TabsContent>
 
                   <TabsContent value="projects" className="space-y-4 mt-0">
