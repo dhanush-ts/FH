@@ -115,7 +115,7 @@ export default function Banner() {
         <div
           className={`${isMobile ? "flex py-24 items-center" : "h-[300px] md:h-[450px]"} max-w-7xl mx-auto relative`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
             {/* Left Content */}
             <motion.div
               className="flex flex-col justify-center space-y-6 md:space-y-8 z-10 py-8 md:py-0"
@@ -126,7 +126,7 @@ export default function Banner() {
               <div className="space-y-4">
                 {isMobile ? (
                   <motion.h1
-                    className="font-bold tracking-tight text-slate-900 text-5xl"
+                    className="font-bold tracking-tight text-slate-900 text-center text-4xl sm:text-5xl"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -201,12 +201,12 @@ export default function Banner() {
                 )}
 
                 <motion.p
-                  className="text-black text-xl font-medium max-w-md leading-relaxed"
+                  className={isMobile?"text-black py-8 text-xl text-center font-medium w-full leading-relaxed":"text-black text-xl font-medium max-w-md leading-relaxed"}
                   initial={isMobile ? { opacity: 0, y: 20 } : {}}
                   animate={isMobile ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.8, delay: 1.3 }}
                 >
-                  Discover, connect, and grow. Join the innovation wave today!
+                  Discover, connect, and grow. <br /> Join the innovation wave today!
                 </motion.p>
               </div>
 
