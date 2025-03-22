@@ -25,7 +25,7 @@ export function UserProfile({ user, onLogout }) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-10 w-10 rounded-full p-0 transition-all duration-200 hover:bg-accent/50 hover:scale-105"
+          className="relative p-3 transition-all duration-200 hover:bg-accent/50 hover:scale-105"
           >
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarImage
@@ -36,7 +36,7 @@ export function UserProfile({ user, onLogout }) {
               {getInitials()}
             </AvatarFallback>
           </Avatar>
-          <span className="">
+          <span className="hidden sm:block">
             {user?.first_name} {user?.last_name}
         </span>
         </Button>

@@ -5,6 +5,13 @@ import RotatingText from "../ui/RotatingText/RotatingText"
 import Btn09 from "../ui/get-started-button"
 import { motion } from "framer-motion"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { Acme } from "next/font/google"
+
+const acme = Acme({
+  weight: "400", // Acme has only one weight
+  subsets: ["latin"],
+  display: "swap",
+})
 
 export default function Banner() {
   const isMobile = useMediaQuery("(max-width: 768px)")
@@ -145,7 +152,9 @@ export default function Banner() {
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ duration: 0.6, delay: 0.7 }}
                     >
-                      FindHacks
+                    <span className={`${acme.className}  font-bold bg-gradient-to-r text-black`}>
+                      FIND<span className="text-green-600">H</span>ACKS
+                    </span>
                     </motion.span>
                     <motion.span
                       initial={{ y: 40, opacity: 0 }}
@@ -178,8 +187,8 @@ export default function Banner() {
                 ) : (
                   <h1 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
                     Welcome to{" "}
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400">
-                      FindHacks
+                    <span className={`${acme.className} font-bold bg-gradient-to-r text-black`}>
+                      FIND<span className="text-green-600">H</span>ACKS
                     </span>{" "}
                     <br />
                     Your hub for{" "}

@@ -18,6 +18,7 @@ export default {
 		fontFamily: {
 			poppins: ['Poppins', 'sans-serif'],
 			varela: ['Varela Round', 'sans-serif'],
+			acme: ['Acme', 'sans-serif'],
 		  },
   		borderRadius: {
   			lg: 'var(--radius)',
