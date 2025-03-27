@@ -37,7 +37,8 @@ export default function Projects() {
     const getProjectData = async () => {
       try {
         setLoading(true)
-        const data = await fetchWithAuth("/user/project/")
+        const response = await fetchWithAuth("/user/project/")
+        const data = await response.json()
         setProjectList(data)
       } catch (error) {
         toast("Error")
@@ -58,10 +59,11 @@ export default function Projects() {
     e.preventDefault()
     try {
       setLoading(true)
-      const newProject = await fetchWithAuth("/user/project/", {
+      const response = await fetchWithAuth("/user/project/", {
         method: "POST",
         body: JSON.stringify(formData),
       })
+      const newProject = await response.json()
       setProjectList((prev) => [...prev, newProject])
       setIsAddDialogOpen(false)
       setFormData({
@@ -83,10 +85,11 @@ export default function Projects() {
 
     try {
       setLoading(true)
-      const updatedProject = await fetchWithAuth(`/user/project/${currentProject.id}/`, {
+      const response = await fetchWithAuth(`/user/project/${currentProject.id}/`, {
         method: "PATCH",
         body: JSON.stringify(formData),
       })
+      const updatedProject = await response.json()
       setProjectList((prev) => prev.map((item) => (item.id === updatedProject.id ? updatedProject : item)))
       setIsEditDialogOpen(false)
       setCurrentProject(null)

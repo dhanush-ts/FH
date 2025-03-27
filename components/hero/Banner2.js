@@ -14,9 +14,10 @@ export default function Banner2() {
     const fetchProfileData = async () => {
       try {
         setLoading(true)
-        const basicData = await fetchWithAuth("/user/basic-profile/")
-        const additionalData = await fetchWithAuth("/user/additional-info/")
-        
+        const basicresponse = await fetchWithAuth("/user/basic-profile/")
+        const additionalresponse = await fetchWithAuth("/user/additional-info/")
+        const basicData = await basicresponse.json();
+        const additionalData = await additionalresponse.json();
         setProfileData(basicData)
         setAdditionalInfo(additionalData)
       } catch (error) {
@@ -31,7 +32,6 @@ export default function Banner2() {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Background with parallax effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-300 overflow-hidden">
         <motion.div 
           className="absolute inset-0 opacity-20"
@@ -53,7 +53,6 @@ export default function Banner2() {
           }}
         />
         
-        {/* Animated gradient overlay */}
         <motion.div 
           className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent"
           initial={{ opacity: 0.5 }}
@@ -61,7 +60,6 @@ export default function Banner2() {
           transition={{ duration: 5, repeat: Infinity }}
         />
         
-        {/* Animated particles */}
         <div className="absolute inset-0 overflow-hidden">
           {Array.from({ length: 20 }).map((_, i) => (
             <motion.div

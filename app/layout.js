@@ -7,7 +7,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body style={{fontFamily: 'Poppins'}} className={`font-poppins antialiased`}>
-        <AuthProvider>
+        <AuthProvider suppressHydrationWarning>
           <Header />
           {children}
         </AuthProvider>

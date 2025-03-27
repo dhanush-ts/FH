@@ -44,10 +44,16 @@ export default function EducationTimeline() {
     const getEducationData = async () => {
       try {
         setLoading(true)
-        const data = await fetchWithAuth("/user/education/")
-        // Sort by start_year (oldest first)
+        const response = await fetchWithAuth("/user/education/");
+        const data = await response.json();
+        if(data.length!==0){
         setEntries(data.sort((a, b) => -a.start_year + b.start_year))
-      } catch (error) {
+        console.log(data)
+        }else{
+          setEntries(data);
+        }
+      }
+       catch (error) {
         console.error("Failed to fetch education data:", error)
         toast("Failed to load education data")
       } finally {
@@ -138,14 +144,19 @@ export default function EducationTimeline() {
         grade: formData.grade,
       }
 
-      const newEducation = await fetchWithAuth("/user/education/", {
+      console.log(apiData)
+
+      const response = await fetchWithAuth("/user/education/", {
         method: "POST",
         body: JSON.stringify(apiData),
       })
 
+      const newEducation = await response.json();
+
       // Convert API response keys to match component expectations
       const formattedEducation = {
         ...newEducation,
+        grade: newEducation.grade,
         start_year: newEducation.start_year,
         end_year: newEducation.end_year,
       }
@@ -176,10 +187,12 @@ export default function EducationTimeline() {
         grade: formData.grade || "",
       }
 
-      const updatedEducation = await fetchWithAuth(`user/education/${editingId}/`, {
+      const response = await fetchWithAuth(`user/education/${editingId}/`, {
         method: "PATCH",
         body: JSON.stringify(apiData),
       })
+
+      const updatedEducation = await response.json();
 
       // Convert API response keys to match component expectations
       const formattedEducation = {
@@ -634,7 +647,7 @@ export default function EducationTimeline() {
               >
                 {entries.map((entry, index) => (
                   <motion.div
-                    key={entry.id}
+                    key={index}
                     variants={itemVariants}
                     id={`timeline-item-${entry.id}`}
                     data-id={entry.id}

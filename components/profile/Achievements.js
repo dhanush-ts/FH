@@ -36,7 +36,8 @@ export default function Achievements() {
     const getAchievementData = async () => {
       try {
         setLoading(true)
-        const data = await fetchWithAuth("/user/achievement/")
+        const response = await fetchWithAuth("/user/achievement/")
+        const data = await response.json()
         setAchievementList(data)
       } catch (error) {
         toast("Error")
@@ -57,10 +58,11 @@ export default function Achievements() {
     e.preventDefault()
     try {
       setLoading(true)
-      const newAchievement = await fetchWithAuth("/user/achievement/", {
+      const response = await fetchWithAuth("/user/achievement/", {
         method: "POST",
         body: JSON.stringify(formData),
       })
+      const newAchievement = await response.json()
       setAchievementList((prev) => [...prev, newAchievement])
       setIsAddDialogOpen(false)
       setFormData({
@@ -81,10 +83,11 @@ export default function Achievements() {
 
     try {
       setLoading(true)
-      const updatedAchievement = await fetchWithAuth(`/user/achievement/${currentAchievement.id}/`, {
+      const response = await fetchWithAuth(`/user/achievement/${currentAchievement.id}/`, {
         method: "PATCH",
         body: JSON.stringify(formData),
       })
+      const updatedAchievement = await response.json()
       setAchievementList((prev) => prev.map((item) => (item.id === updatedAchievement.id ? updatedAchievement : item)))
       setIsEditDialogOpen(false)
       setCurrentAchievement(null)

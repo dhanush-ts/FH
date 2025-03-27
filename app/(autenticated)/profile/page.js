@@ -1,7 +1,4 @@
 "use client"
-
-import { useEffect, useState } from "react"
-import { getCookie } from "cookies-next"
 import { motion, AnimatePresence } from "framer-motion"
 import Banner2 from "@/components/hero/Banner2"
 import BasicInfo from "@/components/profile/BasicInfo"
@@ -10,27 +7,10 @@ import AdditionalInfo from "@/components/profile/AdditionalInfo"
 import Projects from "@/components/profile/Projects"
 import Achievements from "@/components/profile/Achievements"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toast } from "sonner"
+import { useState } from "react"
 
 export default function Profile() {
-  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("education")
-
-  // Check for JWT token
-  useEffect(() => {
-    const token = getCookie("jwt")
-    if (!token) {
-      toast("Authentication Error")
-    }
-  }, [])
-
-  // Simulate loading state
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [])
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -39,10 +19,6 @@ export default function Profile() {
       y: 0,
       transition: { duration: 0.6 },
     },
-  }
-
-  if (loading) {
-    return null;
   }
 
   return (
@@ -56,13 +32,11 @@ export default function Profile() {
         variants={fadeIn}
       >
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left sidebar with basic and additional info */}
           <div className="lg:col-span-1 space-y-6">
             <BasicInfo />
             <AdditionalInfo />
           </div>
 
-          {/* Main content area */}
           <div className="lg:col-span-2 space-y-6">
             <Tabs 
               defaultValue={activeTab} 

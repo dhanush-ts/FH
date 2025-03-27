@@ -24,7 +24,8 @@ export default function AdditionalInfo() {
     const getAdditionalInfo = async () => {
       try {
         setLoading(true)
-        const data = await fetchWithAuth("/user/additional-info/")
+        const response = await fetchWithAuth("/user/additional-info/")
+        const data = await response.json()
         setAdditionalInfo(data)
         setFormData(data)
       } catch (error) {
@@ -78,11 +79,11 @@ export default function AdditionalInfo() {
       }
 
       // Send only changed fields in the request
-      const updatedData = await fetchWithAuth("/user/additional-info/", {
+      const response = await fetchWithAuth("/user/additional-info/", {
         method: "PATCH",
         body: JSON.stringify(changedData)
       })
-
+      const updatedData = await response.json()
       setAdditionalInfo(updatedData)
       setIsEditing(false)
       toast("Success", { description: "Additional information updated successfully" })
@@ -169,7 +170,7 @@ export default function AdditionalInfo() {
                   <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
                     <AvatarImage src={additionalInfo?.profile_photo} alt="Profile" />
                     <AvatarFallback className="bg-gradient-to-br from-primary/80 to-primary text-white text-xl">
-                      {additionalInfo?.id.toString().charAt(0)}
+                      {additionalInfo?.id?.toString()?.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                 </motion.div>

@@ -21,7 +21,8 @@ export default function BasicInfo() {
     const getProfileData = async () => {
       try {
         setLoading(true)
-        const data = await fetchWithAuth("/user/basic-profile/")
+        const response = await fetchWithAuth("/user/basic-profile/")
+        const data = await response.json()
         setProfileData(data)
         setFormData(data)
       } catch (error) {
@@ -47,10 +48,11 @@ export default function BasicInfo() {
     e.preventDefault()
     try {
       setLoading(true)
-      const updatedData = await fetchWithAuth("/user/basic-profile/", {
+      const response = await fetchWithAuth("/user/basic-profile/", {
         method: "PATCH",
         body: JSON.stringify(formData),
       })
+      const updatedData = await response.json()
       setProfileData(updatedData)
       setIsEditing(false)
       toast("Success")
