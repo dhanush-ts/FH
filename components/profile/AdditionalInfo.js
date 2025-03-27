@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { fetchData, updateData } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 export default function AdditionalInfo() {
   const [isEditing, setIsEditing] = useState(false)
@@ -24,7 +24,7 @@ export default function AdditionalInfo() {
     const getAdditionalInfo = async () => {
       try {
         setLoading(true)
-        const data = await fetchData("user/additional-info/")
+        const data = await fetchWithAuth("/user/additional-info/")
         setAdditionalInfo(data)
         setFormData(data)
       } catch (error) {
@@ -78,7 +78,10 @@ export default function AdditionalInfo() {
       }
 
       // Send only changed fields in the request
-      const updatedData = await updateData("user/additional-info/", changedData)
+      const updatedData = await fetchWithAuth("/user/additional-info/", {
+        method: "PATCH",
+        body: JSON.stringify(changedData)
+      })
 
       setAdditionalInfo(updatedData)
       setIsEditing(false)

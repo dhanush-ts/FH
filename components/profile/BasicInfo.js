@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
-import { fetchData, updateData } from "@/lib/api"
+import { fetchWithAuth, updateData } from "@/lib/api"
 
 export default function BasicInfo() {
   const [isEditing, setIsEditing] = useState(false)
@@ -21,7 +21,7 @@ export default function BasicInfo() {
     const getProfileData = async () => {
       try {
         setLoading(true)
-        const data = await fetchData("user/basic-profile/")
+        const data = await fetchWithAuth("/user/basic-profile/")
         setProfileData(data)
         setFormData(data)
       } catch (error) {
@@ -47,7 +47,10 @@ export default function BasicInfo() {
     e.preventDefault()
     try {
       setLoading(true)
-      const updatedData = await updateData("user/basic-profile/", formData)
+      const updatedData = await fetchWithAuth("/user/basic-profile/", {
+        method: "PATCH",
+        body: JSON.stringify(formData),
+      })
       setProfileData(updatedData)
       setIsEditing(false)
       toast("Success")

@@ -12,8 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { api } from "@/app/api";
-import { useToast } from "@/hooks/use-toast";
+import { fetchWithAuth } from "@/lib/api";
 
 async function handleSignUp(formData) {
   "use server";
@@ -24,13 +23,8 @@ async function handleSignUp(formData) {
     password: formData.get("password"),
   };
 
-  ;
-
-  const response = await fetch(`${api}auth/create-patient/`, {
+  const response = await fetchWithAuth(`/auth/create-patient/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(data),
   });
 

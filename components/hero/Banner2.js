@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { getCookie } from "cookies-next"
 import { MapPin, Github, Linkedin, ExternalLink } from 'lucide-react'
-import { fetchData } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 export default function Banner2() {
   const [profileData, setProfileData] = useState(null)
@@ -15,8 +14,8 @@ export default function Banner2() {
     const fetchProfileData = async () => {
       try {
         setLoading(true)
-        const basicData = await fetchData("user/basic-profile/")
-        const additionalData = await fetchData("user/additional-info/")
+        const basicData = await fetchWithAuth("/user/basic-profile/")
+        const additionalData = await fetchWithAuth("/user/additional-info/")
         
         setProfileData(basicData)
         setAdditionalInfo(additionalData)

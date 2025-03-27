@@ -18,11 +18,11 @@ import { Search, Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
 import { useRouter } from "next/navigation"
-import { api } from "@/app/api"
 import { UserProfile } from "@/components/ui/user-profile"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/app/providers"
 import { Acme } from "next/font/google"
+import { fetchWithAuth } from "@/lib/api"
 
 const acme = Acme({
   weight: "400", // Acme has only one weight
@@ -40,11 +40,7 @@ export function Header() {
   React.useEffect(() => {
     async function getProfile(jwtCookie) {
       try {
-        const response = await fetch(`${api}user/basic-profile/`,{
-          headers: {
-            Authorization: `Bearer ${jwtCookie?.split("=")[1]}`,
-          },
-        })
+        const response = await fetchWithAuth(`/user/basic-profile/`)
         if (response.ok) {
           const data = await response.json()
           setProfile(data);
@@ -72,11 +68,7 @@ export function Header() {
   React.useEffect(() => {
     async function getProfile(jwtCookie) {
       try {
-        const response = await fetch(`${api}user/basic-profile/`,{
-          headers: {
-            Authorization: `Bearer ${jwtCookie?.split("=")[1]}`,
-          },
-        })
+        const response = await fetchWithAuth(`/user/basic-profile/`)
         if (response.ok) {
           const data = await response.json()
           setProfile(data);
@@ -238,7 +230,7 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="flex items-center lg:mr-8">
+          <Link href="/" className="flex items-center. lg:mr-8">
             <span className={`${acme.className} text-2xl mx-6 lg:mx-0 font-bold bg-gradient-to-r text-black bg-clip-text transition-all duration-300 hover:scale-105`}>
               FIND<span className="text-green-600">H</span>ACKS
             </span>

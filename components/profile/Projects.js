@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { fetchData, createData, updateData, deleteData } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 export default function Projects() {
   const [loading, setLoading] = useState(true)
@@ -37,7 +37,7 @@ export default function Projects() {
     const getProjectData = async () => {
       try {
         setLoading(true)
-        const data = await fetchData("user/project/")
+        const data = await fetchWithAuth("/user/project/")
         setProjectList(data)
       } catch (error) {
         toast("Error")
@@ -58,7 +58,10 @@ export default function Projects() {
     e.preventDefault()
     try {
       setLoading(true)
-      const newProject = await createData("user/project/", formData)
+      const newProject = await fetchWithAuth("/user/project/", {
+        method: "POST",
+        body: JSON.stringify(formData),
+      })
       setProjectList((prev) => [...prev, newProject])
       setIsAddDialogOpen(false)
       setFormData({
@@ -80,7 +83,10 @@ export default function Projects() {
 
     try {
       setLoading(true)
-      const updatedProject = await updateData(`user/project/${currentProject.id}/`, formData)
+      const updatedProject = await fetchWithAuth(`/user/project/${currentProject.id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(formData),
+      })
       setProjectList((prev) => prev.map((item) => (item.id === updatedProject.id ? updatedProject : item)))
       setIsEditDialogOpen(false)
       setCurrentProject(null)
@@ -95,7 +101,9 @@ export default function Projects() {
   const handleDelete = async (id) => {
     try {
       setLoading(true)
-      await deleteData(`user/project/${id}/`)
+      await fetchWithAuth(`/user/project/${id}/`,{
+        method: "DELETE",
+      })
       setProjectList((prev) => prev.filter((item) => item.id !== id))
       toast("Success")
     } catch (error) {

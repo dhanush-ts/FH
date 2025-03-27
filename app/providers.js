@@ -1,9 +1,18 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { fetchWithAuth } from "@/lib/api";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  useEffect(() => {
+    const response = fetchWithAuth("/user/basic-profile/");
+    if (response.status === 200) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  },[]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (

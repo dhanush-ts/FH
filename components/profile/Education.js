@@ -11,7 +11,7 @@ import { toast } from "sonner" // Added toast import
 import { useMediaQuery } from "@/hooks/use-media-query"
 
 // Import API functions
-import { fetchData, createData, updateData, deleteData } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 export default function EducationTimeline() {
   // State for education entries
@@ -44,7 +44,7 @@ export default function EducationTimeline() {
     const getEducationData = async () => {
       try {
         setLoading(true)
-        const data = await fetchData("user/education/")
+        const data = await fetchWithAuth("/user/education/")
         // Sort by start_year (oldest first)
         setEntries(data.sort((a, b) => -a.start_year + b.start_year))
       } catch (error) {
@@ -138,7 +138,10 @@ export default function EducationTimeline() {
         grade: formData.grade,
       }
 
-      const newEducation = await createData("user/education/", apiData)
+      const newEducation = await fetchWithAuth("/user/education/", {
+        method: "POST",
+        body: JSON.stringify(apiData),
+      })
 
       // Convert API response keys to match component expectations
       const formattedEducation = {
@@ -173,7 +176,10 @@ export default function EducationTimeline() {
         grade: formData.grade || "",
       }
 
-      const updatedEducation = await updateData(`user/education/${editingId}/`, apiData)
+      const updatedEducation = await fetchWithAuth(`user/education/${editingId}/`, {
+        method: "PATCH",
+        body: JSON.stringify(apiData),
+      })
 
       // Convert API response keys to match component expectations
       const formattedEducation = {
@@ -200,7 +206,9 @@ export default function EducationTimeline() {
   const handleDelete = async (id) => {
     try {
       setActionLoading(true)
-      await deleteData(`user/education/${id}/`)
+      await fetchWithAuth(`/user/education/${id}/`,{
+        method: "DELETE",
+      })
       setEntries((prev) => prev.filter((item) => item.id !== id))
       toast("Education deleted successfully")
     } catch (error) {
@@ -312,7 +320,7 @@ export default function EducationTimeline() {
   const mobileCardVariants = {
     initial: {
       scale: 1,
-      opacity: 1, // Ensure cards are visible initially
+      opacity: 1,
       boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
     },
     hover: {

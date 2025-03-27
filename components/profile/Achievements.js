@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { fetchData, createData, updateData, deleteData } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 export default function Achievements() {
   const [loading, setLoading] = useState(true)
@@ -36,7 +36,7 @@ export default function Achievements() {
     const getAchievementData = async () => {
       try {
         setLoading(true)
-        const data = await fetchData("user/achievement/")
+        const data = await fetchWithAuth("/user/achievement/")
         setAchievementList(data)
       } catch (error) {
         toast("Error")
@@ -57,7 +57,10 @@ export default function Achievements() {
     e.preventDefault()
     try {
       setLoading(true)
-      const newAchievement = await createData("user/achievement/", formData)
+      const newAchievement = await fetchWithAuth("/user/achievement/", {
+        method: "POST",
+        body: JSON.stringify(formData),
+      })
       setAchievementList((prev) => [...prev, newAchievement])
       setIsAddDialogOpen(false)
       setFormData({
@@ -78,7 +81,10 @@ export default function Achievements() {
 
     try {
       setLoading(true)
-      const updatedAchievement = await updateData(`user/achievement/${currentAchievement.id}/`, formData)
+      const updatedAchievement = await fetchWithAuth(`/user/achievement/${currentAchievement.id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(formData),
+      })
       setAchievementList((prev) => prev.map((item) => (item.id === updatedAchievement.id ? updatedAchievement : item)))
       setIsEditDialogOpen(false)
       setCurrentAchievement(null)
@@ -93,7 +99,9 @@ export default function Achievements() {
   const handleDelete = async (id) => {
     try {
       setLoading(true)
-      await deleteData(`user/achievement/${id}/`)
+      await fetchWithAuth(`user/achievement/${id}/`,{
+        method: "DELETE",
+      })
       setAchievementList((prev) => prev.filter((item) => item.id !== id))
       toast("Success")
     } catch (error) {
