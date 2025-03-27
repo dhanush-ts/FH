@@ -187,7 +187,7 @@ export default function EducationTimeline() {
         grade: formData.grade || "",
       }
 
-      const response = await fetchWithAuth(`user/education/${editingId}/`, {
+      const response = await fetchWithAuth(`/user/education/${editingId}/`, {
         method: "PATCH",
         body: JSON.stringify(apiData),
       })
