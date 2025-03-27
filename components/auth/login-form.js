@@ -19,7 +19,7 @@ import { useAuth } from "@/app/providers";
 import { fetchWithAuth } from "@/lib/api";
 
 export default function LoginForm({ className, ...props }) {
-  const { setIsAuthenticated } = useAuth();
+  const {  isAuthenticated,setIsAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -32,26 +32,21 @@ export default function LoginForm({ className, ...props }) {
     try {
       const response = await fetchWithAuth(`/auth/login/password/`, {
         method: "POST",
+        credentials: "include",
         headers : {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
         body: JSON.stringify({
         email,
         password})});
 
-      console.log(response);
-
-      // Store JWT token in cookies
-      // Cookies.set("jwt", response.data.token, {
-      //   httpOnly: false, // Allow client-side access if needed
-      //   secure: process.env.NODE_ENV === "production", // Secure flag in production
-      //   sameSite: "Strict",
-      //   path: "/",
-      // });
-
-      setIsAuthenticated(true);
-
-      router.push("/"); // Redirect after successful login
+      const data = await response.json();
+      if(data.detail === "Successfull"){
+        setIsAuthenticated(true);
+        console.log(isAuthenticated)
+        router.push("/");
+      }
     } catch (err) {
       setError("Wrong credentials");
     }
