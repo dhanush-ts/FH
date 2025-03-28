@@ -1,32 +1,53 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/providers';
 
 const Login = () => {
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
+    const router = useRouter();
     const handleLoginSuccess = async (response) => {
         const credential = response.credential;  // Google token
 
         // Send token to Django Backend
         const res = await fetch("http://localhost:8000/api/auth/login/google/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            headers: { 
+                "Content-Type": "application/json", 
+                "Accept": "application/json",
+            },
             body: JSON.stringify({ token: credential })
         });
 
         const data = await res.json();
+        if(data?.detail === "Successful"){
+            setIsAuthenticated(true);
+            console.log(isAuthenticated)
+            router.push("/");
+        }
         console.log("Backend Response:", data);
 
     };
     const handleRegisterSuccess = async (response) => {
         const credential = response.credential;  // Google token
 
-        // Send token to Django Backend
         const res = await fetch("http://localhost:8000/api/auth/register/google/", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+             },
             body: JSON.stringify({ token: credential })
         });
 
         const data = await res.json();
+        if(data?.detail === "Successful"){
+            setIsAuthenticated(true);
+            console.log(isAuthenticated)
+            router.push("/");
+        }
         console.log("Backend Response:", data);
 
     };

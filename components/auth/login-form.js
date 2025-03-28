@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,17 @@ import { fetchWithAuth } from "@/lib/api";
 import Login from "./google-button";
 
 export default function LoginForm({ className, ...props }) {
-  const {  isAuthenticated,setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -33,18 +39,20 @@ export default function LoginForm({ className, ...props }) {
       const response = await fetchWithAuth(`/auth/login/password/`, {
         method: "POST",
         credentials: "include",
-        headers : {
+        headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
-        email,
-        password})});
+          email,
+          password,
+        }),
+      });
 
       const data = await response.json();
-      if(data.detail === "Successful"){
+      if (data.detail === "Successful") {
         setIsAuthenticated(true);
-        console.log(isAuthenticated)
+        console.log(isAuthenticated);
         router.push("/");
       }
     } catch (err) {
@@ -54,7 +62,7 @@ export default function LoginForm({ className, ...props }) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      {(!isAuthenticated) && <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -103,7 +111,7 @@ export default function LoginForm({ className, ...props }) {
             </div>
           </form>
         </CardContent>
-      </Card>
+      </Card>}
     </div>
   );
 }

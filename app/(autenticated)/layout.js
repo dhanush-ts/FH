@@ -1,13 +1,13 @@
-
-import "../globals.css";
+"use client"
 import { Toaster } from "@/components/ui/sonner"
+import { useAuth } from "../providers";
+import { notFound } from "next/navigation";
 
-export const metadata = {
-  title: "Find Hacks",
-  description: "Fink Hacks | your hackathon searching destination",
-};
-
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
+  const { isAuthenticated } = useAuth();
+  if(!isAuthenticated){
+    notFound();
+  }
 
   return (
       <div>
