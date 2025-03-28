@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -93,6 +92,7 @@ export default function LoginForm({ className, ...props }) {
               <Button type="submit" className="w-full">
                 Login
               </Button>
+              <Login />
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

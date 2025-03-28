@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { PlusCircle, Pencil, Trash2, Save, X, GraduationCap, Building, Clock, Award, Calendar } from 'lucide-react'
+import { PlusCircle, Pencil, Trash2, Save, X, GraduationCap, Building, Clock, Award, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -44,16 +44,15 @@ export default function EducationTimeline() {
     const getEducationData = async () => {
       try {
         setLoading(true)
-        const response = await fetchWithAuth("/user/education/");
-        const data = await response.json();
-        if(data.length!==0){
-        setEntries(data.sort((a, b) => -a.start_year + b.start_year))
-        console.log(data)
-        }else{
-          setEntries(data);
+        const response = await fetchWithAuth("/user/education/")
+        const data = await response.json()
+        if (data.length !== 0) {
+          setEntries(data.sort((a, b) => -a.start_year + b.start_year))
+          console.log(data)
+        } else {
+          setEntries(data)
         }
-      }
-       catch (error) {
+      } catch (error) {
         console.error("Failed to fetch education data:", error)
         toast("Failed to load education data")
       } finally {
@@ -131,86 +130,85 @@ export default function EducationTimeline() {
     })
   }
 
+  // Fix the handleAddSubmit function to properly format the data for POST request
   const handleAddSubmit = async (e) => {
     e.preventDefault()
     try {
       setActionLoading(true)
-      // Convert form data keys to match API expectations
+      // Format data according to the expected API structure
       const apiData = {
         degree: formData.degree,
         institution: formData.institution,
-        start_year: formData.start_year,
-        end_year: formData.end_year || null,
+        start_year: Number.parseInt(formData.start_year),
+        end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
         grade: formData.grade,
       }
 
-      console.log(apiData)
-
       const response = await fetchWithAuth("/user/education/", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(apiData),
       })
 
-      const newEducation = await response.json();
-
-      // Convert API response keys to match component expectations
-      const formattedEducation = {
-        ...newEducation,
-        grade: newEducation.grade,
-        start_year: newEducation.start_year,
-        end_year: newEducation.end_year,
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
       }
 
-      setEntries((prev) => [...prev, formattedEducation].sort((a, b) => a.start_year - b.start_year))
+      const newEducation = await response.json()
+      setEntries((prev) => [...prev, newEducation].sort((a, b) => b.start_year - a.start_year))
       setIsAddingNew(false)
       resetForm()
-      toast("Education added successfully")
+      toast.success("Education added successfully")
     } catch (error) {
-      toast("Error adding education")
+      console.error("Failed to add education:", error)
+      toast.error("Error adding education")
     } finally {
       setActionLoading(false)
     }
   }
 
+  // Fix the handleEditSubmit function to properly format the data for PATCH request
   const handleEditSubmit = async (e) => {
     e.preventDefault()
     if (!editingId) return
 
     try {
       setActionLoading(true)
-      // Convert form data keys to match API expectations
+      // Format data according to the expected API structure
       const apiData = {
         degree: formData.degree,
         institution: formData.institution,
-        start_year: formData.start_year,
-        end_year: formData.end_year || null,
-        grade: formData.grade || "",
+        start_year: Number.parseInt(formData.start_year),
+        end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
+        grade: formData.grade,
       }
 
       const response = await fetchWithAuth(`/user/education/${editingId}/`, {
         method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(apiData),
       })
 
-      const updatedEducation = await response.json();
-
-      // Convert API response keys to match component expectations
-      const formattedEducation = {
-        ...updatedEducation,
-        start_year: updatedEducation.start_year,
-        end_year: updatedEducation.end_year,
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
       }
 
+      const updatedEducation = await response.json()
       setEntries((prev) =>
         prev
-          .map((item) => (item.id === formattedEducation.id ? formattedEducation : item))
-          .sort((a, b) => a.start_year - b.start_year),
+          .map((item) => (item.id === updatedEducation.id ? updatedEducation : item))
+          .sort((a, b) => b.start_year - a.start_year),
       )
       setEditingId(null)
       resetForm()
-      toast("Education updated successfully")
+      toast.success("Education updated successfully")
     } catch (error) {
-      toast("Error updating education")
+      console.error("Failed to update education:", error)
+      toast.error("Error updating education")
     } finally {
       setActionLoading(false)
     }
@@ -219,7 +217,7 @@ export default function EducationTimeline() {
   const handleDelete = async (id) => {
     try {
       setActionLoading(true)
-      await fetchWithAuth(`/user/education/${id}/`,{
+      await fetchWithAuth(`/user/education/${id}/`, {
         method: "DELETE",
       })
       setEntries((prev) => prev.filter((item) => item.id !== id))
@@ -798,15 +796,15 @@ export default function EducationTimeline() {
               {/* Timeline line */}
               <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/10 via-primary/50 to-primary/10" />
 
-              <motion.div 
-                variants={containerVariants} 
-                initial="hidden" 
-                animate="visible" 
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 className="space-y-12"
                 style={{ opacity: 1 }} // Force opacity to be visible
               >
                 {entries.map((entry, index) => {
-                  const isVisible = visibleEntries.includes(entry.id) || true; // Force visibility
+                  const isVisible = visibleEntries.includes(entry.id) || true // Force visibility
 
                   return (
                     <motion.div
@@ -983,3 +981,4 @@ export default function EducationTimeline() {
     </div>
   )
 }
+

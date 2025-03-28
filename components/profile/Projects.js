@@ -55,14 +55,32 @@ export default function Projects() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Fix the handleAddSubmit function to properly format the data for POST request
   const handleAddSubmit = async (e) => {
     e.preventDefault()
     try {
       setLoading(true)
+      // Format data according to the expected API structure
+      const apiData = {
+        title: formData.title,
+        description: formData.description,
+        start_date: formData.start_date,
+        end_date: formData.end_date || null,
+        link: formData.link || null,
+      }
+
       const response = await fetchWithAuth("/user/project/", {
         method: "POST",
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiData),
       })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
+      }
+
       const newProject = await response.json()
       setProjectList((prev) => [...prev, newProject])
       setIsAddDialogOpen(false)
@@ -70,32 +88,54 @@ export default function Projects() {
         title: "",
         description: "",
         start_date: new Date().toISOString().split("T")[0],
+        end_date: "",
+        link: "",
       })
-      toast("Success")
+      toast.success("Project added successfully")
     } catch (error) {
-      toast("Error")
+      console.error("Failed to add project:", error)
+      toast.error("Error adding project")
     } finally {
       setLoading(false)
     }
   }
 
+  // Fix the handleEditSubmit function to properly format the data for PATCH request
   const handleEditSubmit = async (e) => {
     e.preventDefault()
     if (!currentProject) return
 
     try {
       setLoading(true)
+      // Format data according to the expected API structure
+      const apiData = {
+        title: formData.title,
+        description: formData.description,
+        start_date: formData.start_date,
+        end_date: formData.end_date || null,
+        link: formData.link || null,
+      }
+
       const response = await fetchWithAuth(`/user/project/${currentProject.id}/`, {
         method: "PATCH",
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiData),
       })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
+      }
+
       const updatedProject = await response.json()
       setProjectList((prev) => prev.map((item) => (item.id === updatedProject.id ? updatedProject : item)))
       setIsEditDialogOpen(false)
       setCurrentProject(null)
-      toast("Success")
+      toast.success("Project updated successfully")
     } catch (error) {
-      toast("Error")
+      console.error("Failed to update project:", error)
+      toast.error("Error updating project")
     } finally {
       setLoading(false)
     }
@@ -104,7 +144,7 @@ export default function Projects() {
   const handleDelete = async (id) => {
     try {
       setLoading(true)
-      await fetchWithAuth(`/user/project/${id}/`,{
+      await fetchWithAuth(`/user/project/${id}/`, {
         method: "DELETE",
       })
       setProjectList((prev) => prev.filter((item) => item.id !== id))

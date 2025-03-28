@@ -95,10 +95,15 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const handleLogout = () => {
-    document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+  const handleLogout = async () => {
     setIsAuthenticated(false)
     setProfile(null)
+    await fetchWithAuth(`/auth/logout/`,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
     router.push("/login");
   }
 

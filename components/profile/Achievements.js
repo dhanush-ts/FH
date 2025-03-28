@@ -30,6 +30,8 @@ export default function Achievements() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    date_received: "",
+    link: "",
   })
 
   useEffect(() => {
@@ -37,10 +39,14 @@ export default function Achievements() {
       try {
         setLoading(true)
         const response = await fetchWithAuth("/user/achievement/")
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`)
+        }
         const data = await response.json()
         setAchievementList(data)
       } catch (error) {
-        toast("Error")
+        console.error("Failed to fetch achievements:", error)
+        toast.error("Failed to load achievements")
       } finally {
         setLoading(false)
       }
@@ -58,20 +64,38 @@ export default function Achievements() {
     e.preventDefault()
     try {
       setLoading(true)
+      const apiData = {
+        title: formData.title,
+        description: formData.description,
+        date_received: formData.date_received || null,
+        link: formData.link || null,
+      }
+
       const response = await fetchWithAuth("/user/achievement/", {
         method: "POST",
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiData),
       })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
+      }
+
       const newAchievement = await response.json()
       setAchievementList((prev) => [...prev, newAchievement])
       setIsAddDialogOpen(false)
       setFormData({
         title: "",
         description: "",
+        date_received: "",
+        link: "",
       })
-      toast("Success")
+      toast.success("Achievement added successfully")
     } catch (error) {
-      toast("Error")
+      console.error("Failed to add achievement:", error)
+      toast.error("Error adding achievement")
     } finally {
       setLoading(false)
     }
@@ -83,17 +107,34 @@ export default function Achievements() {
 
     try {
       setLoading(true)
+      // Format data according to the expected API structure
+      const apiData = {
+        title: formData.title,
+        description: formData.description,
+        date_received: formData.date_received || null,
+        link: formData.link || null,
+      }
+
       const response = await fetchWithAuth(`/user/achievement/${currentAchievement.id}/`, {
         method: "PATCH",
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiData),
       })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
+      }
+
       const updatedAchievement = await response.json()
       setAchievementList((prev) => prev.map((item) => (item.id === updatedAchievement.id ? updatedAchievement : item)))
       setIsEditDialogOpen(false)
       setCurrentAchievement(null)
-      toast("Success")
+      toast.success("Achievement updated successfully")
     } catch (error) {
-      toast("Error")
+      console.error("Failed to update achievement:", error)
+      toast.error("Error updating achievement")
     } finally {
       setLoading(false)
     }
@@ -102,13 +143,20 @@ export default function Achievements() {
   const handleDelete = async (id) => {
     try {
       setLoading(true)
-      await fetchWithAuth(`user/achievement/${id}/`,{
+      // Fix the URL path by adding a leading slash
+      const response = await fetchWithAuth(`/user/achievement/${id}/`, {
         method: "DELETE",
       })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`)
+      }
+
       setAchievementList((prev) => prev.filter((item) => item.id !== id))
-      toast("Success")
+      toast.success("Achievement deleted successfully")
     } catch (error) {
-      toast("Error")
+      console.error("Failed to delete achievement:", error)
+      toast.error("Error deleting achievement")
     } finally {
       setLoading(false)
     }
@@ -117,10 +165,10 @@ export default function Achievements() {
   const openEditDialog = (achievement) => {
     setCurrentAchievement(achievement)
     setFormData({
-      title: achievement.title,
-      description: achievement.description,
-      date_received: achievement.date_received || undefined,
-      link: achievement.link || undefined,
+      title: achievement.title || "",
+      description: achievement.description || "",
+      date_received: achievement.date_received || "",
+      link: achievement.link || "",
     })
     setIsEditDialogOpen(true)
   }
