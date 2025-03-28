@@ -23,6 +23,22 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, []);
 
+  // useEffect(() => {
+  //   async function checkAuth() {
+  //     try {
+  //       const response = await fetchWithAuth("/user/basic-profile/");
+  //       const data = await response.json();
+
+  //       setIsAuthenticated(data?.id ? true : false);
+  //     } catch (error) {
+  //       console.error("Error fetching user profile:", error);
+  //       setIsAuthenticated(false);
+  //     }
+  //   }
+
+  //   checkAuth();
+  // }, [isAuthenticated]);
+
   // 🔥 FIX: Avoid rendering until `isAuthenticated` is set
   if (isAuthenticated === null) return null; 
 

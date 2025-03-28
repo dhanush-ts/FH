@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth } from "@/app/providers";
 import { fetchWithAuth } from "@/lib/api";
+import Login from "./google-button";
 
 export default function LoginForm({ className, ...props }) {
   const {  isAuthenticated,setIsAuthenticated } = useAuth();
@@ -41,7 +42,7 @@ export default function LoginForm({ className, ...props }) {
         password})});
 
       const data = await response.json();
-      if(data.detail === "Successfull"){
+      if(data.detail === "Successful"){
         setIsAuthenticated(true);
         console.log(isAuthenticated)
         router.push("/");
