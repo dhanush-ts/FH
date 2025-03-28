@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Github, Linkedin, ExternalLink } from 'lucide-react'
 import { fetchWithAuth } from "@/lib/api"
+import Image from "next/image"
 
 export default function Banner2() {
   const [profileData, setProfileData] = useState(null)
@@ -96,10 +97,12 @@ export default function Banner2() {
               {loading ? (
                 <div className="h-full w-full bg-gray-300 animate-pulse"></div>
               ) : (
-                <img 
-                  src={additionalInfo?.profile_photo || "/placeholder.svg?height=160&width=160"} 
+                <Image 
+                  src={additionalInfo?.profile_photo || "https://placehold.co/160x160/000000/FFFFFF/png"} 
                   alt="Profile" 
                   className="h-full w-full object-cover"
+                  width = {160}
+                  height = {160}
                 />
               )}
             </div>

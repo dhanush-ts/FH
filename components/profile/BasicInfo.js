@@ -40,10 +40,6 @@ export default function BasicInfo() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleGenderChange = (value) => {
-    setFormData((prev) => ({ ...prev, gender: value }))
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -140,17 +136,6 @@ export default function BasicInfo() {
                 </p>
                 <p className="font-medium">{profileData?.email}</p>
               </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground flex items-center">
-                  <Users className="h-4 w-4 mr-1 text-muted-foreground" />
-                  Gender
-                </p>
-                <p className="font-medium">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {profileData?.gender}
-                  </span>
-                </p>
-              </div>
             </div>
           ) : (
             <motion.form
@@ -198,25 +183,6 @@ export default function BasicInfo() {
                   onChange={handleChange}
                   className="border-gray-300 focus:ring-primary focus:border-primary"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="gender" className="text-sm font-medium">
-                  Gender
-                </Label>
-                <Select value={formData.gender || ""} onValueChange={handleGenderChange}>
-                  <SelectTrigger className="border-gray-300 focus:ring-primary focus:border-primary">
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                    <SelectItem value="Transgender">Transgender</SelectItem>
-                    <SelectItem value="Intersex">Intersex</SelectItem>
-                    <SelectItem value="Non Binary">Non Binary</SelectItem>
-                    <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
-                    <SelectItem value="Others">Others</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
               <Button
                 type="submit"
