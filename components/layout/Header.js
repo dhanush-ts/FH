@@ -38,7 +38,7 @@ export function Header() {
   const [profile, setProfile] = React.useState(null)
 
   React.useEffect(() => {
-    async function getProfile(jwtCookie) {
+    async function getProfile() {
       try {
         const response = await fetchWithAuth(`/user/basic-profile/`)
         if (response.ok) {
@@ -54,19 +54,13 @@ export function Header() {
       }
     }
 
-      const cookies = document?.cookie ? document?.cookie?.split("; ") : []
-      const jwtCookie = cookies.find((row) => row.startsWith("jwt="))
 
-      if (jwtCookie) {
-        setIsAuthenticated(true)
-        getProfile(jwtCookie)
-      }else{
-        setLoading(false)
-      }
+      getProfile()
+      
   }, [])
 
   React.useEffect(() => {
-    async function getProfile(jwtCookie) {
+    async function getProfile() {
       try {
         const response = await fetchWithAuth(`/user/basic-profile/`)
         if (response.ok) {
@@ -80,9 +74,7 @@ export function Header() {
 
     if (isAuthenticated) {
       console.log("reached")
-      const cookies = document.cookie.split("; ")
-      const jwtCookie = cookies.find((row) => row.startsWith("jwt="))
-      getProfile(jwtCookie)
+      getProfile()
     }
   }, [isAuthenticated])
 
