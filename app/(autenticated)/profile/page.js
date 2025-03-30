@@ -1,6 +1,6 @@
 "use client"
 import { motion, AnimatePresence } from "framer-motion"
-import Banner2 from "@/components/hero/Banner2"
+import Banner2 from "@/components/profile/Banner2"
 import BasicInfo from "@/components/profile/BasicInfo"
 import EducationTimeline from "@/components/profile/Education"
 import AdditionalInfo from "@/components/profile/AdditionalInfo"
