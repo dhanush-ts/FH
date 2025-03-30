@@ -99,7 +99,7 @@ export const WelcomeSection = forwardRef(({ scrollToNextSection, acmeFont }, ref
   const Description = () => (
     <motion.p 
       variants={childVariants} 
-      className="text-base md:text-xl text-slate-700 max-w-md"
+      className="text-pretty md:text-xl mx-auto lg:mx-0 text-slate-700 max-w-lg"
     >
       Your ultimate platform for discovering, connecting, and participating in the world's most exciting
       hackathons. Level up your skills, build your network, and showcase your talent.

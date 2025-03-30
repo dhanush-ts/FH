@@ -1,8 +1,8 @@
 "use client"
 
-import { forwardRef, useEffect, useState } from "react"
-import { motion, useAnimation } from "framer-motion"
-import { ChevronDown } from 'lucide-react'
+import { forwardRef, useEffect, useRef, useState } from "react"
+import { motion, useAnimation, useInView } from "framer-motion"
+import { ChevronDown } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { SkillProgress } from "@/components/ui/skill-progress"
 import Lottie from "lottie-react"
@@ -54,32 +54,28 @@ const fadeInFromRight = {
 }
 
 const childVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5 },
-  },
-}
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  }
 
 export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   const isMobile = useMediaQuery("(max-width: 768px)")
-  const controls = useAnimation()
   const [showAfterValues, setShowAfterValues] = useState(false)
   const [progressValues, setProgressValues] = useState(skillDevelopmentData.map((item) => item.before))
-
+  
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true }) // Trigger only once
+  const controls = useAnimation()
   // Start animation when component mounts
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAfterValues(true)
-      setProgressValues(skillDevelopmentData.map((item) => item.after))
-    }, 1000)
-    setTimeout(() => {
+    if(isInView){
       controls.start("visible")
-    }, 100)
-      
-    return () => clearTimeout(timer)
-  }, [])
+    }
+  }, [isInView, controls])
 
   // Shared components
   const SectionBadge = () => (
@@ -92,12 +88,10 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const SectionHeading = () => (
-    <motion.h2 variants={childVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+    <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
       Unleash the{" "}
       <span className="relative">
-        <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
-          Power
-        </span>
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">Power</span>
         <svg
           className="absolute -bottom-2 left-0 w-full"
           viewBox="0 0 150 8"
@@ -113,8 +107,8 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const SectionDescription = () => (
     <motion.p variants={childVariants} className="text-lg text-slate-700">
-      Coding is more than just writing lines of text—it's problem-solving, creativity, and the power to bring
-      ideas to life. Every line of code is a step toward innovation.
+      Coding is more than just writing lines of text—it's problem-solving, creativity, and the power to bring ideas to
+      life. Every line of code is a step toward innovation.
     </motion.p>
   )
 
@@ -221,9 +215,7 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
           </div>
         </div>
       </div>
-      <p className="text-xs text-slate-500 mt-4 text-center">
-        Based on survey of 500+ hackathon participants
-      </p>
+      <p className="text-xs text-slate-500 mt-4 text-center">Based on survey of 500+ hackathon participants</p>
     </motion.div>
   )
 
@@ -248,11 +240,13 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
             initial="hidden"
             animate={controls}
             variants={fadeIn}
-            className="flex flex-col items-center text-center space-y-6"
+            className="flex flex-col items-center text-center space-y-8"
           >
-            <SectionBadge />
-            <SectionHeading />
-            <SectionDescription />
+            <div className="space-y-4">
+              <SectionBadge />
+              <SectionHeading />
+              <SectionDescription />
+            </div>
             <BenefitsList />
             <SkillProgress data={skillDevelopmentData} />
             <Animation />
@@ -303,3 +297,4 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
 })
 
 CodingSection.displayName = "CodingSection"
+
