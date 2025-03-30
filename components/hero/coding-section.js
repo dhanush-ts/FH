@@ -1,7 +1,7 @@
 "use client"
 
-import { forwardRef, useEffect, useRef, useState } from "react"
-import { motion, useAnimation, useInView } from "framer-motion"
+import { forwardRef, useEffect, useState } from "react"
+import { motion, useAnimation } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { SkillProgress } from "@/components/ui/skill-progress"
@@ -64,18 +64,22 @@ const childVariants = {
 
 export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   const isMobile = useMediaQuery("(max-width: 768px)")
+  const controls = useAnimation()
   const [showAfterValues, setShowAfterValues] = useState(false)
   const [progressValues, setProgressValues] = useState(skillDevelopmentData.map((item) => item.before))
-  
-  const sectionRef = useRef(null)
-  const isInView = useInView(sectionRef, { once: true }) // Trigger only once
-  const controls = useAnimation()
+
   // Start animation when component mounts
   useEffect(() => {
-    if(isInView){
+    const timer = setTimeout(() => {
+      setShowAfterValues(true)
+      setProgressValues(skillDevelopmentData.map((item) => item.after))
+    }, 1000)
+    setTimeout(() => {
       controls.start("visible")
-    }
-  }, [isInView, controls])
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   // Shared components
   const SectionBadge = () => (
@@ -106,7 +110,7 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const SectionDescription = () => (
-    <motion.p variants={childVariants} className="text-lg text-slate-700">
+    <motion.p className="text-lg text-slate-700">
       Coding is more than just writing lines of text—it's problem-solving, creativity, and the power to bring ideas to
       life. Every line of code is a step toward innovation.
     </motion.p>

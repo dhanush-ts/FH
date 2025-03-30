@@ -1,7 +1,7 @@
 "use client"
 
-import { forwardRef, useEffect, useRef } from "react"
-import { motion, useAnimation, useInView } from "framer-motion"
+import { forwardRef, useEffect } from "react"
+import { motion, useAnimation } from "framer-motion"
 import { ChevronDown } from 'lucide-react'
 import { useMediaQuery } from "@/hooks/use-media-query"
 import Lottie from "lottie-react"
@@ -63,15 +63,15 @@ const timelineVariants = {
 export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   const isMobile = useMediaQuery("(max-width: 768px)")
   const isTablet = useMediaQuery("(max-width: 1024px)")
-  const sectionRef = useRef(null)
-  const isInView = useInView(sectionRef, { once: true }) // Trigger only once
+  
   const controls = useAnimation()
+
   // Start animation when component mounts
   useEffect(() => {
-    if(isInView){
+    setTimeout(() => {
       controls.start("visible")
-    }
-  }, [isInView, controls])
+    }, 100)
+  }, [])
 
   // Shared components
   const SectionBadge = () => (
