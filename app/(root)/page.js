@@ -7,10 +7,7 @@ export default function Home() {
   return (
     <main>
       <Banner />
-      <FeaturesSectionDemo />
-      <div className="max-w-xl">
-        <DisplayLottie animationData = {build} />
-      </div>
+      {/* <FeaturesSectionDemo /> */}
     </main>
   )
 }

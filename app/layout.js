@@ -6,6 +6,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { setGlobalRouter } from "@/lib/routerService";
+import Footer from "@/components/layout/Footer";
 
 
 export default function RootLayout({ children }) {
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
           <AuthProvider suppressHydrationWarning>
             <Header />
             {children}
+            <Footer />
           </AuthProvider>
         </GoogleOAuthProvider>
       </body>
