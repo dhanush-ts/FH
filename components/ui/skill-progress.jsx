@@ -27,21 +27,9 @@ export function SkillProgress({ data }) {
               <span className="font-medium">{isHovering ? `${item.after}%` : `${item.before}%`}</span>
             </div>
             <div>
-              <Progress
-                value={isHovering ? item.after : item.before}
-                className="h-2 bg-green-100"
-                style={{
-                  transition: "all 0.5s ease-out",
-                }}
-              >
-                <div
-                  className="h-full bg-green-600 rounded-full"
-                  style={{
-                    width: `${isHovering ? item.after : item.before}%`,
-                    transition: "width 0.5s ease-out",
-                  }}
-                />
-              </Progress>
+              <div className="h-2 w-full bg-green-100 rounded-full overflow-hidden">
+                <div className="h-full bg-green-600 rounded-full" style={{ width: `${isHovering?item.after:item.before}%` }} />
+              </div>
             </div>
           </div>
         ))}

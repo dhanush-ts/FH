@@ -68,7 +68,7 @@ export const WelcomeSection = forwardRef(({ scrollToNextSection, acmeFont }, ref
   const ReadyBadge = () => (
     <motion.div
       variants={childVariants}
-      className="bg-green-100 text-green-600 px-4 py-1 rounded-full font-medium text-sm"
+      className="bg-green-100 w-fit text-green-600 px-4 py-1 rounded-full font-medium text-sm"
     >
       READY IN SECONDS
     </motion.div>
@@ -77,10 +77,10 @@ export const WelcomeSection = forwardRef(({ scrollToNextSection, acmeFont }, ref
   const Heading = () => (
     <motion.div variants={childVariants} className="space-y-2">
       <h1 className={`text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter ${acmeFont}`}>
-        Discover the{" "}
+      Welcome to {" "}
         <span className="relative">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
-            Future
+          FindHacks?
           </span>
           <svg
             className="absolute -bottom-2 left-0 w-full"
@@ -90,8 +90,7 @@ export const WelcomeSection = forwardRef(({ scrollToNextSection, acmeFont }, ref
           >
             <path d="M1 5.5C40 1.5 60 1.5 199 5.5" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" />
           </svg>
-        </span>{" "}
-        of Innovation
+        </span>
       </h1>
     </motion.div>
   )
@@ -101,8 +100,9 @@ export const WelcomeSection = forwardRef(({ scrollToNextSection, acmeFont }, ref
       variants={childVariants} 
       className="text-pretty md:text-xl mx-auto lg:mx-0 text-slate-700 max-w-lg"
     >
-      Your ultimate platform for discovering, connecting, and participating in the world's most exciting
-      hackathons. Level up your skills, build your network, and showcase your talent.
+        FindHacks helps you discover and organize hackathons, workshops, and tech & non-tech events. 
+        <br /><br />
+        <span className="font-medium"> Connect, compete, and innovate anywhere! </span>
     </motion.p>
   )
 

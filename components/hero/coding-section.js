@@ -84,8 +84,7 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   // Shared components
   const SectionBadge = () => (
     <motion.div
-      variants={childVariants}
-      className="inline-block bg-green-100 text-green-600 px-4 py-1 rounded-full font-medium text-sm"
+      className="inline-block bg-green-100 w-fit text-green-600 px-4 py-1 rounded-full font-medium text-sm"
     >
       The Coding Journey
     </motion.div>
@@ -93,9 +92,9 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const SectionHeading = () => (
     <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-      Unleash the{" "}
+      Your Resume Speaks {" "}
       <span className="relative">
-        <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">Power</span>
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">Louder</span>
         <svg
           className="absolute -bottom-2 left-0 w-full"
           viewBox="0 0 150 8"
@@ -105,19 +104,19 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
           <path d="M1 5.5C30 2.5 50 7.5 149 3.5" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" />
         </svg>
       </span>{" "}
-      of Innovation
+      Than Your Degree!
     </motion.h2>
   )
 
   const SectionDescription = () => (
     <motion.p className="text-lg text-slate-700">
-      Coding is more than just writing lines of text—it's problem-solving, creativity, and the power to bring ideas to
-      life. Every line of code is a step toward innovation.
+      A degree opens doors, but skills and experience get you noticed. 
+      Hackathons and events showcase your talent, problem-solving, and passion. Build, innovate, and let your resume tell your story!
     </motion.p>
   )
 
   const BenefitsList = () => (
-    <motion.div variants={childVariants} className="space-y-4">
+    <motion.div className="space-y-4">
       <div className="flex items-center space-x-3">
         <div className="bg-green-500 rounded-full p-1">
           <svg
@@ -164,9 +163,9 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const Animation = () => (
-    <div className="w-full h-[300px] md:h-[400px]">
+    <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
       <Lottie
-        animationData={require("@/app/assests/email.json")}
+        animationData={require("@/app/assests/build.json")}
         loop={true}
         className="w-full h-full object-contain"
       />

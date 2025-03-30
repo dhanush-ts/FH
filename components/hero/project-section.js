@@ -89,7 +89,6 @@ export const ProjectSection = forwardRef((props, ref) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             <motion.div variants={fadeInFromLeft} className="relative flex flex-col h-full">
               <Animation />
-              {!isMobile && <Testimonials />}
             </motion.div>
 
             <motion.div variants={fadeInFromRight} className="space-y-6 md:space-y-8 text-center lg:text-left">
@@ -196,46 +195,10 @@ const BenefitItem = ({ text }) => (
 
 const Animation = () => (
   <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
-    <Lottie animationData={require("@/app/assests/build.json")} loop className="w-full h-full object-contain" />
+    <Lottie animationData={require("@/app/assests/codingPerson.json")} loop className="w-full h-full object-contain" />
   </div>
 )
 
-const Testimonials = () => (
-  <motion.div variants={childVariants} className="mt-0">
-    <h3 className="text-xl font-bold mb-4">What Participants Say</h3>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <Testimonial
-        name="Jamie Doe"
-        role="Software Engineer"
-        initials="JD"
-        text="The hackathon project I built became the centerpiece of my portfolio and helped me land my dream job at a tech startup."
-      />
-      <Testimonial
-        name="Alex Smith"
-        role="Founder & CTO"
-        initials="AS"
-        text="Our hackathon project evolved into a startup that just closed its first round of funding. It all started with a weekend of coding!"
-      />
-    </div>
-  </motion.div>
-)
-
-const Testimonial = ({ name, role, initials, text }) => (
-  <Card className="bg-gradient-to-br from-green-50 to-white border-l-4 border-b-4 border-green-500 shadow-md hover:shadow-none transition-all duration-300 overflow-hidden">
-    <CardContent className="p-4">
-      <p className="italic text-slate-600 mb-4">"{text}"</p>
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center">
-          <span className="font-bold text-green-700">{initials}</span>
-        </div>
-        <div>
-          <p className="font-medium">{name}</p>
-          <p className="text-xs text-slate-500">{role}</p>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-)
 
 const Footer = () => (
   <div className="relative mt-12 mb-8 h-16 flex flex-col items-center">

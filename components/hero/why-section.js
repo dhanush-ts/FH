@@ -77,7 +77,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   const SectionBadge = () => (
     <motion.div
       variants={childVariants}
-      className="inline-block bg-green-100 text-green-600 px-4 py-1 rounded-full font-medium text-sm"
+      className="inline-block w-fit bg-green-100 text-green-600 px-4 py-1 rounded-full font-medium text-sm"
     >
       Why Are We Here?
     </motion.div>
@@ -85,10 +85,10 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const SectionHeading = () => (
     <motion.h2 variants={childVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-      Hackathons, <br />
+      Why College Events are a {" "}
       <span className="relative">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
-          Where Ideas Thrive
+            Game-Changers !
         </span>
         <svg
           className="absolute -bottom-2 left-0 w-full"
@@ -104,8 +104,10 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const SectionDescription = () => (
     <motion.p variants={childVariants} className="text-lg text-slate-700">
-      Hackathons provide a unique environment where creativity meets technical skill. They're not just
-      competitions; they're incubators for innovation, collaboration, and rapid learning.
+      College events aren’t just about fun—they’re launchpads for skills, connections, and opportunities. 
+      Whether it’s a hackathon, a cultural fest, or a meetup, every event helps you network, showcase talent, and build your resume. 
+      <br /><br />
+      Step in, stand out, and make your mark!
     </motion.p>
   )
 
@@ -133,7 +135,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   const Animation = () => (
     <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
       <Lottie
-        animationData={require("@/app/assests/codingPerson.json")}
+        animationData={require("@/app/assests/guyThinking.json")}
         loop={true}
         className="w-full h-full object-contain"
       />
