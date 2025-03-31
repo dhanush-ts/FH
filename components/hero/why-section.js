@@ -1,8 +1,8 @@
 "use client"
 
-import { forwardRef, useEffect } from "react"
-import { motion, useAnimation } from "framer-motion"
-import { ChevronDown } from 'lucide-react'
+import { forwardRef, useEffect, useRef } from "react"
+import { motion, useAnimation, useInView } from "framer-motion"
+import { ChevronDown } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import Lottie from "lottie-react"
 
@@ -63,20 +63,20 @@ const timelineVariants = {
 export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   const isMobile = useMediaQuery("(max-width: 768px)")
   const isTablet = useMediaQuery("(max-width: 1024px)")
-  
   const controls = useAnimation()
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true })
 
-  // Start animation when component mounts
+  // Start animation when section comes into view
   useEffect(() => {
-    setTimeout(() => {
+    if (isInView) {
       controls.start("visible")
-    }, 100)
-  }, [])
+    }
+  }, [isInView, controls])
 
   // Shared components
   const SectionBadge = () => (
     <motion.div
-      variants={childVariants}
       className="inline-block w-fit bg-green-100 text-green-600 px-4 py-1 rounded-full font-medium text-sm"
     >
       Why Are We Here?
@@ -84,11 +84,11 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const SectionHeading = () => (
-    <motion.h2 variants={childVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-      Why College Events are a {" "}
+    <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+      Why College Events are a{" "}
       <span className="relative">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
-            Game-Changers !
+          Game-Changers !
         </span>
         <svg
           className="absolute -bottom-2 left-0 w-full"
@@ -103,16 +103,17 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const SectionDescription = () => (
-    <motion.p variants={childVariants} className="text-lg text-slate-700">
-      College events aren’t just about fun—they’re launchpads for skills, connections, and opportunities. 
-      Whether it’s a hackathon, a cultural fest, or a meetup, every event helps you network, showcase talent, and build your resume. 
-      <br /><br />
+    <motion.p className="text-lg text-slate-700">
+      College events aren’t just about fun—they’re launchpads for skills, connections, and opportunities. Whether it’s a
+      hackathon, a cultural fest, or a meetup, every event helps you network, showcase talent, and build your resume.
+      <br />
+      <br />
       Step in, stand out, and make your mark!
     </motion.p>
   )
 
   const BenefitCards = () => (
-    <motion.div variants={childVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
+    <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
       <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-none transition-shadow duration-300 border-l-4 border-b-4 border-green-500 h-full flex flex-col justify-between">
         <h3 className="font-bold text-lg text-green-600 mb-2">Community</h3>
         <p className="text-slate-600">Connect with like-minded innovators and build lasting relationships</p>
@@ -153,9 +154,9 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
       <div className="relative">
         <motion.div
           className="absolute top-3 left-0 h-1 bg-gradient-to-r from-green-500 to-green-400 rounded-full"
-          variants={timelineVariants}
           initial="hidden"
-          animate={controls}
+          animate={isInView ? "visible" : "hidden"}
+          variants={timelineVariants}
         />
         <div className="flex justify-between relative z-10">
           <div className="flex flex-col items-center">
@@ -204,12 +205,11 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 
   return (
     <section
-      ref={ref}
+      ref={sectionRef}
       className="min-h-screen w-full relative flex flex-col justify-center items-center py-16 md:py-24 bg-gradient-to-br from-slate-100 to-slate-200"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {isMobile ? (
-          // Mobile Layout (Single column, everything centered)
           <motion.div
             initial="hidden"
             animate={controls}
@@ -223,7 +223,6 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
             <Animation />
           </motion.div>
         ) : (
-          // Desktop Layout (Original two-column grid)
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <motion.div
               initial="hidden"
@@ -256,7 +255,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer"
-          onClick={scrollToNextSection}
+          onClick={() => scrollToNextSection && scrollToNextSection()}
         >
           <ChevronDown className="w-10 h-10 text-green-500 animate-bounce" />
         </motion.div>
@@ -266,3 +265,4 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 })
 
 WhySection.displayName = "WhySection"
+

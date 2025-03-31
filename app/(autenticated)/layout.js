@@ -14,11 +14,11 @@ export default function RootLayout({ children }) {
     if (!isAuthenticated) {
       router.push('/');
     } else {
-      setCheckingAuth(false); // Stop loading once authentication is checked
+      setCheckingAuth(false);
     }
   }, [isAuthenticated, router]);
 
-  if (checkingAuth) return <Loading />; // Show loading state while checking
+  if (checkingAuth) return <Loading />;
 
   return (
     <div>

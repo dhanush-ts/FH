@@ -1,7 +1,7 @@
 "use client"
 
-import { forwardRef, useEffect, useState } from "react"
-import { motion, useAnimation } from "framer-motion"
+import { forwardRef, useEffect, useState, useRef } from "react"
+import { motion, useAnimation, useInView } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { SkillProgress } from "@/components/ui/skill-progress"
@@ -54,45 +54,46 @@ const fadeInFromRight = {
 }
 
 const childVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  }
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 },
+  },
+}
 
 export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
   const isMobile = useMediaQuery("(max-width: 768px)")
   const controls = useAnimation()
   const [showAfterValues, setShowAfterValues] = useState(false)
   const [progressValues, setProgressValues] = useState(skillDevelopmentData.map((item) => item.before))
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true })
 
-  // Start animation when component mounts
+  // Start animation when section comes into view
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAfterValues(true)
-      setProgressValues(skillDevelopmentData.map((item) => item.after))
-    }, 1000)
-    setTimeout(() => {
+    if (isInView) {
       controls.start("visible")
-    }, 100)
 
-    return () => clearTimeout(timer)
-  }, [])
+      const timer = setTimeout(() => {
+        setShowAfterValues(true)
+        setProgressValues(skillDevelopmentData.map((item) => item.after))
+      }, 1000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isInView, controls])
 
   // Shared components
   const SectionBadge = () => (
-    <motion.div
-      className="inline-block bg-green-100 w-fit text-green-600 px-4 py-1 rounded-full font-medium text-sm"
-    >
+    <motion.div className="inline-block bg-green-100 w-fit text-green-600 px-4 py-1 rounded-full font-medium text-sm">
       The Coding Journey
     </motion.div>
   )
 
   const SectionHeading = () => (
     <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-      Your Resume Speaks {" "}
+      Your Resume Speaks{" "}
       <span className="relative">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">Louder</span>
         <svg
@@ -110,8 +111,8 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const SectionDescription = () => (
     <motion.p className="text-lg text-slate-700">
-      A degree opens doors, but skills and experience get you noticed. 
-      Hackathons and events showcase your talent, problem-solving, and passion. Build, innovate, and let your resume tell your story!
+      A degree opens doors, but skills and experience get you noticed. Hackathons and events showcase your talent,
+      problem-solving, and passion. Build, innovate, and let your resume tell your story!
     </motion.p>
   )
 
@@ -174,9 +175,9 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const ProjectImpact = () => (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.8, duration: 0.8 }}
+      // initial={{ opacity: 0, scale: 0.9 }}
+      // animate={{ opacity: 1, scale: 1 }}
+      // transition={{ delay: 0.8, duration: 0.8 }}
       className="bg-white p-6 rounded-xl shadow-md hover:shadow-none transition-all duration-300 mt-4 border-l-4 border-b-4 border-green-500"
     >
       <h3 className="text-lg font-bold mb-4 text-green-600">Project Impact</h3>
@@ -233,7 +234,7 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
 
   return (
     <section
-      ref={ref}
+      ref={sectionRef}
       className="min-h-screen w-full relative flex flex-col justify-center items-center py-16 md:py-24"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -290,7 +291,7 @@ export const CodingSection = forwardRef(({ scrollToNextSection }, ref) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer"
-          onClick={scrollToNextSection}
+          onClick={() => scrollToNextSection && scrollToNextSection()}
         >
           <ChevronDown className="w-10 h-10 text-green-500 animate-bounce" />
         </motion.div>
