@@ -114,10 +114,11 @@ import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
 
 export function UserProfile({ user, onLogout }) {
-  const router = useRouter();
   const getInitials = () => {
     return user.first_name.charAt(0).toUpperCase()
   }
+
+  const router = useRouter();
 
   return (
   <div className="flex">

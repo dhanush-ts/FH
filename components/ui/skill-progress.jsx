@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 
 export function SkillProgress({ data }) {

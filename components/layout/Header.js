@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input"
 import { Search, Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
-import { useRouter } from "next/navigation"
 import { UserProfile } from "@/components/ui/user-profile"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/app/providers"
@@ -34,7 +33,6 @@ export function Header() {
   const [loading, setLoading] = React.useState(true)
   const { isAuthenticated,setIsAuthenticated } = useAuth();
   const [isScrolled, setIsScrolled] = React.useState(false)
-  const router = useRouter()
   const [profile, setProfile] = React.useState(null)
 
   React.useEffect(() => {
@@ -96,7 +94,6 @@ export function Header() {
         "Content-Type": "application/json",
       },
     })
-    router.push("/login");
   }
 
   if(loading) return null;

@@ -98,7 +98,7 @@ export default function Banner2() {
                 <div className="h-full w-full bg-gray-300 animate-pulse"></div>
               ) : (
                 <Image 
-                  src={additionalInfo?.profile_photo || "https://placehold.co/160x160/000000/FFFFFF/png"} 
+                  src={profileData?.profile_photo_url || "https://placehold.co/160x160/000000/FFFFFF/png"} 
                   alt="Profile" 
                   className="h-full w-full object-cover"
                   width = {160}
