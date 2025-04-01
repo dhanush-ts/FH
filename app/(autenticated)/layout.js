@@ -10,7 +10,7 @@ export const metadata = {
 export default function AuthLayout({ children }) {
   return (
     <AuthGuard>
-      <div>
+      <div className="pb-36 from-gray-50 to-gray-100">
         {children}
         <Toaster />
       </div>
