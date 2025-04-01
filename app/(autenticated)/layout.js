@@ -1,29 +1,19 @@
-"use client";
+// New client component for authentication
+import AuthGuard from "@/components/providers/auth-guard";
 import { Toaster } from "@/components/ui/sonner";
-import { useAuth } from "../providers";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Loading from "../loading";
 
-export default function RootLayout({ children }) {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+export const metadata = {
+  title: "Profile | Portfolio",
+  description: "A powerful event management and AI health evaluation platform",
+};
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/');
-    } else {
-      setCheckingAuth(false);
-    }
-  }, [isAuthenticated, router]);
-
-  if (checkingAuth) return <Loading />;
-
+export default function AuthLayout({ children }) {
   return (
-    <div>
-      {children}
-      <Toaster />
-    </div>
+    <AuthGuard>
+      <div>
+        {children}
+        <Toaster />
+      </div>
+    </AuthGuard>
   );
 }

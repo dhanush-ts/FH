@@ -57,12 +57,12 @@ const Login = () => {
             <GoogleLogin 
                 onSuccess={handleLoginSuccess} 
                 onError={() => console.log("Login Failed")} 
-                text='signin_with' 
+                text='signin_with' flow="auth-code"
             />
             <GoogleLogin 
                 onSuccess={handleRegisterSuccess} 
                 onError={() => console.log("Login Failed")} 
-                text='signup_with' 
+                text='signup_with' flow="auth-code"
             />
         </div>
     );

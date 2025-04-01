@@ -19,7 +19,7 @@ export default function ProfilePage() {
       </Suspense>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="user-info" className="w-full">
+        <Tabs defaultValue="education" className="w-full">
           <div className="bg-white dark:bg-gray-800 max-w-3xl mx-auto rounded-lg p-2 shadow-sm mb-6">
             <TabsList className="grid grid-cols-3">
               <TabsTrigger
