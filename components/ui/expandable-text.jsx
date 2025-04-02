@@ -5,16 +5,10 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-interface ExpandableTextProps {
-  text: string
-  maxLines?: number
-  className?: string
-}
-
-export function ExpandableText({ text, maxLines = 3, className }: ExpandableTextProps) {
+export function ExpandableText({ text, maxLines = 3, className }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
-  const textRef = useRef<HTMLParagraphElement>(null)
+  const textRef = useRef(null)
 
   useEffect(() => {
     const checkOverflow = () => {
