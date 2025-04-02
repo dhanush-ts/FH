@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 async function serverSideFetch(url) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const allCookies = cookieStore.getAll();
     const cookieHeader = allCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ");
 

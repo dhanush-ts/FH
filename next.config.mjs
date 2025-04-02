@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["placehold.co"],
+    domains: ["placehold.co","encrypted-tbn0.gstatic.com"],
   },
   async headers() {
     return [

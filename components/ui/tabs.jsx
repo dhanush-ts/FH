@@ -78,7 +78,7 @@ export const Tabs = ({ tabs: propTabs, containerClassName, activeTabClassName, t
           </button>
         ))}
       </div>
-      <div className="mt-8 sm:mt-10 md:mt-12 lg:mt-16">{tabs[0].content}</div>
+      <div className="mt-8">{tabs[0].content}</div>
     </>
   )
 }

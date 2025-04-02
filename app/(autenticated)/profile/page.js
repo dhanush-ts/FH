@@ -1,15 +1,10 @@
 import { Suspense } from "react"
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent
-} from "@/components/ui/tabs"
-import Banner2 from "@/components/profile/Banner2"
+import {Tabs} from "@/components/ui/tabs"
 import Projects from "@/components/profile/Projects"
 import Achievements from "@/components/profile/Achievements"
 import ProfileSkeleton from "@/components/profile/profile-skeleton"
 import EducationTimeline from "@/components/profile/Education"
+import { ProfileBanner } from "@/components/profile/Banner2"
 
 export const metadata = {
   title: "User Profile | Portfolio",
@@ -89,14 +84,14 @@ export default function ProfilePage() {
     <main className="min-h-screen">
       <Suspense
         fallback={
-          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-gradient-to-r from-green-500 to-green-300 animate-pulse" />
+          <div className="bg-gradient-to-r from-green-500 to-green-300 animate-pulse" />
         }
       >
-        <Banner2 />
+        <ProfileBanner />
       </Suspense>
 
-      <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
-        <div className="w-full mx-auto my-4 sm:my-6 md:my-8 lg:my-10">
+      <div className="container mx-auto px-4">
+        <div className="w-full mx-auto my-6">
           <Tabs
             tabs={tabs}
             containerClassName="mb-4 sm:mb-6 md:mb-8"

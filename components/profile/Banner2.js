@@ -1,237 +1,101 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { MapPin, Github, Linkedin, ExternalLink } from 'lucide-react'
-import { fetchWithAuth } from "@/app/api"
 import Image from "next/image"
+import Link from "next/link"
+import { MapPin, Pencil, ChevronDown, ChevronUp } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { ProfileSocialLinks } from "../ui/profile-social-links"
+import { ProfileSkillTags } from "../ui/profile-skill"
+import { MobileDropdown } from "../ui/mobile-dropdown"
+import serverSideFetch from "@/app/service"
 
-export default function Banner2() {
-  const [profileData, setProfileData] = useState(null)
-  const [additionalInfo, setAdditionalInfo] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        setLoading(true)
-        const basicresponse = await fetchWithAuth("/user/basic-profile/")
-        const additionalresponse = await fetchWithAuth("/user/additional-info/")
-        const basicData = await basicresponse.json();
-        const additionalData = await additionalresponse.json();
-        setProfileData(basicData)
-        setAdditionalInfo(additionalData)
-      } catch (error) {
-        console.error("Failed to fetch profile data:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProfileData()
-  }, [])
+export async function ProfileBanner() {
+  const profileData = await serverSideFetch("/user/additional-info/")
+  const basicData = await serverSideFetch("/user/basic-profile/")
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-300 overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 opacity-20"
-          initial={{ scale: 1.1 }}
-          animate={{ 
-            scale: 1.15,
-            x: [0, 10, 0],
-            y: [0, -10, 0]
-          }}
-          transition={{ 
-            scale: { duration: 10, repeat: Infinity, repeatType: "reverse" },
-            x: { duration: 20, repeat: Infinity, repeatType: "reverse" },
-            y: { duration: 15, repeat: Infinity, repeatType: "reverse" }
-          }}
-          style={{
-            backgroundImage: "url('/placeholder.svg?height=400&width=1200')",
-            backgroundSize: "cover",
-            backgroundPosition: "center"
-          }}
-        />
-        
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent"
-          initial={{ opacity: 0.5 }}
-          animate={{ opacity: [0.5, 0.7, 0.5] }}
-          transition={{ duration: 5, repeat: Infinity }}
-        />
-        
-        <div className="absolute inset-0 overflow-hidden">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 rounded-full bg-white/20"
-              initial={{ 
-                x: Math.random() * 100 + "%", 
-                y: Math.random() * 100 + "%",
-                opacity: Math.random() * 0.5 + 0.2
-              }}
-              animate={{ 
-                y: ["-10%", "110%"],
-                opacity: [0, 1, 0]
-              }}
-              transition={{ 
-                duration: Math.random() * 10 + 15,
-                repeat: Infinity,
-                delay: Math.random() * 20
-              }}
-            />
-          ))}
-        </div>
-      </div>
-      
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 0.5, type: "spring" }}
-            className="relative"
-          >
-            <div className="h-32 w-32 md:h-40 md:w-40 rounded-full overflow-hidden border-4 border-white/80 shadow-xl transform hover:scale-105 transition-transform duration-300">
-              {loading ? (
-                <div className="h-full w-full bg-gray-300 animate-pulse"></div>
-              ) : (
-                <Image 
-                  src={profileData?.profile_photo_url || "https://placehold.co/160x160/000000/FFFFFF/png"} 
-                  alt="Profile" 
-                  className="h-full w-full object-cover"
-                  width = {160}
-                  height = {160}
-                />
-              )}
+    <div className="w-full bg-white border-gray-200">
+      <div className="container mx-auto max-w-5xl px-4 pt-6">
+        <div className="flex flex-col md:flex-row items-start gap-6">
+          {/* Profile Image */}
+          <div className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 lg:h-48 lg:w-48 relative mx-auto md:mx-0">
+            <div className="w-full h-full rounded-full overflow-hidden border-2 border-gray-200">
+              <Image
+                src={basicData.profile_image_url || "/placeholder.svg?height=112&width=112"}
+                alt="Profile"
+                className="h-full w-full object-cover"
+                width={112}
+                height={112}
+                priority
+              />
             </div>
-            
-            {/* Decorative elements */}
-            <motion.div 
-              className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-yellow-400 shadow-lg"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.6, type: "spring" }}
-            />
-            <motion.div 
-              className="absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-blue-400 shadow-lg"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.7, type: "spring" }}
-            />
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center md:text-left"
-          >
-            {loading ? (
-              <div className="space-y-3">
-                <div className="h-8 w-48 bg-white/20 rounded animate-pulse"></div>
-                <div className="h-4 w-32 bg-white/20 rounded animate-pulse"></div>
+            {/* Verification badge if needed */}
+            {profileData.verified && (
+              <div className="absolute bottom-0 right-0 bg-green-500 text-white p-1 rounded-full">
+                🔥
               </div>
-            ) : (
-              <>
-                <h1 className="text-3xl md:text-4xl font-bold text-white">
-                  {profileData?.first_name} {profileData?.last_name}
+            )}
+          </div>
+
+          {/* Profile Info */}
+          <div className="flex-1 w-full mt-4 md:mt-0">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between w-full">
+              <div>
+                {/* Name and Username */}
+                <h1 className="text-2xl font-bold text-gray-800 text-center md:text-left">
+                  {basicData.first_name} {basicData.last_name}
                 </h1>
-                <p className="text-white/80 mt-2">{profileData?.email}</p>
+                {/* <p className="text-gray-500 text-center md:text-left">@{basicData.username}</p> */}
                 
-                {/* Location with animation */}
-                <motion.div 
-                  className="flex items-center justify-center md:justify-start mt-2 text-white/90"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
+                {/* Location */}
+                <div className="flex items-center justify-center md:justify-start mt-2 text-gray-500">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span>Chennai, India</span>
-                </motion.div>
-                
-                {/* Social links */}
-                <div className="flex space-x-3 mt-4 justify-center md:justify-start">
-                  {additionalInfo?.github_url && (
-                    <motion.a
-                      href={additionalInfo.github_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors duration-300"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      <Github className="h-5 w-5 text-white" />
-                    </motion.a>
-                  )}
-                  
-                  {additionalInfo?.linkedin_url && (
-                    <motion.a
-                      href={additionalInfo.linkedin_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors duration-300"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6 }}
-                    >
-                      <Linkedin className="h-5 w-5 text-white" />
-                    </motion.a>
-                  )}
-                  
-                  {additionalInfo?.website_url && (
-                    <motion.a
-                      href={additionalInfo.website_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors duration-300"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7 }}
-                    >
-                      <ExternalLink className="h-5 w-5 text-white" />
-                    </motion.a>
-                  )}
                 </div>
-                
-                {additionalInfo?.skills && additionalInfo.skills.length > 0 && (
-                  <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
-                    {additionalInfo.skills.slice(0, 4).map((skill, index) => (
-                      <motion.span 
-                        key={index} 
-                        className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white shadow-sm hover:bg-white/30 transition-colors duration-300 cursor-default"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.8 + index * 0.1 }}
-                        whileHover={{ y: -2 }}
-                      >
-                        {skill}
-                      </motion.span>
-                    ))}
-                    {additionalInfo.skills.length > 4 && (
-                      <motion.span 
-                        className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white shadow-sm hover:bg-white/30 transition-colors duration-300 cursor-default"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 1.2 }}
-                        whileHover={{ y: -2 }}
-                      >
-                        +{additionalInfo.skills.length - 4} more
-                      </motion.span>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </motion.div>
+              </div>
+
+              {/* Edit Profile Button */}
+              <div className="mt-4 md:mt-0 flex justify-center md:justify-end">
+                <Link href="/profile/settings">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-green-500 text-green-700 hover:bg-green-50"
+                  >
+                    Edit Profile
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div className="mt-4">
+              <ProfileSocialLinks
+                githubUrl={profileData.github_url}
+                linkedinUrl={profileData.linkedin_url}
+                websiteUrl={profileData.website_url}
+              />
+            </div>
+
+            {/* Desktop: Bio and Skills */}
+            <div className="hidden md:block">
+              {/* Bio */}
+              {profileData.bio && (
+                <p className="text-gray-600 mt-4 text-left italic">{profileData.bio}</p>
+              )}
+
+              {/* Skills */}
+              <div className="mt-4">
+                <ProfileSkillTags skills={profileData.skills || []} />
+              </div>
+            </div>
+
+            {/* Mobile: Dropdown for Bio and Skills */}
+            <div className="block md:hidden mt-4">
+              <MobileDropdown 
+                bio={profileData.bio} 
+                skills={profileData.skills || []} 
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
