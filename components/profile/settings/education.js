@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/app/api"
 import { GraduationCap, Building, Calendar, Plus, Pencil, Trash2, Save, X } from "lucide-react"
 import {
   Dialog,

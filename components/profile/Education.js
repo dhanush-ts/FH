@@ -1,34 +1,7 @@
 import { GraduationCap, Building, Clock, Award, Calendar } from 'lucide-react'
-import { fetchWithAuth } from "@/lib/api"
-import { cookies } from 'next/headers'
+import serverSideFetch from '@/app/service';
 
-// Server-side data fetching function
-async function getEducationData() {
-  try {
-    const cookieStore = await cookies()
-    const allCookies = cookieStore.getAll()
-    const cookieHeader = allCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ")
 
-    const response = await fetch("http://127.0.0.1:8000/api/user/education/", {
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Education data: ${response.status}`)
-    }
-
-    return response.json()
-  } catch (error) {
-    console.error("Error fetching Education data:", error)
-    return []
-  }
-}
-
-// Format date to display in a more readable format
 const formatDate = (dateString) => {
   if (!dateString) return "Present";
   const date = new Date(dateString);
@@ -36,10 +9,8 @@ const formatDate = (dateString) => {
 };
 
 export default async function EducationTimeline() {
-  // Fetch education data server-side
-  const entries = await getEducationData();
+  const entries = await serverSideFetch("/user/education/")
   
-  // Sort entries by start year (most recent first)
   const sortedEntries = [...entries].sort((a, b) => b.start_year - a.start_year);
 
   if (entries.length === 0) {
@@ -59,9 +30,7 @@ export default async function EducationTimeline() {
   return (
     <div className="space-y-8">
       <div className="relative">
-        {/* Desktop Timeline */}
         <div className="hidden md:block">
-          {/* Timeline line */}
           <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-green-300/10 via-green-500/50 to-green-300/10 transform -translate-x-1/2" />
 
           <div className="space-y-16 md:space-y-24">
@@ -70,14 +39,12 @@ export default async function EducationTimeline() {
                 key={entry.id}
                 className={`relative group timeline-item ${index % 2 === 0 ? "md:pr-[5%]" : "md:pl-[5%] md:flex md:justify-end"}`}
               >
-                {/* Timeline dot */}
                 <div
                   className="absolute left-1/2 w-10 h-10 bg-green-600 rounded-full items-center justify-center transform -translate-x-1/2 z-10 hidden md:flex shadow-md"
                 >
                   <GraduationCap className="w-5 h-5 text-white" />
                 </div>
 
-                {/* Year indicator for desktop */}
                 <div
                   className={`hidden md:block absolute top-0 ${index % 2 === 0 ? "right-1/3" : "left-1/3"}`}
                 >
@@ -99,7 +66,6 @@ export default async function EducationTimeline() {
                   }}
                 >
                   <div className="p-6 relative bg-white">
-                    {/* Mobile year indicator */}
                     <div className="md:hidden mb-3">
                       <div className="font-bold text-sm px-2 py-1 rounded-full bg-white text-green-700 flex items-center gap-1 w-auto">
                         <Calendar className="w-3 h-3" />
@@ -140,27 +106,22 @@ export default async function EducationTimeline() {
           </div>
         </div>
 
-        {/* Mobile Timeline */}
         <div className="relative pl-8 md:hidden">
-          {/* Timeline line */}
           <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-green-300/10 via-green-500/50 to-green-300/10" />
 
           <div className="space-y-12">
             {sortedEntries.map((entry, index) => (
               <div key={entry.id} className="relative group">
-                {/* Timeline dot */}
                 <div className="absolute -left-4 top-0 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center transform -translate-x-1/2 z-10 shadow-md">
                   <GraduationCap className="w-4 h-4 text-white" />
                 </div>
 
-                {/* Year bubble */}
                 <div className="absolute -left-4 top-10 transform -translate-x-1/2">
                   <div className="font-bold text-sm px-2 py-1 rounded-md bg-green-600 text-white flex items-center gap-1 shadow-md">
                     {entry.start_year}
                   </div>
                 </div>
 
-                {/* Card */}
                 <div
                   className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 border border-green-200 dark:border-green-700 shadow-md ml-4"
                   style={{

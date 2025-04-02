@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Github, Linkedin, ExternalLink } from 'lucide-react'
-import { fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/app/api"
 import Image from "next/image"
 
 export default function Banner2() {

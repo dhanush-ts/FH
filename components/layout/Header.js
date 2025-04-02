@@ -21,7 +21,7 @@ import { UserProfile } from "@/components/ui/user-profile"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/app/providers"
 import { Acme } from "next/font/google"
-import { fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/app/api"
 
 const acme = Acme({
   weight: "400", // Acme has only one weight

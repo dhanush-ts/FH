@@ -1,34 +1,10 @@
 import { Trophy } from "lucide-react"
-import { cookies } from "next/headers"
 import { AchievementCard } from "./cards/achievement-card"
+import serverSideFetch from "@/app/service";
 
-async function getAchievementData() {
-  try {
-    const cookieStore = cookies()
-    const allCookies = cookieStore.getAll()
-    const cookieHeader = allCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ")
-
-    const response = await fetch("http://127.0.0.1:8000/api/user/achievement/", {
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch achievement data: ${response.status}`)
-    }
-
-    return response.json()
-  } catch (error) {
-    console.error("Error fetching achievement data:", error)
-    return []
-  }
-}
 
 export default async function Achievements() {
-  const achievementList = await getAchievementData()
+  const achievementList = await serverSideFetch("/user/achievement/");
 
   if (achievementList.length === 0) {
     return (

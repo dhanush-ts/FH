@@ -1,36 +1,12 @@
 import { Code } from "lucide-react"
 import { cookies } from "next/headers"
 import { ProjectCard } from "./cards/project-card"
+import serverSideFetch from "@/app/service"
 
 // Server-side data fetching function
-async function getProjectData() {
-  try {
-    const cookieStore = cookies()
-    const allCookies = cookieStore.getAll()
-    const cookieHeader = allCookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ")
-
-    const response = await fetch("http://127.0.0.1:8000/api/user/project/", {
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch projects data: ${response.status}`)
-    }
-
-    return response.json()
-  } catch (error) {
-    console.error("Error fetching projects data:", error)
-    return []
-  }
-}
-
 export default async function Projects() {
   // Fetch project data server-side
-  const projectList = await getProjectData()
+  const projectList = await serverSideFetch("/user/project/");
 
   if (projectList.length === 0) {
     return (

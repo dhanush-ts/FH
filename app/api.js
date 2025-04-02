@@ -1,6 +1,7 @@
 export const api = "http://localhost:8000/api";
 import { redirectToLogin } from "@/lib/routerService";
 
+
 export async function fetchWithAuth(url, options = {}) { 
     console.log(`${api}${url}||||`)
     options.credentials = "include";  // Ensure cookies are sent

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/app/api"
 import { Trophy, Calendar, Link2, Plus, Pencil, Trash2, Save, X } from "lucide-react"
 import {
   Dialog,

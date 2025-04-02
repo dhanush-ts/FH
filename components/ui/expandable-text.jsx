@@ -15,13 +15,11 @@ export function ExpandableText({ text, maxLines = 3, className }) {
       const element = textRef.current
       if (!element) return
       
-      // Check if the content is overflowing
       setIsOverflowing(element.scrollHeight > element.clientHeight)
     }
 
     checkOverflow()
     
-    // Re-check on window resize
     window.addEventListener("resize", checkOverflow)
     return () => window.removeEventListener("resize", checkOverflow)
   }, [text])
@@ -43,7 +41,6 @@ export function ExpandableText({ text, maxLines = 3, className }) {
         </p>
       </div>
       
-      {/* Gradient fade overlay when collapsed */}
       {!isExpanded && isOverflowing && (
         <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none"></div>
       )}

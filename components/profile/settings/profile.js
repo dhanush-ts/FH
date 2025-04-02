@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/app/api"
 import { User, Mail, Info, Globe, Linkedin, Github, Phone, Save, X, Plus } from "lucide-react"
 
 export default function ProfileSettingsContent() {

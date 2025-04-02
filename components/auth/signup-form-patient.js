@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { fetchWithAuth } from "@/lib/api";
+import { fetchWithAuth } from "@/app/api";
 
 async function handleSignUp(formData) {
   "use server";
