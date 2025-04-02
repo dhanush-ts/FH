@@ -1,3 +1,359 @@
+// "use client"
+
+// import * as React from "react"
+// import Link from "next/link"
+// import { cn } from "@/lib/utils"
+// import {
+//   NavigationMenu,
+//   NavigationMenuContent,
+//   NavigationMenuItem,
+//   NavigationMenuLink,
+//   NavigationMenuList,
+//   NavigationMenuTrigger,
+//   navigationMenuTriggerStyle,
+// } from "@/components/ui/navigation-menu"
+// import { Button } from "@/components/ui/button"
+// import { Menu, LogOut } from "lucide-react"
+// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+// import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
+// import { UserProfile } from "@/components/ui/user-profile"
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+// import { useAuth } from "@/app/providers"
+// import { Acme } from "next/font/google"
+// import { fetchWithAuth } from "@/app/api"
+
+// const acme = Acme({
+//   weight: "400", // Acme has only one weight
+//   subsets: ["latin"],
+//   display: "swap",
+// })
+
+// export function Header() {
+//   const [loading, setLoading] = React.useState(true)
+//   const { isAuthenticated,setIsAuthenticated } = useAuth();
+//   const [isScrolled, setIsScrolled] = React.useState(false)
+//   const [profile, setProfile] = React.useState(null)
+
+//   React.useEffect(() => {
+//     async function getProfile() {
+//       try {
+//         const response = await fetchWithAuth(`/user/basic-profile/`)
+//         if (response.ok) {
+//           const data = await response.json()
+//           setProfile(data);
+//           console.log(data)
+//           setIsAuthenticated(true);
+//         }
+//       } catch (error) {
+//         console.error("Failed to fetch profile:", error)
+//       }finally{
+//         setLoading(false)
+//       }
+//     }
+
+
+//       getProfile()
+      
+//   }, [])
+
+//   React.useEffect(() => {
+//     async function getProfile() {
+//       try {
+//         const response = await fetchWithAuth(`/user/basic-profile/`)
+//         if (response.ok) {
+//           const data = await response.json()
+//           setProfile(data);
+//         }
+//       } catch (error) {
+//         console.error("Failed to fetch profile:", error)
+//       }
+//     }
+
+//     if (isAuthenticated) {
+//       console.log("reached")
+//       getProfile()
+//     }
+//   }, [isAuthenticated])
+
+//   React.useEffect(() => {
+//     const handleScroll = () => {
+//       setIsScrolled(window.scrollY > 10)
+//     }
+
+//     window.addEventListener("scroll", handleScroll)
+//     return () => window.removeEventListener("scroll", handleScroll)
+//   }, [])
+
+//   const handleLogout = async () => {
+//     setIsAuthenticated(false)
+//     setProfile(null)
+//     await fetchWithAuth(`/auth/logout/`,{
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     })
+//   }
+
+//   if(loading) return null;
+
+//   return (
+//     <header
+//       className={cn(
+//         "sticky top-0 z-50 w-full sm:block flex lg:justify-between transition-all duration-300 ",
+//         isScrolled ? "bg-white/95 backdrop-blur-sm border-b shadow-sm py-2" : "bg-white border-b py-3",
+//       )}
+//     >
+//       <div className="flex h-16 mx-auto px-4 sm:px-8 md:px-16 items-center justify-between">
+//         <div className="flex items-center gap-6">
+//         <Sheet>
+//             <DialogTitle></DialogTitle>
+//             <SheetTrigger asChild>
+//               <Button
+//                 variant="outline"
+//                 size="icon"
+//                 className="lg:hidden h-10 w-10 border-2 border-primary/10 transition-all duration-200 hover:scale-110 rounded-md"
+//               >
+//                 <Menu className="h-5 w-5" />
+//                 <span className="sr-only">Toggle menu</span>
+//               </Button>
+//             </SheetTrigger>
+//             <SheetContent side="right" className="p-6">
+//           <DialogDescription></DialogDescription>
+//               <div className="flex flex-col gap-8 py-2">
+//                 <Link href="/" className="flex items-center">
+//                 <span className={`${acme.className} text-2xl font-bold bg-gradient-to-r text-black bg-clip-text`}>
+//                   FIND<span className="text-green-600">H</span>ACKS
+//                 </span>
+//                 </Link>
+
+//                 {/* User Profile in Mobile Menu */}
+//                 {isAuthenticated && profile && (
+//                   <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
+//                     <Avatar className="h-12 w-12 border-2 border-primary/10">
+//                       <AvatarImage
+//                         src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name} ${profile.last_name}`}
+//                         alt={profile.first_name}
+//                       />
+//                       <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white text-lg">
+//                         {profile.first_name.charAt(0).toUpperCase()}
+//                       </AvatarFallback>
+//                     </Avatar>
+//                     <div className="flex flex-col">
+//                       <span className="font-medium">
+//                         {profile.first_name} {profile.last_name}
+//                       </span>
+//                       <span className="text-xs text-muted-foreground truncate">{profile.email}</span>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 <nav className="flex flex-col space-y-6">
+//                   <Link href="/" className="font-medium text-lg transition-colors duration-200 hover:text-primary">
+//                     Home
+//                   </Link>
+//                   <div className="space-y-3">
+//                     <h4 className="font-medium text-lg">Join a hackathon</h4>
+//                     <div className="pl-4 space-y-2 text-sm">
+//                       <Link
+//                         href="/hackathons/upcoming"
+//                         className="block py-1.5 transition-colors duration-200 hover:text-primary"
+//                       >
+//                         Upcoming
+//                       </Link>
+//                       <Link
+//                         href="/hackathons/ongoing"
+//                         className="block py-1.5 transition-colors duration-200 hover:text-primary"
+//                       >
+//                         Ongoing
+//                       </Link>
+//                       <Link
+//                         href="/hackathons/past"
+//                         className="block py-1.5 transition-colors duration-200 hover:text-primary"
+//                       >
+//                         Past
+//                       </Link>
+//                     </div>
+//                   </div>
+//                   <div className="space-y-3">
+//                     <h4 className="font-medium text-lg">Host a hackathon</h4>
+//                     <div className="pl-4 space-y-2 text-sm">
+//                       <Link
+//                         href="/host/create"
+//                         className="block py-1.5 transition-colors duration-200 hover:text-primary"
+//                       >
+//                         Create a hackathon
+//                       </Link>
+//                       <Link
+//                         href="/host/resources"
+//                         className="block py-1.5 transition-colors duration-200 hover:text-primary"
+//                       >
+//                         Organizer resources
+//                       </Link>
+//                       <Link
+//                         href="/host/pricing"
+//                         className="block py-1.5 transition-colors duration-200 hover:text-primary"
+//                       >
+//                         Pricing
+//                       </Link>
+//                     </div>
+//                   </div>
+//                 </nav>
+
+//                 {isAuthenticated && profile ? (
+//                   <Button
+//                     variant="destructive"
+//                     onClick={handleLogout}
+//                     className="w-full rounded-full h-11 mt-auto flex items-center gap-2"
+//                   >
+//                     <LogOut className="h-4 w-4" />
+//                     <span>Logout</span>
+//                   </Button>
+//                 ) : (
+//                   <div className="flex flex-col gap-3 mt-auto">
+//                     <Button variant="outline" asChild className="w-full rounded-full h-11">
+//                       <Link href="/login">Log in</Link>
+//                     </Button>
+//                     <Button asChild className="w-full rounded-full h-11 bg-gradient-to-r from-cyan-600 to-blue-600">
+//                       <Link href="/signup">Sign up</Link>
+//                     </Button>
+//                   </div>
+//                 )}
+//               </div>
+//             </SheetContent>
+//           </Sheet>
+
+//           <Link href="/" className="flex items-center. lg:mr-8">
+//             <span className={`${acme.className} text-2xl mx-6 lg:mx-0 font-bold bg-gradient-to-r text-black bg-clip-text transition-all duration-300 hover:scale-105`}>
+//               FIND<span className="text-green-600">H</span>ACKS
+//             </span>
+//           </Link>
+
+//           <NavigationMenu className="hidden lg:flex">
+//             <NavigationMenuList className="gap-1">
+//               <NavigationMenuItem>
+//                 <Link href="/" legacyBehavior passHref>
+//                   <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-md")}>Home</NavigationMenuLink>
+//                 </Link>
+//               </NavigationMenuItem>
+//               <NavigationMenuItem>
+//                 <NavigationMenuTrigger className="transition-all duration-200 text-md hover:bg-accent/80">
+//                   Join a hackathon
+//                 </NavigationMenuTrigger>
+//                 <NavigationMenuContent>
+//                   <ul className="grid gap-4 p-6 w-[400px] md:w-[500px] lg:w-[600px] grid-cols-2">
+//                     <li className="row-span-3">
+//                       <NavigationMenuLink asChild>
+//                         <a
+//                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-cyan-500 to-blue-600 p-6 no-underline outline-none transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:shadow-md"
+//                           href="/"
+//                         >
+//                           <div className="mt-4 mb-2 text-lg font-medium text-white">Featured Hackathons</div>
+//                           <p className="text-sm leading-tight text-white/90">
+//                             Discover the most popular hackathons happening right now
+//                           </p>
+//                         </a>
+//                       </NavigationMenuLink>
+//                     </li>
+//                     <ListItem href="/hackathons/upcoming" title="Upcoming">
+//                       Browse hackathons that are starting soon
+//                     </ListItem>
+//                     <ListItem href="/hackathons/ongoing" title="Ongoing">
+//                       Join hackathons that are currently active
+//                     </ListItem>
+//                     <ListItem href="/hackathons/past" title="Past">
+//                       View completed hackathons and winners
+//                     </ListItem>
+//                   </ul>
+//                 </NavigationMenuContent>
+//               </NavigationMenuItem>
+//               <NavigationMenuItem>
+//                 <NavigationMenuTrigger className="transition-all duration-200 hover:bg-accent/80 text-md">
+//                   Host a hackathon
+//                 </NavigationMenuTrigger>
+//                 <NavigationMenuContent>
+//                   <ul className="grid w-[400px] gap-4 p-6">
+//                     <ListItem href="/host/create" title="Create a hackathon">
+//                       Set up and launch your own hackathon
+//                     </ListItem>
+//                     <ListItem href="/host/resources" title="Organizer resources">
+//                       Guides and tools for hackathon organizers
+//                     </ListItem>
+//                     <ListItem href="/host/pricing" title="Pricing">
+//                       Plans and pricing for hosting hackathons
+//                     </ListItem>
+//                   </ul>
+//                 </NavigationMenuContent>
+//               </NavigationMenuItem>
+//             </NavigationMenuList>
+//           </NavigationMenu>
+//         </div>
+
+//         <div className="flex items-center gap-4">
+
+//           {isAuthenticated && profile ? (
+//             <div className="flex items-center">
+//               <div className="">
+//                 <UserProfile user={profile} onLogout={handleLogout} />
+//               </div>
+//             </div>
+//           ) : (
+//             <div className="flex items-center gap-3">
+//               <div className="lg:hidden">
+//                 <Button
+//                   variant="outline"
+//                   asChild
+//                   className="rounded-full px-5 transition-all duration-200 hover:scale-105"
+//                 >
+//                   <Link href="/login">Log in</Link>
+//                 </Button>
+//               </div>
+//               <div className="hidden lg:flex items-center gap-3">
+//                 <Button
+//                   variant="outline"
+//                   asChild
+//                   className="rounded-full px-5 transition-all duration-200 hover:scale-105"
+//                 >
+//                   <Link href="/login">Log in</Link>
+//                 </Button>
+//                 <Button
+//                   asChild
+//                   className="rounded-full px-5 transition-all duration-200 hover:scale-105 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700"
+//                 >
+//                   <Link href="/signup">Sign up</Link>
+//                 </Button>
+//               </div>
+//             </div>
+//           )}
+
+          
+//         </div>
+//       </div>
+//     </header>
+//   )
+// }
+
+// const ListItem = React.forwardRef(({ className, title, children, ...props }, ref) => {
+//   return (
+//     <li>
+//       <NavigationMenuLink asChild>
+//         <a
+//           ref={ref}
+//           className={cn(
+//             "block select-none space-y-1 rounded-md p-4 leading-none no-underline outline-none transition-all duration-200 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground hover:scale-[1.01]",
+//             className,
+//           )}
+//           {...props}
+//         >
+//           <div className="text-sm font-medium leading-none">{title}</div>
+//           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">{children}</p>
+//         </a>
+//       </NavigationMenuLink>
+//     </li>
+//   )
+// })
+// ListItem.displayName = "ListItem"
+
 "use client"
 
 import * as React from "react"
@@ -13,8 +369,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Menu, LogOut } from "lucide-react"
+import { Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog"
 import { UserProfile } from "@/components/ui/user-profile"
@@ -22,6 +377,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/app/providers"
 import { Acme } from "next/font/google"
 import { fetchWithAuth } from "@/app/api"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 const acme = Acme({
   weight: "400", // Acme has only one weight
@@ -31,9 +387,10 @@ const acme = Acme({
 
 export function Header() {
   const [loading, setLoading] = React.useState(true)
-  const { isAuthenticated,setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth()
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [profile, setProfile] = React.useState(null)
+  const [sheetOpen, setSheetOpen] = React.useState(false)
 
   React.useEffect(() => {
     async function getProfile() {
@@ -41,20 +398,18 @@ export function Header() {
         const response = await fetchWithAuth(`/user/basic-profile/`)
         if (response.ok) {
           const data = await response.json()
-          setProfile(data);
+          setProfile(data)
           console.log(data)
-          setIsAuthenticated(true);
+          setIsAuthenticated(true)
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
-      }finally{
+      } finally {
         setLoading(false)
       }
     }
 
-
-      getProfile()
-      
+    getProfile()
   }, [])
 
   React.useEffect(() => {
@@ -63,7 +418,7 @@ export function Header() {
         const response = await fetchWithAuth(`/user/basic-profile/`)
         if (response.ok) {
           const data = await response.json()
-          setProfile(data);
+          setProfile(data)
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
@@ -88,7 +443,7 @@ export function Header() {
   const handleLogout = async () => {
     setIsAuthenticated(false)
     setProfile(null)
-    await fetchWithAuth(`/auth/logout/`,{
+    await fetchWithAuth(`/auth/logout/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -96,7 +451,11 @@ export function Header() {
     })
   }
 
-  if(loading) return null;
+  const closeSheet = () => {
+    setSheetOpen(false)
+  }
+
+  if (loading) return null
 
   return (
     <header
@@ -107,36 +466,36 @@ export function Header() {
     >
       <div className="flex h-16 mx-auto px-4 sm:px-8 md:px-16 items-center justify-between">
         <div className="flex items-center gap-6">
-        <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <DialogTitle></DialogTitle>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                className="lg:hidden h-10 w-10 border-2 border-primary/10 transition-all duration-200 hover:scale-110 rounded-md"
+                className="lg:hidden h-10 w-10 border-2 border-green-600/10 transition-all duration-200 hover:scale-110 rounded-md"
               >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="p-6">
-          <DialogDescription></DialogDescription>
+              <DialogDescription></DialogDescription>
               <div className="flex flex-col gap-8 py-2">
-                <Link href="/" className="flex items-center">
-                <span className={`${acme.className} text-2xl font-bold bg-gradient-to-r text-black bg-clip-text`}>
-                  FIND<span className="text-green-600">H</span>ACKS
-                </span>
+                <Link href="/" className="flex items-center" onClick={closeSheet}>
+                  <span className={`${acme.className} text-2xl font-bold bg-gradient-to-r text-black bg-clip-text`}>
+                    FIND<span className="text-green-600">H</span>ACKS
+                  </span>
                 </Link>
 
                 {/* User Profile in Mobile Menu */}
                 {isAuthenticated && profile && (
-                  <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
-                    <Avatar className="h-12 w-12 border-2 border-primary/10">
+                  <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-md">
+                    <Avatar className="h-12 w-12 border-2 border-green-600/10">
                       <AvatarImage
                         src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name} ${profile.last_name}`}
                         alt={profile.first_name}
                       />
-                      <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white text-lg">
+                      <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white text-lg">
                         {profile.first_name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -150,7 +509,11 @@ export function Header() {
                 )}
 
                 <nav className="flex flex-col space-y-6">
-                  <Link href="/" className="font-medium text-lg transition-colors duration-200 hover:text-primary">
+                  <Link
+                    href="/"
+                    className="font-medium text-lg transition-colors duration-200 hover:text-green-600"
+                    onClick={closeSheet}
+                  >
                     Home
                   </Link>
                   <div className="space-y-3">
@@ -158,19 +521,22 @@ export function Header() {
                     <div className="pl-4 space-y-2 text-sm">
                       <Link
                         href="/hackathons/upcoming"
-                        className="block py-1.5 transition-colors duration-200 hover:text-primary"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
                       >
                         Upcoming
                       </Link>
                       <Link
                         href="/hackathons/ongoing"
-                        className="block py-1.5 transition-colors duration-200 hover:text-primary"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
                       >
                         Ongoing
                       </Link>
                       <Link
                         href="/hackathons/past"
-                        className="block py-1.5 transition-colors duration-200 hover:text-primary"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
                       >
                         Past
                       </Link>
@@ -181,19 +547,22 @@ export function Header() {
                     <div className="pl-4 space-y-2 text-sm">
                       <Link
                         href="/host/create"
-                        className="block py-1.5 transition-colors duration-200 hover:text-primary"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
                       >
                         Create a hackathon
                       </Link>
                       <Link
                         href="/host/resources"
-                        className="block py-1.5 transition-colors duration-200 hover:text-primary"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
                       >
                         Organizer resources
                       </Link>
                       <Link
                         href="/host/pricing"
-                        className="block py-1.5 transition-colors duration-200 hover:text-primary"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
                       >
                         Pricing
                       </Link>
@@ -204,19 +573,26 @@ export function Header() {
                 {isAuthenticated && profile ? (
                   <Button
                     variant="destructive"
-                    onClick={handleLogout}
-                    className="w-full rounded-full h-11 mt-auto flex items-center gap-2"
+                    onClick={() => {
+                      handleLogout()
+                      closeSheet()
+                    }}
+                    className="w-full rounded-md h-11 mt-auto flex items-center gap-2"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
                   </Button>
                 ) : (
                   <div className="flex flex-col gap-3 mt-auto">
-                    <Button variant="outline" asChild className="w-full rounded-full h-11">
-                      <Link href="/login">Log in</Link>
+                    <Button variant="outline" asChild className="w-full rounded-md h-11">
+                      <Link href="/login" onClick={closeSheet}>
+                        Log in
+                      </Link>
                     </Button>
-                    <Button asChild className="w-full rounded-full h-11 bg-gradient-to-r from-cyan-600 to-blue-600">
-                      <Link href="/signup">Sign up</Link>
+                    <Button asChild className="w-full rounded-md h-11 bg-gradient-to-r from-green-500 to-green-600">
+                      <Link href="/signup" onClick={closeSheet}>
+                        Sign up
+                      </Link>
                     </Button>
                   </div>
                 )}
@@ -224,8 +600,10 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="flex items-center. lg:mr-8">
-            <span className={`${acme.className} text-2xl mx-6 lg:mx-0 font-bold bg-gradient-to-r text-black bg-clip-text transition-all duration-300 hover:scale-105`}>
+          <Link href="/" className="flex items-center lg:mr-8">
+            <span
+              className={`${acme.className} text-2xl mx-6 lg:mx-0 font-bold bg-gradient-to-r text-black bg-clip-text transition-all duration-300 hover:scale-105`}
+            >
               FIND<span className="text-green-600">H</span>ACKS
             </span>
           </Link>
@@ -234,11 +612,13 @@ export function Header() {
             <NavigationMenuList className="gap-1">
               <NavigationMenuItem>
                 <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-md")}>Home</NavigationMenuLink>
+                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-md rounded-md")}>
+                    Home
+                  </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="transition-all duration-200 text-md hover:bg-accent/80">
+                <NavigationMenuTrigger className="transition-all duration-200 text-md hover:bg-accent/80 rounded-md">
                   Join a hackathon
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -246,7 +626,7 @@ export function Header() {
                     <li className="row-span-3">
                       <NavigationMenuLink asChild>
                         <a
-                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-cyan-500 to-blue-600 p-6 no-underline outline-none transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:shadow-md"
+                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-green-500 to-green-600 p-6 no-underline outline-none transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:shadow-md"
                           href="/"
                         >
                           <div className="mt-4 mb-2 text-lg font-medium text-white">Featured Hackathons</div>
@@ -269,7 +649,7 @@ export function Header() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="transition-all duration-200 hover:bg-accent/80 text-md">
+                <NavigationMenuTrigger className="transition-all duration-200 hover:bg-accent/80 text-md rounded-md">
                   Host a hackathon
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -291,54 +671,48 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* <div className="hidden lg:flex relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-200" />
-            <Input
-              type="search"
-              placeholder="Search hackathons..."
-              className="w-[200px] lg:w-[300px] pl-10 pr-4 transition-all duration-300 focus:w-[250px] lg:focus:w-[350px] h-10 rounded-full"
-            />
-          </div> */}
-
           {isAuthenticated && profile ? (
             <div className="flex items-center">
               <div className="">
                 <UserProfile user={profile} onLogout={handleLogout} />
               </div>
-
-              {/* <div className="lg:hidden">
-                <Button variant="ghost" className="h-10 w-10 rounded-full p-0" onClick={handleLogout}>
-                  <Avatar className="h-10 w-10 border-2 border-primary/10">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.first_name} ${profile.last_name}`}
-                      alt={profile.first_name}
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white text-xs">
-                      {profile.first_name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </div> */}
             </div>
           ) : (
-            <div className="hidden lg:flex items-center gap-3">
-              <Button
-                variant="outline"
-                asChild
-                className="rounded-full px-5 transition-all duration-200 hover:scale-105"
-              >
-                <Link href="/login">Log in</Link>
-              </Button>
-              <Button
-                asChild
-                className="rounded-full px-5 transition-all duration-200 hover:scale-105 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700"
-              >
-                <Link href="/signup">Sign up</Link>
-              </Button>
+            <div className="flex items-center gap-3">
+              <div className="lg:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="rounded-md px-5 transition-all duration-200 hover:scale-105">
+                      Auth
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/login">Sign in</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/signup">Sign up</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="hidden lg:flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  asChild
+                  className="rounded-md px-5 transition-all duration-200 hover:scale-105"
+                >
+                  <Link href="/login">Sign in</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="rounded-md px-5 transition-all duration-200 hover:scale-105 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                >
+                  <Link href="/signup">Sign up</Link>
+                </Button>
+              </div>
             </div>
           )}
-
-          
         </div>
       </div>
     </header>
@@ -365,3 +739,4 @@ const ListItem = React.forwardRef(({ className, title, children, ...props }, ref
   )
 })
 ListItem.displayName = "ListItem"
+
