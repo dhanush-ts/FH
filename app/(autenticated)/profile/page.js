@@ -90,7 +90,7 @@ export default function ProfilePage() {
         <ProfileBanner />
       </Suspense>
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 select-none">
         <div className="w-full mx-auto my-6">
           <Tabs
             tabs={tabs}

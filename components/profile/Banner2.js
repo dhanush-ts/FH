@@ -53,12 +53,12 @@ export async function ProfileBanner() {
               </div>
 
               {/* Edit Profile Button */}
-              <div className="mt-4 md:mt-0 flex justify-center md:justify-end">
+              <div className="mt-4 md:mt-0 select-none flex justify-center md:justify-end">
                 <Link href="/profile/settings">
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="border-green-500 text-green-700 hover:bg-green-50"
+                    className="border-green-500 cursor-pointer text-green-700 hover:bg-green-50"
                   >
                     Edit Profile
                   </Button>
@@ -83,7 +83,7 @@ export async function ProfileBanner() {
               )}
 
               {/* Skills */}
-              <div className="mt-4">
+              <div className="mt-4 select-none">
                 <ProfileSkillTags skills={profileData.skills || []} />
               </div>
             </div>

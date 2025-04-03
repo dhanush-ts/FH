@@ -41,7 +41,7 @@ export const Tabs = ({ tabs: propTabs, containerClassName, activeTabClassName, t
               setHoverTab(null);
             }}
             className={cn(
-              "relative px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full transition-all mx-1",
+              "relative px-2 cursor-pointer py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full transition-all mx-1",
               tabClassName
             )}
             style={{
@@ -78,7 +78,7 @@ export const Tabs = ({ tabs: propTabs, containerClassName, activeTabClassName, t
           </button>
         ))}
       </div>
-      <div className="mt-8">{tabs[0].content}</div>
+      <div className="mt-8 max-w-7xl mx-auto">{tabs[0].content}</div>
     </>
   )
 }
