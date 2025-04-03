@@ -11,6 +11,8 @@ export const metadata = {
   description: "View professional profile, education, projects and achievements",
 }
 
+export const dynamic = "auto"; // ⬅️ Allows SSR when needed, otherwise SSG
+
 export default function ProfilePage() {
   const tabs = [
     {
