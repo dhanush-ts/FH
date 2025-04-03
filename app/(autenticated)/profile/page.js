@@ -5,13 +5,13 @@ import Achievements from "@/components/profile/Achievements"
 import ProfileSkeleton from "@/components/profile/profile-skeleton"
 import EducationTimeline from "@/components/profile/Education"
 import { ProfileBanner } from "@/components/profile/Banner2"
+export const dynamic = "force-dynamic";  // ✅ Force SSR instead of static export
+export const revalidate = 0;  // ✅ Disable caching
 
 export const metadata = {
   title: "User Profile | Portfolio",
   description: "View professional profile, education, projects and achievements",
 }
-
-export const dynamic = "auto"; // ⬅️ Allows SSR when needed, otherwise SSG
 
 export default function ProfilePage() {
   const tabs = [
