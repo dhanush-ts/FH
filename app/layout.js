@@ -8,6 +8,7 @@ import GlobalRouterProvider from "@/components/providers/global-router";
 export const metadata = {
   title: "FindHacks",
   description: "A powerful event management and AI health evaluation platform",
+  icons: { icon: "/green.ico" },
 };
 
 export default function RootLayout({ children }) {
