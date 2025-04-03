@@ -19,7 +19,6 @@ export default function RootLayout({ children }) {
       <body style={{ fontFamily: 'Poppins' }} className="font-poppins antialiased">
         <GoogleOAuthProvider clientId={CLIENT_ID}>
           <AuthProvider suppressHydrationWarning>
-            {/* ✅ Place it here without children */}
             <GlobalRouterProvider />  
             <Header />
             {children}
