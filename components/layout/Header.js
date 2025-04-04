@@ -249,7 +249,7 @@ export function Header() {
             <span
               className={`${acme.className} text-2xl flex mx-6 lg:mx-0 font-bold bg-gradient-to-r text-black bg-clip-text transition-all duration-300 hover:scale-105`}
             >
-              <Image src="/assets/logo.png" className="lg:-mt-2" width={150} height={25} alt="Logo" />
+              <Image src="/assets/logo.png" className="lg:-mt-2" width={150} height={25} alt="Logo" priority/>
             </span>
           </Link>
 

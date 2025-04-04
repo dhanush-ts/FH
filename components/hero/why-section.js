@@ -5,6 +5,7 @@ import { motion, useAnimation, useInView } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import Lottie from "lottie-react"
+import Head from "next/head"
 
 // Animation variants
 const fadeIn = {
@@ -67,14 +68,12 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   const sectionRef = useRef(null)
   const isInView = useInView(sectionRef, { once: true })
 
-  // Start animation when section comes into view
   useEffect(() => {
     if (isInView) {
       controls.start("visible")
     }
   }, [isInView, controls])
 
-  // Shared components
   const SectionBadge = () => (
     <motion.div
       className="inline-block w-fit bg-green-100 text-green-600 px-4 py-1 rounded-full font-medium text-sm"
@@ -85,7 +84,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const SectionHeading = () => (
     <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-      Why College Events are a{" "}
+      Why College Events are a {" "}
       <span className="relative">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
           Game-Changers !
@@ -134,7 +133,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const Animation = () => (
-    <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
+    <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]" aria-hidden="true">
       <Lottie
         animationData={require("@/app/assests/guyThinking.json")}
         loop={true}
@@ -159,36 +158,14 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
           variants={timelineVariants}
         />
         <div className="flex justify-between relative z-10">
-          <div className="flex flex-col items-center">
-            <div className="w-6 h-6 rounded-full bg-green-500 mb-2 flex items-center justify-center">
-              <span className="text-white text-xs">1</span>
+          {["Register", "Form Team", "Ideate", "Build", "Present"].map((label, index) => (
+            <div className="flex flex-col items-center" key={label}>
+              <div className="w-6 h-6 rounded-full bg-green-500 mb-2 flex items-center justify-center">
+                <span className="text-white text-xs">{index + 1}</span>
+              </div>
+              <p className="text-xs font-medium text-center">{label}</p>
             </div>
-            <p className="text-xs font-medium text-center">Register</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-6 h-6 rounded-full bg-green-500 mb-2 flex items-center justify-center">
-              <span className="text-white text-xs">2</span>
-            </div>
-            <p className="text-xs font-medium text-center">Form Team</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-6 h-6 rounded-full bg-green-500 mb-2 flex items-center justify-center">
-              <span className="text-white text-xs">3</span>
-            </div>
-            <p className="text-xs font-medium text-center">Ideate</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-6 h-6 rounded-full bg-green-500 mb-2 flex items-center justify-center">
-              <span className="text-white text-xs">4</span>
-            </div>
-            <p className="text-xs font-medium text-center">Build</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="w-6 h-6 rounded-full bg-green-500 mb-2 flex items-center justify-center">
-              <span className="text-white text-xs">5</span>
-            </div>
-            <p className="text-xs font-medium text-center">Present</p>
-          </div>
+          ))}
         </div>
       </div>
     </motion.div>
@@ -207,7 +184,13 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
     <section
       ref={sectionRef}
       className="min-h-screen w-full relative flex flex-col justify-center items-center py-16 md:py-24 bg-gradient-to-br from-slate-100 to-slate-200"
+      aria-label="Why College Events Matter"
     >
+      <Head>
+        <title>Why College Events are Game-Changers | FindHacks</title>
+        <meta name="description" content="Discover the impact of college events like hackathons and meetups. Build skills, grow your network, and unlock opportunities with FindHacks." />
+        <meta name="keywords" content="college events, hackathons, tech meetups, student innovation, build skills, FindHacks" />
+      </Head>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {isMobile ? (
           <motion.div
@@ -265,4 +248,3 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 })
 
 WhySection.displayName = "WhySection"
-
