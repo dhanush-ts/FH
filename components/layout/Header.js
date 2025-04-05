@@ -32,30 +32,30 @@ const acme = Acme({
 
 export function Header() {
 
-  const [loading, setLoading] = React.useState(true)
-  const { isAuthenticated, setIsAuthenticated } = useAuth()
+  // const [loading, setLoading] = React.useState(true)
+  const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useAuth()
   const [isScrolled, setIsScrolled] = React.useState(false)
-  const [profile, setProfile] = React.useState(null)
+  // const [profile, setProfile] = React.useState(null)
   const [sheetOpen, setSheetOpen] = React.useState(false)
 
-  React.useEffect(() => {
-    async function getProfile() {
-      try {
-        const response = await fetchWithAuth(`/user/basic-profile/`)
-        if (response.ok) {
-          const data = await response.json()
-          setProfile(data)
-          setIsAuthenticated(true)
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+  // React.useEffect(() => {
+  //   async function getProfile() {
+  //     try {
+  //       const response = await fetchWithAuth(`/user/basic-profile/`)
+  //       if (response.ok) {
+  //         const data = await response.json()
+  //         setProfile(data)
+  //         setIsAuthenticated(true)
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch profile:", error)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
 
-    getProfile()
-  }, [])
+  //   getProfile()
+  // }, [])
 
   React.useEffect(() => {
     async function getProfile() {
@@ -100,7 +100,7 @@ export function Header() {
     setSheetOpen(false)
   }
 
-  if (loading) return null
+  // if (loading) return null
 
   return (
     <header
@@ -141,7 +141,7 @@ export function Header() {
                         alt={profile.first_name}
                       />
                       <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white text-lg">
-                        {profile.first_name.charAt(0).toUpperCase()}
+                        {profile?.first_name?.charAt(0)?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
