@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import Lottie from "lottie-react"
 import Head from "next/head"
+import OptimizedLottie from "../ui/display-lottie"
 
 // Animation variants
 const fadeIn = {
@@ -134,7 +135,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const Animation = () => (
     <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]" aria-hidden="true">
-      <Lottie
+      <OptimizedLottie
         animationData={require("@/app/assests/guyThinking.json")}
         loop={true}
         className="w-full h-full object-contain"

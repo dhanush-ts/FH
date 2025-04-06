@@ -218,6 +218,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Lottie from "lottie-react"
+import OptimizedLottie from "../ui/display-lottie"
 
 const fadeIn = {
   hidden: { opacity: 0, y: 30 },
@@ -455,7 +456,7 @@ const Animation = () => (
     aria-label="Developer working on a computer animation"
     className="w-full h-[300px] md:h-[400px] lg:h-[500px]"
   >
-    <Lottie
+    <OptimizedLottie
       animationData={require("@/app/assests/codingPerson.json")}
       loop
       className="w-full h-full object-contain"

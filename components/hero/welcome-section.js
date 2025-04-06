@@ -220,6 +220,7 @@ import { ChevronDown } from 'lucide-react'
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { Button } from "@/components/ui/button"
 import Lottie from "lottie-react"
+import OptimizedLottie from "../ui/display-lottie"
 
 // Animation variants
 const fadeIn = {
@@ -343,7 +344,7 @@ export const WelcomeSection = forwardRef(({ scrollToNextSection, acmeFont }, ref
 
   const Animation = () => (
     <div className={`w-full ${isMobile ? "h-80" : "h-[400px] md:h-[500px] lg:h-[600px]"}`} aria-hidden="true">
-      <Lottie
+      <OptimizedLottie
         animationData={require("@/app/assests/landingPerson.json")}
         loop={true}
         className="w-full h-full object-contain"

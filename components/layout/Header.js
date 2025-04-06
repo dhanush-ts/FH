@@ -70,7 +70,7 @@ export function Header() {
       }
     }
 
-    if (isAuthenticated) {
+    if (isAuthenticated && !profile) {
       console.log("reached")
       getProfile()
     }
