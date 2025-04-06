@@ -104,12 +104,14 @@ export function Header() {
 
   return (
     <header
-      className={cn(
-        "sticky top-0 z-50 w-full sm:block flex lg:justify-between transition-all duration-300 ",
-        isScrolled ? "bg-white/95 backdrop-blur-sm border-b shadow-sm py-2" : "bg-white border-b py-3",
-      )}
+    className={cn(
+      "sticky top-0 z-50 transition-all duration-300",
+      isScrolled
+        ? "bg-white/95 top-3 rounded-md backdrop-blur-sm py-3 border w-[calc(100%-20px)] mx-[10px] md:w-[calc(100%-60px)] md:mx-[30px]"
+        : "bg-white top-0 py-3 w-full"
+    )}
     >
-      <div className="flex h-16 mx-auto px-4 sm:px-8 md:px-16 items-center justify-between">
+      <div className={isScrolled?"flex h-12 mx-auto px-4 sm:px-8 md:px-16 items-center justify-between":"flex h-16 mx-auto px-4 sm:px-8 md:px-16 items-center justify-between"}>
         <div className="flex items-center gap-6">
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <DialogTitle></DialogTitle>

@@ -23,7 +23,7 @@ export const Tabs = ({ tabs: propTabs, containerClassName, activeTabClassName, t
     <>
             <div
         className={cn(
-          "flex flex-row items-center justify-center relative max-w-full w-full",
+          "flex flex-row items-center justify-center bg-green-100 relative max-w-full w-fit m-auto p-1.5 rounded-full",
           containerClassName
         )}>
         {propTabs.map((tab, idx) => (
