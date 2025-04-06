@@ -70,7 +70,8 @@ export function Header() {
       }
     }
 
-    if (isAuthenticated && !profile) {
+    console.log(profile)
+    if (isAuthenticated && !profile.first_name) {
       console.log("reached")
       getProfile()
     }

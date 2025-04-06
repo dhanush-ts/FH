@@ -84,7 +84,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   )
 
   const SectionHeading = () => (
-    <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+    <motion.h2 className="text-3xl Highlight md:text-4xl lg:text-5xl font-bold tracking-tight">
       Why College Events are a {" "}
       <span className="relative">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
@@ -114,8 +114,8 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
 
   const BenefitCards = () => (
     <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
-      <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-none transition-shadow duration-300 border-l-4 border-b-4 border-green-500 h-full flex flex-col justify-between">
-        <h3 className="font-bold text-lg text-green-600 mb-2">Community</h3>
+      <div className="bg-white highlight p-4 rounded-lg shadow-md hover:shadow-none transition-shadow duration-300 border-l-4 border-b-4 border-green-500 h-full flex flex-col justify-between">
+        <h3 className="font-bold Highlight text-lg text-green-600 mb-2">Community</h3>
         <p className="text-slate-600">Connect with like-minded innovators and build lasting relationships</p>
       </div>
       <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-none transition-shadow duration-300 border-l-4 border-b-4 border-green-500 h-full flex flex-col justify-between">
@@ -201,7 +201,9 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
             className="flex flex-col items-center text-center space-y-6"
           >
             <SectionBadge />
-            <SectionHeading />
+            <div className="highlight">
+                <SectionHeading />
+              </div>
             <SectionDescription />
             <BenefitCards />
             <Animation />
@@ -225,9 +227,13 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
               className="space-y-6 md:space-y-8 h-full flex flex-col justify-center text-center lg:text-left"
             >
               <SectionBadge />
-              <SectionHeading />
+              <div className="highlight">
+                <SectionHeading />
+              </div>
               <SectionDescription />
-              <BenefitCards />
+              <div className="highlight">
+                <BenefitCards />
+              </div>
             </motion.div>
           </div>
         )}
