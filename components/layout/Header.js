@@ -100,14 +100,12 @@ export function Header() {
     setSheetOpen(false)
   }
 
-  // if (loading) return null
-
   return (
     <header
     className={cn(
       "sticky top-0 z-50 transition-all duration-300",
       isScrolled
-        ? "bg-white/95 top-3 rounded-md backdrop-blur-sm py-3 border w-[calc(100%-20px)] mx-[10px] md:w-[calc(100%-60px)] md:mx-[30px]"
+        ? "bg-white/95 top-3 shadow-md rounded-md backdrop-blur-sm py-3 border w-[calc(100%-20px)] mx-[10px] md:w-[calc(100%-60px)] md:mx-[30px]"
         : "bg-white top-0 py-3 w-full"
     )}
     >

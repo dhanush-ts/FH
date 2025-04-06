@@ -6,6 +6,9 @@ import { WelcomeSection } from "./welcome-section"
 import { WhySection } from "./why-section"
 import { CodingSection } from "./coding-section"
 import { ProjectSection } from "./project-section"
+import ScrollText from "../ui/scrollText"
+import ParallaxText from "../ui/scrollText"
+import { cn } from "@/lib/utils"
 
 const acme = Acme({
   weight: "400",
@@ -34,8 +37,11 @@ export default function Banner() {
         scrollToNextSection={() => scrollToNextSection(0)}
         acmeFont={acme.className}
       />
-      <WhySection ref={sectionRefs[1]} scrollToNextSection={() => scrollToNextSection(1)} />
-      <CodingSection ref={sectionRefs[2]} scrollToNextSection={() => scrollToNextSection(2)} />
+      <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText>
+      <WhySection  ref={sectionRefs[1]} scrollToNextSection={() => scrollToNextSection(1)} />
+      <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText>
+      <CodingSection  ref={sectionRefs[2]} scrollToNextSection={() => scrollToNextSection(2)} />
+      <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText>
       <ProjectSection ref={sectionRefs[3]} />
     </div>
   )

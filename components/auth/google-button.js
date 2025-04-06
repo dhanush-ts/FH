@@ -7,9 +7,8 @@ const Login = () => {
     const { isAuthenticated, setIsAuthenticated } = useAuth();
     const router = useRouter();
     const handleLoginSuccess = async (response) => {
-        const credential = response.credential;  // Google token
+        const credential = response.credential;
 
-        // Send token to Django Backend
         const res = await fetch("http://localhost:8000/api/auth/login/google/", {
             method: "POST",
             credentials: "include",
@@ -30,7 +29,7 @@ const Login = () => {
 
     };
     const handleRegisterSuccess = async (response) => {
-        const credential = response.credential;  // Google token
+        const credential = response.credential; 
 
         const res = await fetch("http://localhost:8000/api/auth/register/google/", {
             method: "POST",
