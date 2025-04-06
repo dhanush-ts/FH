@@ -36,6 +36,7 @@
     "dotted-map": "^2.2.3",
     "framer-motion": "^11.18.2",
     "gsap": "^3.12.7",
+    "input-otp": "^1.4.2",
     "ldrs": "^1.1.2",
     "lightningcss": "^1.29.3",
     "lottie-react": "^2.4.1",

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, Children, useRef, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,30 +19,30 @@ export default function Stepper({
   renderStepIndicator,
   ...rest
 }) {
-  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [currentstep, setcurrentstep] = useState(initialStep);
   const [direction, setDirection] = useState(0);
   const stepsArray = Children.toArray(children);
   const totalSteps = stepsArray.length;
-  const isCompleted = currentStep > totalSteps;
-  const isLastStep = currentStep === totalSteps;
+  const isCompleted = currentstep > totalSteps;
+  const isLastStep = currentstep === totalSteps;
 
   const updateStep = (newStep) => {
-    setCurrentStep(newStep);
+    setcurrentstep(newStep);
     if (newStep > totalSteps) onFinalStepCompleted();
     else onStepChange(newStep);
   };
 
   const handleBack = () => {
-    if (currentStep > 1) {
+    if (currentstep > 1) {
       setDirection(-1);
-      updateStep(currentStep - 1);
+      updateStep(currentstep - 1);
     }
   };
 
   const handleNext = () => {
     if (!isLastStep) {
       setDirection(1);
-      updateStep(currentStep + 1);
+      updateStep(currentstep + 1);
     }
   };
 
@@ -70,9 +71,9 @@ export default function Stepper({
                 {renderStepIndicator ? (
                   renderStepIndicator({
                     step: stepNumber,
-                    currentStep,
+                    currentstep,
                     onStepClick: (clicked) => {
-                      setDirection(clicked > currentStep ? 1 : -1);
+                      setDirection(clicked > currentstep ? 1 : -1);
                       updateStep(clicked);
                     },
                   })
@@ -80,15 +81,15 @@ export default function Stepper({
                   <StepIndicator
                     step={stepNumber}
                     disableStepIndicators={disableStepIndicators}
-                    currentStep={currentStep}
+                    currentstep={currentstep}
                     onClickStep={(clicked) => {
-                      setDirection(clicked > currentStep ? 1 : -1);
+                      setDirection(clicked > currentstep ? 1 : -1);
                       updateStep(clicked);
                     }}
                   />
                 )}
                 {isNotLastStep && (
-                  <StepConnector isComplete={currentStep > stepNumber} />
+                  <StepConnector isComplete={currentstep > stepNumber} />
                 )}
               </React.Fragment>
             );
@@ -96,24 +97,24 @@ export default function Stepper({
         </div>
         <StepContentWrapper
           isCompleted={isCompleted}
-          currentStep={currentStep}
+          currentstep={currentstep}
           direction={direction}
           className={`space-y-2 px-8 ${contentClassName}`}
         >
-          {stepsArray[currentStep - 1]}
+          {stepsArray[currentstep - 1]}
         </StepContentWrapper>
         {!isCompleted && (
           <div className={`px-8 pb-8 ${footerClassName}`}>
             <div
               className={`mt-10 flex ${
-                currentStep !== 1 ? "justify-between" : "justify-end"
+                currentstep !== 1 ? "justify-between" : "justify-end"
               }`}
             >
-              {currentStep !== 1 && (
+              {currentstep !== 1 && (
                 <button
                   onClick={handleBack}
                   className={`duration-350 rounded px-2 py-1 transition ${
-                    currentStep === 1
+                    currentstep === 1
                       ? "pointer-events-none opacity-50 text-neutral-400"
                       : "text-neutral-400 hover:text-neutral-700"
                   }`}
@@ -139,7 +140,7 @@ export default function Stepper({
 
 function StepContentWrapper({
   isCompleted,
-  currentStep,
+  currentstep,
   direction,
   children,
   className,
@@ -156,7 +157,7 @@ function StepContentWrapper({
       <AnimatePresence initial={false} mode="sync" custom={direction}>
         {!isCompleted && (
           <SlideTransition
-            key={currentStep}
+            key={currentstep}
             direction={direction}
             onHeightReady={(h) => setParentHeight(h)}
           >
@@ -212,19 +213,19 @@ export function Step({ children }) {
 
 function StepIndicator({
   step,
-  currentStep,
+  currentstep,
   onClickStep,
   disableStepIndicators,
 }) {
   const status =
-    currentStep === step
+    currentstep === step
       ? "active"
-      : currentStep < step
+      : currentstep < step
         ? "inactive"
         : "complete";
 
   const handleClick = () => {
-    if (step !== currentStep && !disableStepIndicators) onClickStep(step);
+    if (step !== currentstep && !disableStepIndicators) onClickStep(step);
   };
 
   return (

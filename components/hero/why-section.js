@@ -184,7 +184,7 @@ export const WhySection = forwardRef(({ scrollToNextSection }, ref) => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen w-full relative flex flex-col justify-center items-center py-16 md:py-24 bg-gradient-to-br from-slate-100 to-slate-200"
+      className="min-h-screen highlight w-full relative flex flex-col justify-center items-center py-16 md:py-24 bg-gradient-to-br from-slate-100 to-slate-200"
       aria-label="Why College Events Matter"
     >
       <Head>
