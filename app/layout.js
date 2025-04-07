@@ -15,7 +15,6 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   const CLIENT_ID = "803976634382-ffm3v2818gk5kqoj5q39i5944dtmna39.apps.googleusercontent.com";
-
   return (
     <html lang="en">
       <body style={{ fontFamily: 'Poppins' }} className="font-poppins antialiased">
