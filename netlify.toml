@@ -1,5 +1,5 @@
 [build]
-  command = "npm install --legacy-peer-deps --force && npm run build"
+  command = "npm ci install --force && npm run build"
   publish = ".next"
   environment = { NODE_VERSION = "22.12.0", NODE_ENV = "production" }
 
