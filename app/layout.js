@@ -6,6 +6,7 @@ import { AuthProvider } from "./providers";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GlobalRouterProvider from "@/components/providers/global-router";
 import MaskMouseEffect from "@/components/ui/MaskEffect";
+import SmoothScrollWrapper from "@/components/ui/LenisScrollWrap";
 
 export const metadata = {
   title: "FindHacks",
@@ -20,12 +21,14 @@ export default function RootLayout({ children }) {
       <body style={{ fontFamily: 'Poppins' }} className="font-poppins antialiased">
         <GoogleOAuthProvider clientId={CLIENT_ID}>
           <AuthProvider suppressHydrationWarning>
+          <SmoothScrollWrapper>
             <MaskMouseEffect scale={1.5} targetClassName="highlight" >
               <Header />
                 <GlobalRouterProvider />  
                 {children}
                 <Footer />
             </MaskMouseEffect>
+            </SmoothScrollWrapper>
           </AuthProvider>
         </GoogleOAuthProvider>
       </body>
