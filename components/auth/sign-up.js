@@ -475,7 +475,9 @@ export default function SignUpForm() {
   ]
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div 
+      // className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+    >
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-center text-green-600">Create Your Account</h1>
         <p className="text-center text-gray-600 mt-2">Complete the steps below to get started</p>
