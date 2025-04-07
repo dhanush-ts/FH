@@ -19,12 +19,12 @@ export async function fetchWithAuth(url, options = {}) {
     let response = await fetch(`${api}${url}`, options);
 
     if (response.status === 401) {
-        const success = await refreshAccessToken();
-        if (success) {
-            response = await fetch(`${api}${url}`, options);  // Retry request
-        } else {
+        // const success = await refreshAccessToken();
+        // if (success) {
+        //     response = await fetch(`${api}${url}`, options);  // Retry request
+        // } else {
             redirectToLogin(); // ✅ Redirect to login if refresh fails
-        }
+        // }
     }
 
     return response;

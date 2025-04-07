@@ -36,7 +36,8 @@ const GoogleSignUp = () => {
             <GoogleLogin 
                 onSuccess={handleRegisterSuccess} 
                 onError={() => console.log("Login Failed")} 
-                text='signup_with' flow="auth-code"
+                text='signup_with' useOneTap={true}
+                flow="auth-code"
             />
         </div>
     );

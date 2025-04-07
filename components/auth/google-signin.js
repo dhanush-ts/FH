@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/navigation';
@@ -33,7 +34,7 @@ const Login = () => {
             <GoogleLogin 
                 onSuccess={handleLoginSuccess} 
                 onError={() => console.log("Login Failed")} 
-                text='signin_with' flow="auth-code"
+                text='signin_with' useOneTap={true}
             />
         </div>
     );

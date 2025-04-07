@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation"
 import { fetchWithAuth } from "@/app/api"
 import { useAuth } from "@/app/providers"
 import Link from "next/link"
-import GoogleButton from "./google-button"
+// import GoogleButton from "./google-button"
+import Login from "./google-signin"
 
 export default function LoginForm({ className, ...props }) {
   const { isAuthenticated, setIsAuthenticated } = useAuth()
@@ -336,7 +337,8 @@ export default function LoginForm({ className, ...props }) {
 
               <div className="flex -mx-3">
                 <div className="w-full px-3">
-                  <GoogleButton />
+                  {/* <GoogleButton /> */}
+                  <Login />
                 </div>
               </div>
 
