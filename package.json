@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "install": "npm install --legacy-peer-deps"
+
   },
   "dependencies": {
     "@fontsource/poppins": "^5.2.5",
