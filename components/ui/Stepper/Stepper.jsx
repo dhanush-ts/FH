@@ -4,12 +4,13 @@ import React from "react"
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { CheckCircle } from "lucide-react"
+import { CheckCircle, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 
 export default function MultiStepForm({ steps, currentStep, onStepChange, isLoading }) {
   const [completedSteps, setCompletedSteps] = useState([1])
+  const [processingStep, setProcessingStep] = useState(false)
 
   // Update completed steps when current step changes
   useEffect(() => {
@@ -23,14 +24,19 @@ export default function MultiStepForm({ steps, currentStep, onStepChange, isLoad
 
   const handleNext = async () => {
     if (currentStep < steps.length) {
-      const success = await onStepChange(currentStep + 1)
-      if (success) {
-        setCompletedSteps((prev) => {
-          if (!prev.includes(currentStep + 1)) {
-            return [...prev, currentStep + 1]
-          }
-          return prev
-        })
+      setProcessingStep(true)
+      try {
+        const success = await onStepChange(currentStep + 1)
+        if (success) {
+          setCompletedSteps((prev) => {
+            if (!prev.includes(currentStep + 1)) {
+              return [...prev, currentStep + 1]
+            }
+            return prev
+          })
+        }
+      } finally {
+        setProcessingStep(false)
       }
     }
   }
@@ -50,7 +56,10 @@ export default function MultiStepForm({ steps, currentStep, onStepChange, isLoad
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 relative">
+        {/* Horizontal connecting line */}
+        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 z-0"></div>
+
         {steps.map((step, index) => {
           const stepNumber = index + 1
           const isActive = currentStep === stepNumber
@@ -58,12 +67,12 @@ export default function MultiStepForm({ steps, currentStep, onStepChange, isLoad
           const isAccessible = completedSteps.includes(stepNumber) || stepNumber === Math.min(...completedSteps) + 1
 
           return (
-            <div key={stepNumber} className="flex flex-col items-center">
+            <div key={stepNumber} className="flex flex-col items-center z-10">
               <button
                 onClick={() => handleStepClick(stepNumber)}
-                disabled={!isAccessible}
+                disabled={!isAccessible || isLoading}
                 className={cn(
-                  "relative flex h-10 w-10 items-center justify-center rounded-full font-semibold transition-all duration-200",
+                  "relative flex h-12 w-12 items-center justify-center rounded-full font-semibold transition-all duration-200",
                   isActive
                     ? "bg-green-500 text-white"
                     : isCompleted
@@ -73,29 +82,20 @@ export default function MultiStepForm({ steps, currentStep, onStepChange, isLoad
                         : "bg-gray-200 text-gray-400 cursor-not-allowed",
                 )}
               >
-                {isCompleted ? <CheckCircle className="h-5 w-5" /> : <span className="text-sm">{stepNumber}</span>}
+                {isCompleted ? <CheckCircle className="h-6 w-6" /> : <span className="text-base">{stepNumber}</span>}
               </button>
 
-              {index < steps.length - 1 && (
-                <div className="hidden sm:block absolute h-0.5 w-full max-w-[100px] bg-gray-200">
-                  <div
-                    className="h-full bg-green-500 transition-all duration-300"
-                    style={{
-                      width: isCompleted ? "100%" : "0%",
-                    }}
-                  />
-                </div>
-              )}
+              <span className="mt-2 text-xs font-medium text-gray-700">{steps[index].title.split(" ")[0]}</span>
             </div>
           )
         })}
       </div>
 
-      <div className="min-h-[300px]">{steps[currentStep - 1].content}</div>
+      <div className="min-h-[200px]">{steps[currentStep - 1].content}</div>
 
       <div className="flex justify-between mt-6">
         {currentStep > 1 ? (
-          <Button type="button" variant="outline" onClick={handleBack} disabled={isLoading}>
+          <Button type="button" variant="outline" onClick={handleBack} disabled={isLoading || processingStep}>
             Back
           </Button>
         ) : (
@@ -106,10 +106,17 @@ export default function MultiStepForm({ steps, currentStep, onStepChange, isLoad
           <Button
             type="button"
             onClick={handleNext}
-            disabled={!steps[currentStep - 1].isValid || isLoading}
+            disabled={!steps[currentStep - 1].isValid || isLoading || processingStep}
             className="bg-green-500 hover:bg-green-600"
           >
-            Next
+            {processingStep ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Next"
+            )}
           </Button>
         )}
       </div>

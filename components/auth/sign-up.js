@@ -6,13 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle, AlertCircle, Mail, Lock, User, RefreshCw } from "lucide-react"
+import { CheckCircle, AlertCircle, Mail, Lock, User, RefreshCw, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import MultiStepForm from "../ui/Stepper/Stepper"
+import OtpInput from "../ui/otp"
 import { fetchWithAuth } from "@/app/api"
+import { useAuth } from "@/app/providers"
 
 export default function SignUpForm() {
-  const router = useRouter()
+  const router = useRouter();
+
+  const {setIsAuthenticated, setProfile} = useAuth();
 
   // Form state
   const [firstName, setFirstName] = useState("")
@@ -28,7 +32,9 @@ export default function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [resendDisabled, setResendDisabled] = useState(true)
-  const [resendCountdown, setResendCountdown] = useState(30)
+  const [resendCountdown, setResendCountdown] = useState(80)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [verifyLoading, setVerifyLoading] = useState(false)
   const [stepValidation, setStepValidation] = useState({
     step1: false,
     step2: false,
@@ -131,11 +137,11 @@ export default function SignUpForm() {
         return false
       }
 
-      toast("Please check your email for the verification code.")
+      toast("Verification code sent")
       return true
     } catch (error) {
       setError("An error occurred. Please try again.")
-      toast("Error")
+      toast("An error occurred. Please try again.")
       return false
     } finally {
       setIsLoading(false)
@@ -145,12 +151,12 @@ export default function SignUpForm() {
   // Verify OTP
   const verifyOTP = async () => {
     try {
-      setIsLoading(true)
+      setVerifyLoading(true)
       setError("")
 
       if (!otp || otp.length !== 6 || !otpSignature) {
         setError("Invalid verification code or missing signature.")
-        toast("Invalid code")
+        toast("Invalid verification code")
         return false
       }
 
@@ -173,12 +179,9 @@ export default function SignUpForm() {
         return false
       }
 
-      toast("Success!")
-
-      // Redirect to home page
-      setTimeout(() => {
-        router.push("/")
-      }, 1500)
+      toast("Your account has been created successfully.");
+      setIsAuthenticated(true)
+      router.push("/")
 
       return true
     } catch (error) {
@@ -186,14 +189,14 @@ export default function SignUpForm() {
       toast("Error")
       return false
     } finally {
-      setIsLoading(false)
+      setVerifyLoading(false)
     }
   }
 
   // Resend OTP
   const resendOTP = async () => {
     try {
-      setIsLoading(true)
+      setResendLoading(true)
       setError("")
       setResendDisabled(true)
 
@@ -209,14 +212,14 @@ export default function SignUpForm() {
         return
       }
 
-      toast("Code resent")
+      toast("Please check your email for the new verification code.")
       // Reset the countdown
       setResendCountdown(30)
     } catch (error) {
       setError("An error occurred. Please try again.")
       toast("Error")
     } finally {
-      setIsLoading(false)
+      setResendLoading(false)
     }
   }
 
@@ -399,17 +402,11 @@ export default function SignUpForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="otp">Verification Code</Label>
+            <Label htmlFor="otp" className="block text-center mb-2">
+              Verification Code
+            </Label>
             <div className="flex justify-center">
-              <Input
-                id="otp"
-                type="text"
-                placeholder="Enter 6-digit code"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="max-w-[200px] text-center border-2 focus:border-green-500"
-                maxLength={6}
-              />
+              <OtpInput value={otp} onChange={setOtp} disabled={verifyLoading} />
             </div>
           </div>
 
@@ -427,10 +424,15 @@ export default function SignUpForm() {
               variant="outline"
               size="sm"
               onClick={resendOTP}
-              disabled={resendDisabled || isLoading}
+              disabled={resendDisabled || resendLoading}
               className="flex items-center gap-2"
             >
-              {resendDisabled ? (
+              {resendLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Sending...</span>
+                </>
+              ) : resendDisabled ? (
                 <>
                   <span>Resend in {resendCountdown}s</span>
                 </>
@@ -447,13 +449,13 @@ export default function SignUpForm() {
             <Button
               type="button"
               onClick={() => verifyOTP()}
-              disabled={!stepValidation.step4 || isLoading}
+              disabled={!stepValidation.step4 || verifyLoading}
               className="bg-green-500 hover:bg-green-600"
             >
-              {isLoading ? (
+              {verifyLoading ? (
                 <>
-                  <span className="mr-2">Verifying</span>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying...
                 </>
               ) : (
                 "Verify Account"

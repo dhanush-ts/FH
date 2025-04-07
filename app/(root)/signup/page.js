@@ -7,7 +7,7 @@ import SignUp from "@/components/auth/sign-up";
 
 export default function SignUpPage() {
   return (
-    <div>
+    <div className="min-h-screen">
       <SignUp />
     </div>
   );
