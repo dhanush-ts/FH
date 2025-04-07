@@ -91,7 +91,7 @@ export default function MultiStepForm({ steps, currentStep, onStepChange, isLoad
         })}
       </div>
 
-      <div className="min-h-[200px]">{steps[currentStep - 1].content}</div>
+      <div className="min-h-[150px]">{steps[currentStep - 1].content}</div>
 
       <div className="flex justify-between mt-6">
         {currentStep > 1 ? (
