@@ -1,3 +1,4 @@
+"use client"
 import { useRef, useEffect } from "react";
 import Lottie from "lottie-react";
 import { useInView } from "framer-motion";
