@@ -1,10 +1,13 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { User, GraduationCap, Briefcase, Trophy } from "lucide-react"
 
-export default function ProfileSettingsSidebar({ activeItem = "profile" }) {
+export default function ProfileSettingsSidebar() {
+  const pathname = usePathname()
+
   const menuItems = [
     {
       id: "profile",
@@ -34,25 +37,29 @@ export default function ProfileSettingsSidebar({ activeItem = "profile" }) {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-2 border-green-200 dark:border-green-700 shadow-md">
-      <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase">Profile Settings</div>
+      <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase">
+        Profile Settings
+      </div>
       <nav className="space-y-1">
-        {menuItems.map((item) => (
-          <Link
-            key={item.id}
-            href={item.href}
-            className={cn(
-              "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-              activeItem === item.id
-                ? "bg-primary text-white"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
-            )}
-          >
-            {item.icon}
-            {item.label}
-          </Link>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              className={cn(
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                isActive
+                  ? "bg-primary text-white"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
+              )}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          )
+        })}
       </nav>
     </div>
   )
 }
-

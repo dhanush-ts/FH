@@ -1,4 +1,3 @@
-import AuthGuard from "@/components/providers/auth-guard";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
@@ -8,10 +7,10 @@ export const metadata = {
 
 export default function AuthLayout({ children }) {
   return (
-    <AuthGuard>
+    <section>
       <div className="from-gray-50 to-gray-100 pb-36">
         {children}
       </div>
-    </AuthGuard>
+    </section>
   );
 }
