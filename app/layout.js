@@ -10,6 +10,14 @@ export const metadata = {
   title: "FindHacks",
   description: "A powerful event management and AI health evaluation platform",
   icons: { icon: "/green.ico" },
+  keywords: [
+    "hackathon platform",
+    "hackathons",
+    "events",
+    "symposiums",
+    "find hackathons",
+    "FindHacks",
+  ],
 };
 
 export default function RootLayout({ children }) {
