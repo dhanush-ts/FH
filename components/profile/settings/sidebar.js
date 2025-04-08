@@ -33,7 +33,7 @@ export default function ProfileSettingsSidebar({ activeItem = "profile" }) {
   ]
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-2 border-green-200 dark:border-green-700 shadow-md">
       <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase">Profile Settings</div>
       <nav className="space-y-1">
         {menuItems.map((item) => (

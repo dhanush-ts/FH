@@ -1,11 +1,9 @@
 import "./globals.css";
-// import "./index.scss";
 import { Header } from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AuthProvider } from "./providers"; 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GlobalRouterProvider from "@/components/providers/global-router";
-import MaskMouseEffect from "@/components/ui/MaskEffect";
 import SmoothScrollWrapper from "@/components/ui/LenisScrollWrap";
 
 export const metadata = {
@@ -22,12 +20,10 @@ export default function RootLayout({ children }) {
         <GoogleOAuthProvider clientId={CLIENT_ID}>
           <AuthProvider suppressHydrationWarning>
           <SmoothScrollWrapper>
-            <MaskMouseEffect scale={1.5} targetClassName="highlight" >
               <Header />
                 <GlobalRouterProvider />  
                 {children}
                 <Footer />
-            </MaskMouseEffect>
             </SmoothScrollWrapper>
           </AuthProvider>
         </GoogleOAuthProvider>

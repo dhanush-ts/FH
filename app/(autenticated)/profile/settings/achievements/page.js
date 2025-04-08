@@ -18,7 +18,7 @@ export default function AchievementsSettingsPage() {
       </div>
 
       <div className="container mx-auto py-8">
-        <div className="mb-6 px-4">
+        <div className="mb-6 px-4 md:px-12">
           <Link
             href="/profile/settings"
             className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
@@ -28,7 +28,7 @@ export default function AchievementsSettingsPage() {
           </Link>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-8 mx-2 md:mx-12">
           <div className="w-full md:w-1/4">
             <ProfileSettingsSidebar activeItem="achievements" />
           </div>

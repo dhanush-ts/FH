@@ -590,6 +590,13 @@ export function Header() {
                         Create a hackathon
                       </Link>
                       <Link
+                        href="/host/create"
+                        className="block py-1.5 transition-colors duration-200 hover:text-green-600"
+                        onClick={closeSheet}
+                      >
+                        Organised hackathons
+                      </Link>
+                      <Link
                         href="/host/resources"
                         className="block py-1.5 transition-colors duration-200 hover:text-green-600"
                         onClick={closeSheet}
@@ -690,9 +697,12 @@ export function Header() {
                   Host a hackathon
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-4 p-6">
+                  <ul className="grid grid-cols-2 w-[800px] gap-4 p-6">
                     <ListItem href="/host/create" title="Create a hackathon">
                       Set up and launch your own hackathon
+                    </ListItem>
+                    <ListItem href="/host" title="Organised hackathons">
+                      List of hackathons which you have created
                     </ListItem>
                     <ListItem href="/host/resources" title="Organizer resources">
                       Guides and tools for hackathon organizers

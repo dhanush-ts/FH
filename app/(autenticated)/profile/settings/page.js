@@ -29,7 +29,7 @@ export default function ProfileSettingsPage() {
           </Link>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-8 mx-2 md:mx-12">
           <div className="w-full md:w-1/4">
             <ProfileSettingsSidebar />
           </div>

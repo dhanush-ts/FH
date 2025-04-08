@@ -135,7 +135,7 @@ export default function ProfileSettingsContent() {
 
   return (
     <div className="space-y-8">
-      <Card>
+      <Card className="border border-green-200 dark:border-green-700 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
@@ -214,7 +214,7 @@ export default function ProfileSettingsContent() {
         </CardFooter>
       </Card>
 
-      <Card>
+      <Card className="border border-green-200 dark:border-green-700 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Info className="h-5 w-5 text-primary" />

@@ -205,8 +205,8 @@ export default function EducationSettingsForm() {
   }
 
   return (
-    <div className="space-y-8">
-      <Card>
+        <div className="space-y-8">
+      <Card className="border border-green-200 dark:border-green-700 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <GraduationCap className="h-5 w-5 text-primary" />
