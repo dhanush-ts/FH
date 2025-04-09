@@ -23,7 +23,7 @@ import { Acme } from "next/font/google"
 import { fetchWithAuth } from "@/app/api"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import Image from "next/image"
-import CreateHackathonDialog from "../host/create-popup"
+import CreateHackathonDialog from "../host/create-hack"
 
 const acme = Acme({
   weight: "400",
@@ -311,10 +311,10 @@ export function Header() {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid grid-cols-2 w-[800px] gap-4 p-6">
-                    <ListItem href="/host/create" title="Create a hackathon">
+                    <ListItem showCreateDialog={true} title="Create a hackathon">
                       Set up and launch your own hackathon
                     </ListItem>
-                    <ListItem showCreateDialog={true} title="Organised hackathons">
+                    <ListItem href="/host" title="Organised hackathons">
                       List of hackathons which you have created
                     </ListItem>
                     <ListItem href="/host/resources" title="Organizer resources">
@@ -392,7 +392,7 @@ const ListItem = React.forwardRef(
 
     return (
       <li>
-        <NavigationMenuLink asChild>
+        <button>
           <a
             ref={ref}
             href={href}
@@ -406,7 +406,7 @@ const ListItem = React.forwardRef(
             <div className="text-sm font-medium leading-none">{title}</div>
             <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">{children}</p>
           </a>
-        </NavigationMenuLink>
+        </button>
 
         {showCreateDialog && (
           <CreateHackathonDialog open={dialogOpen} onOpenChange={setDialogOpen} />
