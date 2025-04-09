@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
+import { fetchWithAuth } from "@/app/api"
 
 const additionalDetailsSchema = z.object({
   url: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
@@ -107,7 +108,7 @@ export function AdditionalDetailsForm({
       const method = !initialData?.id ? "PUT" : "PATCH"
       const url = `/event/organizer/additional-event-detail/${eventId}/`
 
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method,
         headers: {
           "Content-Type": "application/json",

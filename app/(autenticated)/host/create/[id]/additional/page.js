@@ -10,16 +10,9 @@ async function getAdditionalDetails(id) {
   if (id === "new") return null
 
   try {
-    const res = await serverSideFetch(`/event/organizer/additional-event-detail/${id}/`, {
-      next: { revalidate: 60 },
-    })
+    const res = await serverSideFetch(`/event/organizer/additional-event-detail/${id}/`)
 
-    if (!res.ok) {
-      if (res.status === 404) return null
-      throw new Error(`Failed to fetch additional details: ${res.status}`)
-    }
-
-    return await res.json()
+    return await res
   } catch (error) {
     console.error("Error fetching additional details:", error)
     return null

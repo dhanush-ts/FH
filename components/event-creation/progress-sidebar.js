@@ -48,8 +48,8 @@ export function ProgressSidebar({ eventId }) {
   }
 
   return (
-    <aside className="w-full border-t md:w-80 md:border-l md:border-t-0">
-      <div className="flex h-full flex-col p-6">
+    <aside className="w-full md:w-80 border rounded-md shadow-md h-fit mr-24">
+      <div className="flex flex-col p-6">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Event Progress</h2>
           <CircularProgressIndicator value={totalProgress} size={48} strokeWidth={4} className="text-primary" />
@@ -92,7 +92,7 @@ export function ProgressSidebar({ eventId }) {
                     </div>
                   </Button>
 
-                  {index < SECTIONS.length - 1 && <div className="ml-3 h-4 w-px bg-border"></div>}
+                  {index < SECTIONS.length - 1 && <div className="ml-6 h-6 w-px mx-auto bg-border"></div>}
                 </li>
               )
             })}
