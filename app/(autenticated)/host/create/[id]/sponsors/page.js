@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function SponsorsPage({ params }) {
   const id = params.id
-  const sponsors = res = await serverSideFetch(`/event/organizer/sponser/${id}/`) || [];
+  const sponsors = await serverSideFetch(`/event/organizer/sponser/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">
