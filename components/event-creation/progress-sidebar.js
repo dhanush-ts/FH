@@ -1,8 +1,5 @@
 "use client"
-
-import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { useEventData } from "./event-data-provider"
 import { CircularProgressIndicator } from "@/components/ui/circular-progress"
 import { Button } from "@/components/ui/button"
 import { ChevronRight, Check, AlertCircle } from "lucide-react"
@@ -20,30 +17,8 @@ const SECTIONS = [
 
 export function ProgressSidebar({ eventId }) {
   const router = useRouter()
-  const { currentSection, setCurrentSection, sectionProgress } = useEventData()
-  const [totalProgress, setTotalProgress] = useState(0)
-
-  // Use ref to prevent unnecessary re-calculations
-  const prevSectionProgressRef = useRef(sectionProgress)
-
-  // Calculate total progress based on section weights
-  useEffect(() => {
-    // Skip if sectionProgress hasn't actually changed
-    if (JSON.stringify(prevSectionProgressRef.current) === JSON.stringify(sectionProgress)) {
-      return
-    }
-
-    let progress = 0
-    SECTIONS.forEach((section) => {
-      progress += (sectionProgress[section.id] || 0) * (section.weight / 100)
-    })
-
-    setTotalProgress(Math.round(progress))
-    prevSectionProgressRef.current = sectionProgress
-  }, [sectionProgress])
 
   const handleSectionClick = (sectionId, path) => {
-    setCurrentSection(sectionId)
     router.push(`/host/create/${eventId}/${path}`)
   }
 
@@ -52,14 +27,14 @@ export function ProgressSidebar({ eventId }) {
       <div className="flex flex-col p-6">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Event Progress</h2>
-          <CircularProgressIndicator value={totalProgress} size={48} strokeWidth={4} className="text-primary" />
+          <CircularProgressIndicator value={20} size={48} strokeWidth={4} className="text-primary" />
         </div>
 
         <nav className="flex-1">
           <ul className="space-y-1">
             {SECTIONS.map((section, index) => {
-              const progress = sectionProgress[section.id] || 0
-              const isActive = currentSection === section.id
+              const progress = 110
+              const isActive = false
               const isCompleted = progress === 100
 
               return (

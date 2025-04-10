@@ -2,7 +2,6 @@ import React from "react"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { ProgressSidebar } from "@/components/event-creation/progress-sidebar"
-import { EventDataProvider } from "@/components/event-creation/event-data-provider"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import serverSideFetch from "@/app/service"
 
@@ -34,13 +33,11 @@ export default async function EventCreationLayout({
   }
 
   return (
-    <EventDataProvider initialEventId={id} initialEventData={eventData}>
       <div className="flex min-h-screen flex-col md:flex-row">
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         </main>
         <ProgressSidebar eventId={id} />
       </div>
-    </EventDataProvider>
   )
 }

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useEventData } from "./event-data-provider"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -25,7 +24,6 @@ export function AdditionalDetailsForm({
   eventId,
 }) {
   const router = useRouter()
-  const { updateSectionProgress, setSectionData } = useEventData()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [originalData, setOriginalData] = useState(null)
 
@@ -115,6 +113,8 @@ export function AdditionalDetailsForm({
         },
         body: JSON.stringify(data),
       })
+
+      console.log(data)
 
       if (!response.ok) {
         throw new Error(`Failed to save: ${response.status}`)

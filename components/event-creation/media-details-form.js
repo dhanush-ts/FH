@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,7 +8,6 @@ import * as z from "zod"
 import Image from "next/image"
 import { format } from "date-fns"
 import { CalendarIcon, Upload } from "lucide-react"
-import { useEventData } from "./event-data-provider"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
@@ -21,8 +20,7 @@ import { cn } from "@/lib/utils"
 import { fetchWithAuth } from "@/app/api"
 
 const mediaDetailsSchema = z.object({
-  banner: z.string().optional(),
-  thumbnail: z.string().optional(),
+  banner: z.any().optional(),
   about_event: z.string().min(10, "About event must be at least 10 characters"),
   mode: z.enum(["Online", "Offline", "Hybrid"]),
   start_date: z.date(),
@@ -30,23 +28,22 @@ const mediaDetailsSchema = z.object({
   registration_end_date: z.date(),
 })
 
-export function MediaDetailsForm({
-  initialData,
-  eventId,
-}) {
+export function MediaDetailsForm({ initialData, eventId }) {
   const router = useRouter()
-  const { updateSectionProgress, setSectionData } = useEventData()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [originalData, setOriginalData] = useState(null)
   const [bannerPreview, setBannerPreview] = useState(null)
-  const [thumbnailPreview, setThumbnailPreview] = useState(null)
+  const [bannerFile, setBannerFile] = useState(null)
+
+  // Use refs to prevent infinite loops
+  const initialDataRef = useRef(false)
+  const progressUpdateRef = useRef(0)
 
   // Initialize form with default values or data from API
   const form = useForm({
     resolver: zodResolver(mediaDetailsSchema),
     defaultValues: {
-      banner: initialData?.banner || "",
-      thumbnail: initialData?.thumbnail || "",
+      banner: null,
       about_event: initialData?.about_event || "",
       mode: initialData?.mode || "Online",
       start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
@@ -59,20 +56,16 @@ export function MediaDetailsForm({
 
   // Set preview images
   useEffect(() => {
-    if (initialData?.banner) {
+    if (initialData?.banner && !bannerPreview) {
       setBannerPreview(initialData.banner)
     }
-    if (initialData?.thumbnail) {
-      setThumbnailPreview(initialData.thumbnail)
-    }
-  }, [initialData])
+  }, [initialData, bannerPreview])
 
   // Store original data for change detection
   useEffect(() => {
-    if (initialData) {
+    if (initialData && !initialDataRef.current) {
       const data = {
-        banner: initialData.banner || "",
-        thumbnail: initialData.thumbnail || "",
+        banner: initialData.banner || null,
         about_event: initialData.about_event || "",
         mode: initialData.mode || "Online",
         start_date: initialData.start_date ? new Date(initialData.start_date) : new Date(),
@@ -83,112 +76,103 @@ export function MediaDetailsForm({
       }
       setOriginalData(data)
       setSectionData("media", data)
+      initialDataRef.current = true
     }
   }, [initialData, setSectionData])
 
   // Calculate progress based on form completion
   useEffect(() => {
     const values = form.getValues()
-    const fields = Object.keys(mediaDetailsSchema.shape)
+    const fields = ["about_event", "mode", "start_date", "end_date", "registration_end_date"]
 
     let filledFields = 0
     fields.forEach((field) => {
-      if (field === "banner" || field === "thumbnail") {
-        // Optional fields
-        filledFields += 0.5
-      } else if (values[field]) {
+      if (values[field]) {
         filledFields++
       }
     })
 
-    const progress = Math.round((filledFields / (fields.length - 1)) * 100) // -1 because banner and thumbnail count as 0.5 each
-    updateSectionProgress("media", progress)
-  }, [form.watch(), updateSectionProgress])
+    // Add banner as a partial field
+    if (bannerFile || bannerPreview) {
+      filledFields += 0.5
+    }
+
+    const progress = Math.round((filledFields / fields.length) * 100)
+
+    // Only update if progress has changed
+    if (progress !== progressUpdateRef.current) {
+      updateSectionProgress("media", progress)
+      progressUpdateRef.current = progress
+    }
+  }, [
+    form.watch("about_event"),
+    form.watch("mode"),
+    form.watch("start_date"),
+    form.watch("end_date"),
+    form.watch("registration_end_date"),
+    bannerFile,
+    bannerPreview,
+    updateSectionProgress,
+  ])
 
   // Handle file uploads
-  const handleFileUpload = async (file, type) => {
-    // In a real implementation, you would upload the file to your server
-    // For now, we'll create a local URL for preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result
-      if (type === "banner") {
-        setBannerPreview(result)
-        form.setValue("banner", result)
-      } else {
-        setThumbnailPreview(result)
-        form.setValue("thumbnail", result)
-      }
-    }
-    reader.readAsDataURL(file)
-
-    // Simulate API upload
-
+  const handleFileUpload = async (file) => {
+    // Create a preview URL for the UI
+    const objectUrl = URL.createObjectURL(file)
+    setBannerPreview(objectUrl)
+    setBannerFile(file)
+    form.setValue("banner", file)
   }
 
   async function onSubmit(data) {
     setIsSubmitting(true)
 
     try {
-      // Check if we need to make an API call (data has changed)
-      const hasDataChanged =
-        !originalData ||
-        JSON.stringify({
-          ...originalData,
-          start_date: originalData.start_date.toISOString(),
-          end_date: originalData.end_date.toISOString(),
-          registration_end_date: originalData.registration_end_date.toISOString(),
-        }) !==
-          JSON.stringify({
-            ...data,
-            start_date: data.start_date.toISOString(),
-            end_date: data.end_date.toISOString(),
-            registration_end_date: data.registration_end_date.toISOString(),
-          })
-
-      if (!hasDataChanged) {
-
-        setIsSubmitting(false)
-        router.push(`/host/create/${eventId}/sponsors`)
-        return
-      }
-
       // Determine if we need PUT or PATCH
       const method = !initialData?.id ? "PUT" : "PATCH"
       const url = `/event/organizer/base-event-detail/${eventId}/`
 
-      // Format dates for API
-      const formattedData = {
-        ...data,
-        start_date: data.start_date.toISOString(),
-        end_date: data.end_date.toISOString(),
-        registration_end_date: data.registration_end_date.toISOString(),
+      // Create FormData for file upload
+      const formData = new FormData()
+
+      // Add the banner file if it exists
+      if (bannerFile) {
+        formData.append("banner", bannerFile)
       }
+
+      // Add other form fields
+      formData.append("about_event", data.about_event)
+      formData.append("mode", data.mode)
+      formData.append("start_date", data.start_date.toISOString())
+      formData.append("end_date", data.end_date.toISOString())
+      formData.append("registration_end_date", data.registration_end_date.toISOString())
 
       const response = await fetchWithAuth(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedData),
+        body: JSON.stringify(formData),
+        // Don't set Content-Type header, browser will set it with boundary for FormData
       })
-
-      if (!response.ok) {
-        throw new Error(`Failed to save: ${response.status}`)
-      }
 
       const savedData = await response.json()
 
+      // if (!response.ok) {
+      //   throw new Error(`Failed to save: ${savedData}`)
+      // }
+      console.log(savedData)
+
+
       // Update context with new data
-      setOriginalData(data)
-      setSectionData("media", data)
+      const updatedData = {
+        ...data,
+        banner: bannerPreview,
+      }
+      setOriginalData(updatedData)
+      setSectionData("media", updatedData)
 
       // Navigate to next section
       router.push(`/host/create/${eventId}/sponsors`)
-
     } catch (error) {
       console.error("Error saving media details:", error)
- 
     } finally {
       setIsSubmitting(false)
     }
@@ -198,89 +182,46 @@ export function MediaDetailsForm({
     <Card className="p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <FormItem>
-              <FormLabel>Banner Image</FormLabel>
-              <div className="mt-2">
-                <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
-                    {bannerPreview ? (
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={bannerPreview || "/placeholder.svg"}
-                          alt="Banner preview"
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                          <p className="text-white text-sm">Click to change</p>
-                        </div>
+          <FormItem>
+            <FormLabel>Banner Image</FormLabel>
+            <div className="mt-2">
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
+                  {bannerPreview ? (
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={bannerPreview || "/placeholder.svg"}
+                        alt="Banner preview"
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
+                        <p className="text-white text-sm">Click to change</p>
                       </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                        <p className="mb-2 text-sm text-muted-foreground">
-                          <span className="font-semibold">Click to upload</span> or drag and drop
-                        </p>
-                        <p className="text-xs text-muted-foreground">PNG, JPG or WEBP (MAX. 2MB)</p>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleFileUpload(file, "banner")
-                      }}
-                    />
-                  </label>
-                </div>
-                <FormDescription>Banner image for your event page (recommended: 1200×400px)</FormDescription>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                      <p className="mb-2 text-sm text-muted-foreground">
+                        <span className="font-semibold">Click to upload</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG or WEBP (MAX. 2MB)</p>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFileUpload(file)
+                    }}
+                  />
+                </label>
               </div>
-            </FormItem>
-
-            <FormItem>
-              <FormLabel>Thumbnail Image</FormLabel>
-              <div className="mt-2">
-                <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
-                    {thumbnailPreview ? (
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={thumbnailPreview || "/placeholder.svg"}
-                          alt="Thumbnail preview"
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                          <p className="text-white text-sm">Click to change</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                        <p className="mb-2 text-sm text-muted-foreground">
-                          <span className="font-semibold">Click to upload</span> or drag and drop
-                        </p>
-                        <p className="text-xs text-muted-foreground">PNG, JPG or WEBP (MAX. 1MB)</p>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleFileUpload(file, "thumbnail")
-                      }}
-                    />
-                  </label>
-                </div>
-                <FormDescription>Thumbnail for event listings (recommended: 400×400px)</FormDescription>
-              </div>
-            </FormItem>
-          </div>
+              <FormDescription>Banner image for your event page (recommended: 1200×400px)</FormDescription>
+            </div>
+          </FormItem>
 
           <FormField
             control={form.control}

@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import { Tabs } from "@/components/ui/tabs"
+import { Tabs } from "@/components/ui/tab"
 import Projects from "@/components/profile/Projects"
 import Achievements from "@/components/profile/Achievements"
 import ProfileSkeleton from "@/components/profile/profile-skeleton"

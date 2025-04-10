@@ -6,21 +6,9 @@ export const metadata = {
   description: "Upload media for your event",
 }
 
-async function getEventDetails(id) {
-  if (id === "new") return null
-
-  try {
-    const res = await serverSideFetch(`/event/organizer/base-event-detail/${id}/`)
-    return res
-  } catch (error) {
-    console.error("Error fetching event details:", error)
-    return null
-  }
-}
-
 export default async function MediaPage({ params }) {
   const id = (await params).id
-  const eventDetails = await getEventDetails(id)
+  const eventDetails = await serverSideFetch(`/event/organizer/base-event-detail/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">

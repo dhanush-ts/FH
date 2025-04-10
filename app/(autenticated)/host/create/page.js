@@ -15,7 +15,7 @@ export const metadata = {
       "hackathon organization",
     ],
   }
-  
+
   export default function CreateHackathons() {
     return (
       <div className="bg-gray-100 py-24 min-h-screen overflow-hidden px-8">
@@ -26,7 +26,6 @@ export const metadata = {
             From streamlining entries to coordinating judging, we’ve got everything you need to host a seamless and impactful event.</p>
           <Button className="text-xl p-6">Ready to host? Make it happen on FindHacks !</Button>
         </div>
-        
       </div>
     )
   }

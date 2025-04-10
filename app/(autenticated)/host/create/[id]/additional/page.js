@@ -6,22 +6,9 @@ export const metadata = {
   description: "Set up additional details for your event",
 }
 
-async function getAdditionalDetails(id) {
-  if (id === "new") return null
-
-  try {
-    const res = await serverSideFetch(`/event/organizer/additional-event-detail/${id}/`)
-
-    return await res
-  } catch (error) {
-    console.error("Error fetching additional details:", error)
-    return null
-  }
-}
-
 export default async function AdditionalDetailsPage({ params }) {
   const id = (await params).id
-  const additionalDetails = await getAdditionalDetails(id)
+  const additionalDetails = await serverSideFetch(`/event/organizer/additional-event-detail/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">
