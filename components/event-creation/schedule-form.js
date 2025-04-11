@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { fetchWithAuth } from "@/app/api"
-import { ArrowRight, ArrowLeft, Plus, Trash2, Calendar, Clock, Edit, AlarmClock } from "lucide-react"
+import { ArrowRight, ArrowLeft, Plus, Trash2, Calendar, Edit, AlarmClock } from "lucide-react"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
+import { TimePickerDemo } from "./time-picker"
 
 export function ScheduleForm({ initialTimeline = [], initialFaq = [], eventId }) {
   const router = useRouter()
@@ -50,7 +51,7 @@ export function ScheduleForm({ initialTimeline = [], initialFaq = [], eventId })
   }, [timelines, faqs, cacheFormData, setChangedFields])
 
   const addTimeline = () => {
-    setTimelines([...timelines, { title: "", description: "", date: "", time: "" }])
+    setTimelines([...timelines, { title: "", description: "", date: new Date(), time: "" }])
   }
 
   const updateTimeline = (index, field, value) => {
@@ -208,29 +209,15 @@ export function ScheduleForm({ initialTimeline = [], initialFaq = [], eventId })
                         className="border-green-200 focus-visible:ring-green-500 mt-1"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label className="text-green-800 flex items-center gap-1">
-                          <Calendar className="h-3.5 w-3.5" /> Date
-                        </Label>
-                        <Input
-                          value={timeline.date || ""}
-                          onChange={(e) => updateTimeline(index, "date", e.target.value)}
-                          placeholder="e.g., May 15, 2023"
-                          className="border-green-200 focus-visible:ring-green-500 mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-green-800 flex items-center gap-1">
-                          <Clock className="h-3.5 w-3.5" /> Time
-                        </Label>
-                        <Input
-                          value={timeline.time || ""}
-                          onChange={(e) => updateTimeline(index, "time", e.target.value)}
-                          placeholder="e.g., 10:00 AM"
-                          className="border-green-200 focus-visible:ring-green-500 mt-1"
-                        />
-                      </div>
+                    <div>
+                      <Label className="text-green-800 flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5" /> Date & Time
+                      </Label>
+                      <TimePickerDemo
+                        date={timeline.date instanceof Date ? timeline.date : new Date()}
+                        setDate={(date) => updateTimeline(index, "date", date)}
+                        className="border-green-200 focus-visible:ring-green-500 mt-1 w-full"
+                      />
                     </div>
                   </div>
 
