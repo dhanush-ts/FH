@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function VenuePage({ params }) {
   const id = params.id
-  const venueDetails = await serverSideFetch(`/event/organizer/venue-detail/${id}/`) || [];
+  const venueDetails = await serverSideFetch(`/event/host/venue-detail/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">

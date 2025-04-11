@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function SchedulePage({ params }) {
   const id = params.id
-  const timelines = await serverSideFetch(`/event/organizer/timeline/${id}/`) || [];
+  const timelines = await serverSideFetch(`/event/host/timeline/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">

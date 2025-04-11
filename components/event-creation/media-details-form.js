@@ -84,53 +84,167 @@ export function MediaDetailsForm({ initialData, eventId }) {
     form.setValue("banner", file);
   };
 
+  // function getChangedFields(currentData) {
+  //   const changed = {};
+  //   if (!originalData) return currentData;
+  
+  //   if (currentData.about_event !== originalData.about_event) {
+  //     changed.about_event = currentData.about_event;
+  //   }
+  //   if (currentData.mode !== originalData.mode) {
+  //     changed.mode = currentData.mode;
+  //   }
+  //   if (
+  //     currentData.start_date &&
+  //     originalData.start_date &&
+  //     currentData.start_date.toISOString() !==
+  //       new Date(originalData.start_date).toISOString()
+  //   ) {
+  //     changed.start_date = currentData.start_date;
+  //   }
+  //   if (
+  //     currentData.end_date &&
+  //     originalData.end_date &&
+  //     currentData.end_date.toISOString() !==
+  //       new Date(originalData.end_date).toISOString()
+  //   ) {
+  //     changed.end_date = currentData.end_date;
+  //   }
+  //   if (
+  //     currentData.registration_end_date &&
+  //     originalData.registration_end_date &&
+  //     currentData.registration_end_date.toISOString() !==
+  //       new Date(originalData.registration_end_date).toISOString()
+  //   ) {
+  //     changed.registration_end_date = currentData.registration_end_date;
+  //   }
+  
+  //   // Check if banner is newly added
+  //   if (bannerFile) {
+  //     changed.banner = bannerFile;
+  //   }
+  
+  //   return changed;
+  // }
+  
+  function getChangedFields(currentData) {
+    if (!originalData) return currentData;
+  
+    const changed = {};
+    const dateFields = ["start_date", "end_date", "registration_end_date"];
+  
+    for (const key in currentData) {
+      const currentVal = currentData[key];
+      const originalVal = originalData?.[key];
+  
+      if (dateFields.includes(key)) {
+        const currentISO = currentVal?.toISOString?.();
+        const originalISO = originalVal ? new Date(originalVal).toISOString(): null;
+  
+        if (currentISO !== originalISO) {
+          changed[key] = currentVal;
+        }
+      } else if (currentVal !== originalVal) {
+        changed[key] = currentVal;
+      }
+    }
+  
+    if (bannerFile) {
+      changed.banner = bannerFile;
+    }
+  
+    return changed;
+  }
+  
+  
+
   async function onSubmit(data) {
     setIsSubmitting(true);
-
+  
     try {
-      const formData = new FormData();
-      if (bannerFile) {
-        formData.append("banner", bannerFile);
+      const changedFields = getChangedFields(data); // Use the function I gave earlier
+      const isInitialDataEmpty = Object.keys(changedFields).length === 0;
+  
+      if (isInitialDataEmpty) {
+        router.push(`/host/create/${eventId}/sponsors`);
+        setIsSubmitting(false);
+        return; // No changes to submit
       }
-
-      formData.append("about_event", data.about_event);
-      formData.append("mode", data.mode);
-      formData.append("start_date", data.start_date.toISOString().split("T")[0]);
-      formData.append("end_date", data.end_date.toISOString().split("T")[0]);
-      formData.append(
-        "registration_end_date",
-        data.registration_end_date.toISOString().split("T")[0]
-      );
-
-      const isInitialDataEmpty =
-        !initialData?.about_event &&
-        !initialData?.mode &&
-        !initialData?.start_date &&
-        !initialData?.end_date &&
-        !initialData?.registration_end_date &&
-        !initialData?.banner;
-
-      const method = isInitialDataEmpty ? "PUT" : "PATCH";
-      const url = `/event/organizer/base-event-detail/${eventId}/`;
-
-      const response = await fetchWithAuth(url, {
-        method,
-        body: formData,
-      });
-      const savedData = await response.json();
-      console.log(savedData)
-
+  
+      const method = originalData ? "PATCH" : "POST";
+      const url = `/event/host/base-event-detail/${eventId}/`;
+  
+      let body, isMultipart;
+  
+      if ("banner" in changedFields) {
+        // build FormData
+        const formData = new FormData();
+        if (bannerFile) {
+          formData.append("banner", bannerFile);
+        }
+  
+        if ("about_event" in changedFields) {
+          formData.append("about_event", changedFields.about_event);
+        }
+        if ("mode" in changedFields) {
+          formData.append("mode", changedFields.mode);
+        }
+        if ("start_date" in changedFields) {
+          formData.append("start_date", changedFields.start_date.toISOString());
+        }
+        if ("end_date" in changedFields) {
+          formData.append("end_date", changedFields.end_date.toISOString());
+        }
+        if ("registration_end_date" in changedFields) {
+          formData.append("registration_end_date", changedFields.registration_end_date.toISOString());
+        }
+  
+        body = formData;
+        isMultipart = true;
+      } else {
+        // build JSON
+        const jsonPayload = {};
+        if ("about_event" in changedFields) {
+          jsonPayload.about_event = changedFields.about_event;
+        }
+        if ("mode" in changedFields) {
+          jsonPayload.mode = changedFields.mode;
+        }
+        if ("start_date" in changedFields) {
+          jsonPayload.start_date = changedFields.start_date.toISOString();
+        }
+        if ("end_date" in changedFields) {
+          jsonPayload.end_date = changedFields.end_date.toISOString();
+        }
+        if ("registration_end_date" in changedFields) {
+          jsonPayload.registration_end_date = changedFields.registration_end_date.toISOString();
+        }
+  
+        body = JSON.stringify(jsonPayload);
+        isMultipart = false;
+      }
+  
+      const response = await fetchWithAuth(url, { method, body }, isMultipart);
+      const text = await response.text();
+      try {
+        const savedData = JSON.parse(text);
+        console.log(savedData);
+      } catch (e) {
+        console.warn("Non-JSON response:", text);
+      }
+  
       if (!response.ok) {
         throw new Error(`Failed to save: ${response.status}`);
       }
-
-
+  
+      // Update local state
       const updatedData = {
-        ...data,
+        ...originalData,
+        ...changedFields,
         banner: bannerPreview,
       };
       setOriginalData(updatedData);
-
+  
       router.push(`/host/create/${eventId}/sponsors`);
     } catch (error) {
       console.error("Error saving media details:", error);
@@ -138,6 +252,9 @@ export function MediaDetailsForm({ initialData, eventId }) {
       setIsSubmitting(false);
     }
   }
+  
+  
+  
 
   return (
     <Card className="p-6">

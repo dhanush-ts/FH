@@ -12,7 +12,7 @@ export const metadata = {
 
 async function getEventData(id) {
   try {
-    const res = await serverSideFetch(`/event/organizer/base-event/${id}/`)
+    const res = await serverSideFetch(`/event/host/base-event/${id}/`)
 
     return res
   } catch (error) {

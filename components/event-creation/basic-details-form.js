@@ -48,7 +48,7 @@ export function BasicDetailsForm({ initialData, eventId }) {
 
     try {
       const response = await fetchWithAuth(
-        `/event/organizer/base-event/${eventId}/`,
+        `/event/host/base-event/${eventId}/`,
         {
           method: 'PATCH',
           headers: {

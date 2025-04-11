@@ -23,7 +23,7 @@
 // export default async function RoughCutsPage() {
 //   let events = []
 //   try {
-//     events = await serverSideFetch("/event/organizer/base-event/", {
+//     events = await serverSideFetch("/event/host/base-event/", {
 //       next: { revalidate: 60 },
 //     })
 //   } catch (error) {
@@ -129,7 +129,7 @@ const getPublishedStatusColor = (isPublished) => {
 export default async function RoughCutsPage() {
   let events = []
   try {
-    events = await serverSideFetch("/event/organizer/base-event/", {
+    events = await serverSideFetch("/event/host/base-event/", {
       next: { revalidate: 60 },
     })
   } catch (error) {

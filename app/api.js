@@ -3,10 +3,10 @@ export const api = "http://localhost:8000/api";
 import { redirectToLogin } from "@/lib/routerService";
 
 
-export async function fetchWithAuth(url, options = {}) { 
+export async function fetchWithAuth(url, options = {},key = false) { 
     options.credentials = "include";  // Ensure cookies are sent
 
-    if (!options.headers) {
+    if (!options.headers && !key) {
         options.headers = {
             "Content-Type": "application/json",
         };

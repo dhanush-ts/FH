@@ -43,7 +43,7 @@
 //       }
 
 //       const method = !initialData?.id ? "PUT" : "PATCH"
-//       const url = `/event/organizer/additional-event-detail/${eventId}/`
+//       const url = `/event/host/additional-event-detail/${eventId}/`
 
 //       const response = await fetchWithAuth(url, {
 //         method,
@@ -201,7 +201,7 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
   async function onSubmit(data) {
     setIsSubmitting(true);
 
-    const method = isInitialEmpty ? "PUT" : "PATCH";
+    const method = isInitialEmpty ? "POST" : "PATCH";
     const body =
       method === "PATCH" ? getChangedFields(originalDataRef.current, data) : data;
 
@@ -213,7 +213,7 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
 
     try {
       const response = await fetchWithAuth(
-        `/event/organizer/additional-event-detail/${eventId}/`,
+        `/event/host/additional-event-detail/${eventId}/`,
         {
           method,
           headers: {

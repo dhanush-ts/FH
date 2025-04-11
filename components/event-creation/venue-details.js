@@ -76,7 +76,7 @@
 //     try {
 //       // Determine if we need PUT or PATCH
 //       const method = !initialData?.id ? "PUT" : "PATCH"
-//       const url = `/event/organizer/venue-detail/${eventId}/`
+//       const url = `/event/host/venue-detail/${eventId}/`
 
 //       const response = await fetchWithAuth(url, {
 //         method,
@@ -221,7 +221,7 @@ export function VenueForm({ initialData, eventId }) {
     try {
       // Determine if we need PUT or PATCH
       const method = isInitialEmpty ? "PUT" : "PATCH"
-      const url = `/event/organizer/venue-detail/${eventId}/`
+      const url = `/event/host/venue-detail/${eventId}/`
 
       // Only send changed fields if using PATCH
       const body = method === "PATCH" 

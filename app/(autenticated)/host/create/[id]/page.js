@@ -10,7 +10,7 @@ async function getEventDetails(id) {
   if (id === "new") return null
 
   try {
-    const res = await serverSideFetch(`/event/organizer/base-event/${id}/`)
+    const res = await serverSideFetch(`/event/host/base-event/${id}/`)
     console.log(res)
     return res;
   

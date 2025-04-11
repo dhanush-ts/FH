@@ -109,7 +109,7 @@
 //         if (!sponsor.name) continue // Skip empty sponsors
 
 //         const method = sponsor.id ? "PATCH" : "POST"
-//         const url = sponsor.id ? `/event/organizer/sponser/${sponsor.id}/` : `/event/organizer/sponser/${eventId}/`
+//         const url = sponsor.id ? `/event/host/sponser/${sponsor.id}/` : `/event/host/sponser/${eventId}/`
 
 //         // Create FormData for file upload
 //         const formData = new FormData()
@@ -454,7 +454,7 @@ export function SponsorsForm({ initialData = [], eventId }) {
         if (!sponsor.name) continue // Skip empty sponsors
 
         const method = sponsor.id ? "PATCH" : "POST"
-        const url = sponsor.id ? `/event/organizer/sponser/${sponsor.id}/` : `/event/organizer/sponser/${eventId}/`
+        const url = sponsor.id ? `/event/host/sponser/${sponsor.id}/` : `/event/host/sponser/${eventId}/`
 
         // Create FormData for file upload
         const formData = new FormData()
@@ -480,7 +480,7 @@ export function SponsorsForm({ initialData = [], eventId }) {
         if (!prize.title) continue // Skip empty prizes
 
         const method = prize.id ? "PATCH" : "POST"
-        const url = prize.id ? `/event/organizer/prize/${prize.id}/` : `/event/organizer/prize/${eventId}/`
+        const url = prize.id ? `/event/host/prize/${prize.id}/` : `/event/host/prize/${eventId}/`
 
         // Create FormData for file upload
         const formData = new FormData()

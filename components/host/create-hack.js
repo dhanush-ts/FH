@@ -86,7 +86,7 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
       }
       
 
-      const response = await fetchWithAuth("/event/organizer/base-event/", {
+      const response = await fetchWithAuth("/event/host/base-event/", {
         headers: {},
         method: "POST",
         body: df,
