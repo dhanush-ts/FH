@@ -28,11 +28,9 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingIndex, setEditingIndex] = useState(null)
 
-  // Store original data for comparison
   const originalTimelinesRef = useRef(JSON.parse(JSON.stringify(initialTimeline)))
   const originalFaqsRef = useRef(JSON.parse(JSON.stringify(initialFaq)))
 
-  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "Not set"
     try {
@@ -80,7 +78,6 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
   }
 
   const handleDateChange = (index, field, date) => {
-    // Preserve the time from the existing date
     const existingDate = new Date(timelines[index][field])
     date.setHours(existingDate.getHours())
     date.setMinutes(existingDate.getMinutes())
@@ -149,18 +146,13 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
         const timeline = timelines[index]
         const original = originalTimelinesRef.current[index] || {}
 
-   
-
-        // Get only changed fields if it's an update
         const data = timeline.id ? getChangedFields(original, timeline) : timeline
 
-        // Skip if no changes for existing items
         if (timeline.id && Object.keys(data).length === 0) {
           toggleEditMode(index, type)
           return
         }
 
-        // Remove UI-only properties
         const { isEditing, ...dataToSend } = data
 
         const method = timeline.id ? "PATCH" : "POST"
@@ -188,7 +180,6 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
         }
         setTimelines(newTimelines)
 
-        // Update original reference
         originalTimelinesRef.current[index] = { ...result }
 
       } else {
@@ -197,16 +188,13 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
 
         
 
-        // Get only changed fields if it's an update
         const data = faq.id ? getChangedFields(original, faq) : faq
 
-        // Skip if no changes for existing items
         if (faq.id && Object.keys(data).length === 0) {
           toggleEditMode(index, type)
           return
         }
 
-        // Remove UI-only properties
         const { isEditing, ...dataToSend } = data
 
         const method = faq.id ? "PATCH" : "POST"
@@ -226,7 +214,6 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
 
         const result = await response.json()
 
-        // Update the FAQ with the returned data
         const newFaqs = [...faqs]
         newFaqs[index] = {
           ...result,
@@ -234,7 +221,6 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
         }
         setFaqs(newFaqs)
 
-        // Update original reference
         originalFaqsRef.current[index] = { ...result }
 
       }
