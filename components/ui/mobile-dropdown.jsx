@@ -63,4 +63,3 @@ export function MobileDropdown({ bio, skills }) {
     </div>
   )
 }
-p

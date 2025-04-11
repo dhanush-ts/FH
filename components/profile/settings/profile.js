@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import { fetchWithAuth } from "@/app/api"
 import { User, Mail, Info, Globe, Linkedin, Github, Phone, Save, X, Plus } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 export default function ProfileSettingsContent() {
   const [loading, setLoading] = useState(true)
@@ -23,6 +24,9 @@ export default function ProfileSettingsContent() {
     email: "",
     profile_photo_url: "",
   })
+  
+  const inputRef = useRef(null)
+  const [popoverOpen, setPopoverOpen] = useState(false)
 
   const [additionalInfo, setAdditionalInfo] = useState({
     bio: "",
@@ -35,6 +39,8 @@ export default function ProfileSettingsContent() {
   })
 
   const [skillInput, setSkillInput] = useState("")
+  const [availableSkills, setAvailableSkills] = useState([])
+  const [filteredSkills, setFilteredSkills] = useState([])
 
   // Fetch data
   useEffect(() => {
@@ -74,13 +80,35 @@ export default function ProfileSettingsContent() {
     setAdditionalInfo((prev) => ({ ...prev, gender: value }))
   }
 
+  const handleSkillSectionClick = async () => {
+    if (availableSkills.length === 0) {
+      try {
+        const response = await fetchWithAuth("/user/additional-data/")
+        const data = await response.json()
+        setAvailableSkills(data.skills || [])
+        setFilteredSkills(data.skills || [])
+      } catch (error) {
+        toast.error("Failed to load skills")
+      }
+    }
+  }
+
   const handleAddSkill = () => {
     if (!skillInput.trim()) return
-
-    const newSkills = [...(additionalInfo.skills || []), skillInput.trim()]
-    setAdditionalInfo((prev) => ({ ...prev, skills: newSkills }))
+  
+    const trimmed = skillInput.trim()
+    const currentSkills = new Set(additionalInfo.skills || [])
+  
+    if (currentSkills.size >= 6) {
+      toast.warning("You can select up to 6 skills")
+      return
+    }
+  
+    currentSkills.add(trimmed)
+    setAdditionalInfo((prev) => ({ ...prev, skills: [...currentSkills] }))
     setSkillInput("")
   }
+  
 
   const handleRemoveSkill = (skill) => {
     const newSkills = (additionalInfo.skills || []).filter((s) => s !== skill)
@@ -123,6 +151,13 @@ export default function ProfileSettingsContent() {
       setSaving(false)
     }
   }
+
+  useEffect(() => {
+    if (availableSkills.length > 0) {
+      const filtered = availableSkills.filter((skill) => skill.toLowerCase().includes(skillInput.toLowerCase()))
+      setFilteredSkills(filtered)
+    }
+  }, [skillInput, availableSkills])
 
   if (loading) {
     return (
@@ -270,39 +305,88 @@ export default function ProfileSettingsContent() {
           </div>
 
           <div className="space-y-2">
-            <Label>Skills</Label>
-            <div className="flex flex-wrap gap-2 mb-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md min-h-[40px]">
-              {additionalInfo.skills?.map((skill, index) => (
-                <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-primary/10 text-primary">
-                  {skill}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveSkill(skill)}
-                    className="ml-1 rounded-full hover:bg-primary/20 p-1 transition-colors"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Add a skill"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault()
-                    handleAddSkill()
+  <Label>Skills</Label>
+  <div className="flex flex-wrap gap-2 mb-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-md min-h-[40px]">
+    {additionalInfo.skills?.map((skill, index) => (
+      <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-primary/10 text-primary">
+        {skill}
+        <button
+          type="button"
+          onClick={() => handleRemoveSkill(skill)}
+          className="ml-1 rounded-full hover:bg-primary/20 p-1 transition-colors"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </Badge>
+    ))}
+  </div>
+  <p className="text-sm text-muted-foreground mb-2">
+    Choose the best 6 skills that represent you professionally.
+  </p>
+
+  <div className="flex gap-2">
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <PopoverTrigger asChild>
+        <div className="relative w-full">
+          <Input
+            ref={inputRef}
+            placeholder="Add a skill"
+            value={skillInput}
+            onFocus={() => {
+              handleSkillSectionClick()
+              setPopoverOpen(true)
+            }}
+            onBlur={() => setTimeout(() => setPopoverOpen(false), 150)} // delay to allow item click
+            onChange={(e) => {
+              setSkillInput(e.target.value)
+              setPopoverOpen(true)
+            }}
+          />
+        </div>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-[200px] p-0" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <div className="max-h-[200px] overflow-y-auto">
+          {filteredSkills.length > 0 ? (
+            filteredSkills.map((skill) => (
+              <button
+                key={skill}
+                className="w-full text-left px-3 py-2 hover:bg-primary/10 transition-colors"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  if (additionalInfo.skills?.length >= 6) {
+                    toast.warning("You can select up to 6 skills")
+                    return
                   }
+
+                  const updatedSkills = Array.from(new Set([...additionalInfo.skills, skill]))
+                  setAdditionalInfo((prev) => ({ ...prev, skills: updatedSkills }))
+                  setSkillInput("")
+                  setPopoverOpen(false)
                 }}
-              />
-              <Button type="button" variant="outline" onClick={handleAddSkill}>
-                <Plus className="h-4 w-4 mr-1" />
-                Add
-              </Button>
-            </div>
-          </div>
+              >
+                {skill}
+              </button>
+            ))
+          ) : (
+            <div className="p-3 text-sm text-muted-foreground text-center">No matching skills found.</div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+
+    <Button
+      type="button"
+      variant="outline"
+      onClick={handleAddSkill}
+      disabled={additionalInfo.skills?.length >= 6}
+    >
+      <Plus className="h-4 w-4 mr-1" />
+      Add
+    </Button>
+  </div>
+</div>
+
 
           <div className="space-y-2">
             <Label htmlFor="website_url" className="flex items-center gap-1">
@@ -365,4 +449,3 @@ export default function ProfileSettingsContent() {
     </div>
   )
 }
-
