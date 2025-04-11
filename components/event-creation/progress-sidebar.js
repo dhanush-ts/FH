@@ -25,7 +25,7 @@ export function ProgressSidebar({ eventId }) {
   }
 
   return (
-    <aside className="w-full md:w-80 border rounded-md shadow-md h-fit mr-24">
+    <aside className="w-full md:w-80 border rounded-md shadow-md h-fit">
       <div className="flex flex-col p-6">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Event Progress</h2>

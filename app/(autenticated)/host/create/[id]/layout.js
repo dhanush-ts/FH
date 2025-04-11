@@ -33,11 +33,13 @@ export default async function EventCreationLayout({
   }
 
   return (
-      <div className="flex min-h-screen flex-col md:flex-row pb-48">
+      <div className="flex min-h-screen flex-col md:flex-row pb-48 bg-green-100">
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         </main>
-        <ProgressSidebar eventId={id} />
+        <div className="bg-white rounded-md mr-24 mt-8">      
+          <ProgressSidebar eventId={id} />
+        </div>
       </div>
   )
 }

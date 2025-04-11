@@ -15,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -23,6 +22,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { fetchWithAuth } from "@/app/api";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 
 export function MediaDetailsForm({ initialData, eventId }) {
   const router = useRouter();
@@ -30,6 +34,15 @@ export function MediaDetailsForm({ initialData, eventId }) {
   const [originalData, setOriginalData] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
+  const [editorState, setEditorState] = useState(() => {
+    if (initialData?.about_event) {
+      const blocksFromHtml = htmlToDraft(initialData.about_event);
+      const { contentBlocks, entityMap } = blocksFromHtml;
+      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+      return EditorState.createWithContent(contentState);
+    }
+    return EditorState.createEmpty();
+  });
   const initialDataRef = useRef(false);
   const form = useForm({
     defaultValues: {
@@ -84,12 +97,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
     form.setValue("banner", file);
   };
   
-  function getChangedFields(currentData) {
+  function getChangedFields(currentData, aboutHtml) {
     const changed = {};
     if (!originalData) return currentData;
-  
-    if (currentData.about_event !== originalData.about_event) {
-      changed.about_event = currentData.about_event;
+
+    if (aboutHtml !== originalData.about_event) {
+      changed.about_event = aboutHtml;
     }
     if (currentData.mode !== originalData.mode) {
       changed.mode = currentData.mode;
@@ -97,33 +110,27 @@ export function MediaDetailsForm({ initialData, eventId }) {
     if (
       currentData.start_date &&
       originalData.start_date &&
-      currentData.start_date.toISOString() !==
-        new Date(originalData.start_date).toISOString()
+      currentData.start_date.toISOString() !== new Date(originalData.start_date).toISOString()
     ) {
       changed.start_date = currentData.start_date;
     }
     if (
       currentData.end_date &&
       originalData.end_date &&
-      currentData.end_date.toISOString() !==
-        new Date(originalData.end_date).toISOString()
+      currentData.end_date.toISOString() !== new Date(originalData.end_date).toISOString()
     ) {
       changed.end_date = currentData.end_date;
     }
     if (
       currentData.registration_end_date &&
       originalData.registration_end_date &&
-      currentData.registration_end_date.toISOString() !==
-        new Date(originalData.registration_end_date).toISOString()
+      currentData.registration_end_date.toISOString() !== new Date(originalData.registration_end_date).toISOString()
     ) {
       changed.registration_end_date = currentData.registration_end_date;
     }
-  
-    // Check if banner is newly added
     if (bannerFile) {
       changed.banner = bannerFile;
     }
-  
     return changed;
   }
   
@@ -131,70 +138,46 @@ export function MediaDetailsForm({ initialData, eventId }) {
 
   async function onSubmit(data) {
     setIsSubmitting(true);
-  
+    const aboutHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+
     try {
-      const changedFields = getChangedFields(data); // Use the function I gave earlier
+      const changedFields = getChangedFields(data, aboutHtml);
       const isInitialDataEmpty = Object.keys(changedFields).length === 0;
-  
+
       if (isInitialDataEmpty) {
         router.push(`/host/create/${eventId}/sponsors`);
         setIsSubmitting(false);
-        return; // No changes to submit
+        return;
       }
-  
+
       const method = originalData ? "PATCH" : "POST";
       const url = `/event/host/base-event-detail/${eventId}/`;
-  
+
       let body, isMultipart;
-  
+
       if ("banner" in changedFields) {
-        // build FormData
         const formData = new FormData();
-        if (bannerFile) {
-          formData.append("banner", bannerFile);
-        }
-  
-        if ("about_event" in changedFields) {
-          formData.append("about_event", changedFields.about_event);
-        }
-        if ("mode" in changedFields) {
-          formData.append("mode", changedFields.mode);
-        }
-        if ("start_date" in changedFields) {
-          formData.append("start_date", changedFields.start_date.toISOString());
-        }
-        if ("end_date" in changedFields) {
-          formData.append("end_date", changedFields.end_date.toISOString());
-        }
-        if ("registration_end_date" in changedFields) {
-          formData.append("registration_end_date", changedFields.registration_end_date.toISOString());
-        }
-  
+        if (bannerFile) formData.append("banner", bannerFile);
+        if ("about_event" in changedFields) formData.append("about_event", aboutHtml);
+        if ("mode" in changedFields) formData.append("mode", changedFields.mode);
+        if ("start_date" in changedFields) formData.append("start_date", changedFields.start_date.toISOString());
+        if ("end_date" in changedFields) formData.append("end_date", changedFields.end_date.toISOString());
+        if ("registration_end_date" in changedFields) formData.append("registration_end_date", changedFields.registration_end_date.toISOString());
+
         body = formData;
         isMultipart = true;
       } else {
-        // build JSON
         const jsonPayload = {};
-        if ("about_event" in changedFields) {
-          jsonPayload.about_event = changedFields.about_event;
-        }
-        if ("mode" in changedFields) {
-          jsonPayload.mode = changedFields.mode;
-        }
-        if ("start_date" in changedFields) {
-          jsonPayload.start_date = changedFields.start_date.toISOString();
-        }
-        if ("end_date" in changedFields) {
-          jsonPayload.end_date = changedFields.end_date.toISOString();
-        }
-        if ("registration_end_date" in changedFields) {
-          jsonPayload.registration_end_date = changedFields.registration_end_date.toISOString();
-        }
-  
+        if ("about_event" in changedFields) jsonPayload.about_event = aboutHtml;
+        if ("mode" in changedFields) jsonPayload.mode = changedFields.mode;
+        if ("start_date" in changedFields) jsonPayload.start_date = changedFields.start_date.toISOString();
+        if ("end_date" in changedFields) jsonPayload.end_date = changedFields.end_date.toISOString();
+        if ("registration_end_date" in changedFields) jsonPayload.registration_end_date = changedFields.registration_end_date.toISOString();
+
         body = JSON.stringify(jsonPayload);
         isMultipart = false;
       }
-  
+
       const response = await fetchWithAuth(url, { method, body }, isMultipart);
       const text = await response.text();
       try {
@@ -203,19 +186,17 @@ export function MediaDetailsForm({ initialData, eventId }) {
       } catch (e) {
         console.warn("Non-JSON response:", text);
       }
-  
-      if (!response.ok) {
-        throw new Error(`Failed to save: ${response.status}`);
-      }
-  
-      // Update local state
+
+      if (!response.ok) throw new Error(`Failed to save: ${response.status}`);
+
       const updatedData = {
         ...originalData,
         ...changedFields,
+        about_event: aboutHtml,
         banner: bannerPreview,
       };
       setOriginalData(updatedData);
-  
+
       router.push(`/host/create/${eventId}/sponsors`);
     } catch (error) {
       console.error("Error saving media details:", error);
@@ -232,6 +213,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Banner Upload */}
+          <div className="flex flex-col md:flex-row justify-between">
           <FormField
             control={form.control}
             name="banner"
@@ -268,34 +250,21 @@ export function MediaDetailsForm({ initialData, eventId }) {
           />
 
           {/* About Event */}
-          <FormField
-            control={form.control}
-            name="about_event"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>About the Event</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Tell people more about your event..." {...field} rows={4} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           {/* Event Mode */}
           <FormField
             control={form.control}
             name="mode"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Event Mode</FormLabel>
-                <FormControl>
+              <FormItem className="mb-8 w-xs mt-8 md:mt-0 space-y-4 md:flex md:flex-col md:justify-center md:item-center">
+                <FormLabel className="md:mx-auto">Event Mode</FormLabel>
+                <FormControl className="h-2 md:mx-auto">
                   <RadioGroup defaultValue={field.value} onValueChange={field.onChange}>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex space-x-2">
                       <RadioGroupItem value="Online" id="online" />
                       <Label htmlFor="online">Online</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex space-x-2">
                       <RadioGroupItem value="Offline" id="offline" />
                       <Label htmlFor="offline">Offline</Label>
                     </div>
@@ -305,6 +274,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
               </FormItem>
             )}
           />
+          </div>
 
           {/* Start Date, End Date */}
           <div className="grid gap-6 md:grid-cols-2">
@@ -429,6 +399,36 @@ export function MediaDetailsForm({ initialData, eventId }) {
               </FormItem>
             )}
           />
+
+            {/* <FormField
+              control={form.control}
+              name="about_event"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>About the Event</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Tell people more about your event..." {...field} rows={4} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+
+<div>
+            <FormLabel>About the Event</FormLabel>
+            <div className="border border-input bg-background rounded-md p-2 min-h-[200px]">
+              <Editor
+                editorState={editorState}
+                onEditorStateChange={setEditorState}
+                wrapperClassName="demo-wrapper"
+                editorClassName="demo-editor"
+                toolbar={{
+                  options: ['inline', 'list', 'link', 'textAlign', 'history'],
+                }}
+              />
+            </div>
+            <FormDescription>Give attendees more details about your event.</FormDescription>
+          </div>
 
           <div className="flex justify-between space-x-4 pt-4">
             <Button
