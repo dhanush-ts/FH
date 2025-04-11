@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { MapPin, Pencil, ChevronDown, ChevronUp } from 'lucide-react'
+import { MapPin, Pencil, ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { ProfileSocialLinks } from "../ui/profile-social-links"
 import { ProfileSkillTags } from "../ui/profile-skill"
@@ -80,6 +80,16 @@ export async function ProfileBanner() {
               {/* Bio */}
               {profileData.bio && (
                 <p className="text-gray-600 mt-4 text-left italic">{profileData.bio}</p>
+              )}
+
+              {!profileData.bio && (
+                <Link
+                      href="/profile/settings"
+                      className="hover:bg-gray-100 mt-4 w-fit transition rounded-md flex items-center gap-2 text-sm"
+                      >
+                  <Plus className="w-4 h-4" />
+                  Add bio
+                </Link>
               )}
 
               {/* Skills */}

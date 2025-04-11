@@ -1,9 +1,17 @@
-"use client"
-
-import { Github, Linkedin, Globe } from "lucide-react"
+import { Github, Linkedin, Globe, Plus } from "lucide-react"
+import Link from "next/link"
+// import { Button } from "./button"
 
 export function ProfileSocialLinks({ githubUrl, linkedinUrl, websiteUrl }) {
-  if (!githubUrl && !linkedinUrl && !websiteUrl) return null
+  if (!githubUrl && !linkedinUrl && !websiteUrl) return (
+      <Link
+        href="/profile/settings"
+        className="hover:bg-gray-100 w-fit transition rounded-md flex items-center gap-2 text-sm"
+        >
+          <Plus className="w-4 h-4" />
+          Add Social links
+        </Link>
+  )
 
   return (
     <div className="flex space-x-3 justify-center md:justify-start">
