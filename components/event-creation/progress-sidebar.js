@@ -3,10 +3,12 @@
 import { usePathname, useRouter } from "next/navigation"
 import { CircularProgressIndicator } from "@/components/ui/circular-progress"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, Check, Info } from "lucide-react"
+import { ChevronRight, Check, Info, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useEventFormContext} from "./event-data-provider"
+import { useEffect, useState } from "react"
 
 // Section definitions with their weightage
 const SECTIONS = [
@@ -24,7 +26,13 @@ const SECTIONS = [
     path: "additional",
     description: "Configure team sizes and registration costs",
   },
-  { id: "media", name: "Media", weight: 15, path: "media", description: "Upload banner images and set event dates" },
+  {
+    id: "media",
+    name: "Media",
+    weight: 15,
+    path: "media",
+    description: "Upload banner images and set event dates",
+  },
   {
     id: "sponsors",
     name: "Sponsors & Prizes",
@@ -39,15 +47,37 @@ const SECTIONS = [
     path: "schedule",
     description: "Create a timeline of activities for your event",
   },
-  { id: "venue", name: "Venue", weight: 10, path: "venue", description: "Set the location details for your event" },
+  {
+    id: "venue",
+    name: "Venue",
+    weight: 10,
+    path: "venue",
+    description: "Set the location details for your event",
+  },
 ]
 
-export function ProgressSidebar({ eventId, currentStep }) {
+export function ProgressSidebar({ eventId, currentSection = "basic" }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { isFormDirty, hasInitializedSection } = useEventFormContext()
+  const [completedSections, setCompletedSections] = useState([])
 
-  // Calculate overall progress
-  const progress = 75 // This would be calculated based on completed sections
+  // Calculate overall progress based on completed sections
+  const progress = Math.round((completedSections.length / SECTIONS.length) * 100)
+
+  // Determine which sections are completed
+  useEffect(() => {
+    // This is a simplified approach - in a real app, you might want to check
+    // if each section has the required data from the API
+    const completed = SECTIONS.filter((section) => {
+      // A section is completed if it comes before the current section
+      const sectionIndex = SECTIONS.findIndex((s) => s.id === section.id)
+      const currentIndex = SECTIONS.findIndex((s) => s.id === currentSection)
+      return sectionIndex < currentIndex
+    }).map((section) => section.id)
+
+    setCompletedSections(completed)
+  }, [currentSection])
 
   const handleSectionClick = (sectionId, path) => {
     router.push(`/host/create/${eventId}/${path}`)
@@ -80,7 +110,9 @@ export function ProgressSidebar({ eventId, currentStep }) {
                 const isActive =
                   pathname === `/host/create/${eventId}/${section.path}` ||
                   (pathname === `/host/create/${eventId}` && section.id === "basic")
-                const isCompleted = index < 3 // Just for demonstration
+                const isCompleted = completedSections.includes(section.id)
+                const isDirty = isFormDirty(section.id)
+                const isInitialized = hasInitializedSection(section.id)
 
                 return (
                   <motion.li
@@ -115,10 +147,14 @@ export function ProgressSidebar({ eventId, currentStep }) {
                                 <span className={cn("text-xs", "text-gray-600")}>{index + 1}</span>
                               )}
                             </div>
-                            <span className="font-medium">{section.name}</span>
+                            <span className="font-medium">
+                              {section.name}
+                              {isDirty && <span className="text-amber-500 ml-1">*</span>}
+                            </span>
                           </div>
 
                           <div className="flex items-center">
+                            {isDirty && !isActive && <AlertCircle className="h-4 w-4 text-amber-500 mr-1" />}
                             {isActive && (
                               <motion.div
                                 animate={{ x: [0, 5, 0] }}
@@ -132,6 +168,7 @@ export function ProgressSidebar({ eventId, currentStep }) {
                       </TooltipTrigger>
                       <TooltipContent side="right" className="bg-green-800 text-white border-green-700">
                         <p>{section.description}</p>
+                        {isDirty && <p className="text-amber-300 mt-1">This section has unsaved changes</p>}
                       </TooltipContent>
                     </Tooltip>
 
@@ -158,9 +195,10 @@ export function ProgressSidebar({ eventId, currentStep }) {
             <div className="relative flex items-start gap-3">
               <Info className="absolute h-10 w-10 -top-7 -left-7 text-green-600" />
               <div>
-                <h4 className="font-medium text-green-800">Save Progress</h4>
+                <h4 className="font-medium text-green-800">Unsaved Changes</h4>
                 <p className="text-sm text-green-700">
-                  Your changes are saved automatically when you move between sections.
+                  Sections with unsaved changes are marked with an asterisk (*). Your changes are preserved when
+                  navigating between sections.
                 </p>
               </div>
             </div>
