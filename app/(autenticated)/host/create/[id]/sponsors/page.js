@@ -7,8 +7,9 @@ export const metadata = {
 }
 
 export default async function SponsorsPage({ params }) {
-  const id = params.id
+  const id = (await params).id;
   const sponsors = await serverSideFetch(`/event/host/sponser/${id}/`) || [];
+  const prizes = await serverSideFetch(`/event/host/prize/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -17,7 +18,7 @@ export default async function SponsorsPage({ params }) {
         <p className="mt-2 text-muted-foreground">Add sponsors and set up prizes for your event</p>
       </div>
 
-      <SponsorsForm initialData={sponsors} eventId={id} />
+      <SponsorsForm initialSponsors={sponsors} initialPrizes={prizes} eventId={id} />
     </div>
   )
 }

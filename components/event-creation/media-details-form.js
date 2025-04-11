@@ -299,10 +299,6 @@ export function MediaDetailsForm({ initialData, eventId }) {
                       <RadioGroupItem value="Offline" id="offline" />
                       <Label htmlFor="offline">Offline</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Hybrid" id="hybrid" />
-                      <Label htmlFor="hybrid">Hybrid</Label>
-                    </div>
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />

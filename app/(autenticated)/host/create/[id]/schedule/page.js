@@ -9,6 +9,7 @@ export const metadata = {
 export default async function SchedulePage({ params }) {
   const id = params.id
   const timelines = await serverSideFetch(`/event/host/timeline/${id}/`) || [];
+  const faq = await serverSideFetch(`/event/host/faq/${id}/`) || [];
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -17,7 +18,7 @@ export default async function SchedulePage({ params }) {
         <p className="mt-2 text-muted-foreground">Create a timeline of activities for your event</p>
       </div>
 
-      <ScheduleForm initialData={timelines} eventId={id} />
+      <ScheduleForm initialTimeline={timelines} initialFaq={faq} eventId={id} />
     </div>
   )
 }
