@@ -83,72 +83,43 @@ export function MediaDetailsForm({ initialData, eventId }) {
     setBannerFile(file);
     form.setValue("banner", file);
   };
-
-  // function getChangedFields(currentData) {
-  //   const changed = {};
-  //   if (!originalData) return currentData;
-  
-  //   if (currentData.about_event !== originalData.about_event) {
-  //     changed.about_event = currentData.about_event;
-  //   }
-  //   if (currentData.mode !== originalData.mode) {
-  //     changed.mode = currentData.mode;
-  //   }
-  //   if (
-  //     currentData.start_date &&
-  //     originalData.start_date &&
-  //     currentData.start_date.toISOString() !==
-  //       new Date(originalData.start_date).toISOString()
-  //   ) {
-  //     changed.start_date = currentData.start_date;
-  //   }
-  //   if (
-  //     currentData.end_date &&
-  //     originalData.end_date &&
-  //     currentData.end_date.toISOString() !==
-  //       new Date(originalData.end_date).toISOString()
-  //   ) {
-  //     changed.end_date = currentData.end_date;
-  //   }
-  //   if (
-  //     currentData.registration_end_date &&
-  //     originalData.registration_end_date &&
-  //     currentData.registration_end_date.toISOString() !==
-  //       new Date(originalData.registration_end_date).toISOString()
-  //   ) {
-  //     changed.registration_end_date = currentData.registration_end_date;
-  //   }
-  
-  //   // Check if banner is newly added
-  //   if (bannerFile) {
-  //     changed.banner = bannerFile;
-  //   }
-  
-  //   return changed;
-  // }
   
   function getChangedFields(currentData) {
+    const changed = {};
     if (!originalData) return currentData;
   
-    const changed = {};
-    const dateFields = ["start_date", "end_date", "registration_end_date"];
-  
-    for (const key in currentData) {
-      const currentVal = currentData[key];
-      const originalVal = originalData?.[key];
-  
-      if (dateFields.includes(key)) {
-        const currentISO = currentVal?.toISOString?.();
-        const originalISO = originalVal ? new Date(originalVal).toISOString(): null;
-  
-        if (currentISO !== originalISO) {
-          changed[key] = currentVal;
-        }
-      } else if (currentVal !== originalVal) {
-        changed[key] = currentVal;
-      }
+    if (currentData.about_event !== originalData.about_event) {
+      changed.about_event = currentData.about_event;
+    }
+    if (currentData.mode !== originalData.mode) {
+      changed.mode = currentData.mode;
+    }
+    if (
+      currentData.start_date &&
+      originalData.start_date &&
+      currentData.start_date.toISOString() !==
+        new Date(originalData.start_date).toISOString()
+    ) {
+      changed.start_date = currentData.start_date;
+    }
+    if (
+      currentData.end_date &&
+      originalData.end_date &&
+      currentData.end_date.toISOString() !==
+        new Date(originalData.end_date).toISOString()
+    ) {
+      changed.end_date = currentData.end_date;
+    }
+    if (
+      currentData.registration_end_date &&
+      originalData.registration_end_date &&
+      currentData.registration_end_date.toISOString() !==
+        new Date(originalData.registration_end_date).toISOString()
+    ) {
+      changed.registration_end_date = currentData.registration_end_date;
     }
   
+    // Check if banner is newly added
     if (bannerFile) {
       changed.banner = bannerFile;
     }
