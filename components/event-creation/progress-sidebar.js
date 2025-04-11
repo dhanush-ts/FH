@@ -10,7 +10,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useEventFormContext} from "./event-data-provider"
 import { useEffect, useState } from "react"
 
-// Section definitions with their weightage
 const SECTIONS = [
   {
     id: "basic",
@@ -62,15 +61,10 @@ export function ProgressSidebar({ eventId, currentSection = "basic" }) {
   const { isFormDirty, hasInitializedSection } = useEventFormContext()
   const [completedSections, setCompletedSections] = useState([])
 
-  // Calculate overall progress based on completed sections
   const progress = Math.round((completedSections.length / SECTIONS.length) * 100)
 
-  // Determine which sections are completed
   useEffect(() => {
-    // This is a simplified approach - in a real app, you might want to check
-    // if each section has the required data from the API
     const completed = SECTIONS.filter((section) => {
-      // A section is completed if it comes before the current section
       const sectionIndex = SECTIONS.findIndex((s) => s.id === section.id)
       const currentIndex = SECTIONS.findIndex((s) => s.id === currentSection)
       return sectionIndex < currentIndex

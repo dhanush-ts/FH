@@ -7,7 +7,7 @@ export const metadata = {
 }
 
 export default async function SchedulePage({ params }) {
-  const id = params.id
+  const id = (await params).id
   const timelines = await serverSideFetch(`/event/host/timeline/${id}/`) || [];
   const faq = await serverSideFetch(`/event/host/faq/${id}/`) || [];
 

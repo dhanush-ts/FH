@@ -163,6 +163,8 @@ export function MediaDetailsForm({ initialData, eventId }) {
         },
         true,
       )
+      const k = await response.json()
+      console.log(k)
 
       if (!response.ok) {
         throw new Error(`Failed to save: ${response.status}`)
