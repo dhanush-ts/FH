@@ -33,7 +33,7 @@ export default async function EventCreationLayout({
   }
 
   return (
-      <div className="flex min-h-screen flex-col md:flex-row">
+      <div className="flex min-h-screen flex-col md:flex-row pb-48">
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         </main>

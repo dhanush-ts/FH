@@ -1,5 +1,5 @@
 "use client"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { CircularProgressIndicator } from "@/components/ui/circular-progress"
 import { Button } from "@/components/ui/button"
 import { ChevronRight, Check, AlertCircle } from "lucide-react"
@@ -17,6 +17,8 @@ const SECTIONS = [
 
 export function ProgressSidebar({ eventId }) {
   const router = useRouter()
+  const pathname = usePathname()
+
 
   const handleSectionClick = (sectionId, path) => {
     router.push(`/host/create/${eventId}/${path}`)
@@ -34,7 +36,7 @@ export function ProgressSidebar({ eventId }) {
           <ul className="space-y-1">
             {SECTIONS.map((section, index) => {
               const progress = 110
-              const isActive = false
+              const isActive = pathname === `/host/create/${eventId}/${section.path}` || pathname === `/host/create/${eventId}` && section.id==="basic"
               const isCompleted = progress === 100
 
               return (

@@ -13,9 +13,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { Upload, X } from "lucide-react"
 import { fetchWithAuth } from "@/app/api"
+import { useAuth } from "@/app/providers"
 
 
 export default function CreateHackathonDialog({ open, onOpenChange }) {
+  const {isAuthenticated} = useAuth();
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState("")
@@ -54,6 +56,12 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if(!isAuthenticated){
+      onOpenChange(false)
+      router.push("login");
+      return
+    }
 
     if (!title.trim()) {
       toast("Please enter a title for your hackathon")
