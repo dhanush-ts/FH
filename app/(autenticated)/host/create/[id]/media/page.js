@@ -12,10 +12,6 @@ export default async function MediaPage({ params }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Media</h1>
-        <p className="mt-2 text-muted-foreground">Upload images and add details about your event</p>
-      </div>
 
       <MediaDetailsForm initialData={eventDetails} eventId={id} />
     </div>

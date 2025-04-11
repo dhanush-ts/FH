@@ -26,11 +26,6 @@ export default async function BasicDetailsPage({ params }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Basic Details</h1>
-        <p className="mt-2 text-muted-foreground">Set up the fundamental information about your event</p>
-      </div>
-
       <BasicDetailsForm initialData={eventDetails} eventId={id} />
     </div>
   )

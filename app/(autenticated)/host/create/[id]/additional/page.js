@@ -12,11 +12,6 @@ export default async function AdditionalDetailsPage({ params }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Additional Details</h1>
-        <p className="mt-2 text-muted-foreground">Provide more specific information about your event</p>
-      </div>
-
       <AdditionalDetailsForm initialData={additionalDetails} eventId={id} />
     </div>
   )

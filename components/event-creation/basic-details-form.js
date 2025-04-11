@@ -1,133 +1,465 @@
-'use client';
+// 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { fetchWithAuth } from '@/app/api';
-import { getChangedFields } from './utility';
+// import { useState, useRef, useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
+// import { useForm } from 'react-hook-form';
+// import { motion } from 'framer-motion';
+// import { Button } from '@/components/ui/button';
+// import {
+//   Form,
+//   FormControl,
+//   FormDescription,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from '@/components/ui/form';
+// import { Input } from '@/components/ui/input';
+// import { Textarea } from '@/components/ui/textarea';
+// import { Card } from '@/components/ui/card';
+// import { fetchWithAuth } from '@/app/api';
+// import { getChangedFields } from './utility';
+// import { Sparkles } from 'lucide-react';
+
+// export function BasicDetailsForm({ initialData, eventId }) {
+//   const router = useRouter();
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [charCount, setCharCount] = useState(initialData?.short_description?.length || 0);
+
+//   // Store initial data in a ref to persist original values
+//   const originalDataRef = useRef({
+//     title: initialData?.title || '',
+//     short_description: initialData?.short_description || '',
+//   });
+
+//   const form = useForm({
+//     defaultValues: {
+//       title: initialData?.title || '',
+//       short_description: initialData?.short_description || '',
+//     },
+//   });
+
+//   // Watch the short description field to update character count
+//   const shortDescription = form.watch('short_description');
+  
+//   useEffect(() => {
+//     setCharCount(shortDescription?.length || 0);
+//   }, [shortDescription]);
+
+//   async function onSubmit(data) {
+//     setIsSubmitting(true);
+
+//     const changes = getChangedFields(originalDataRef.current, data);
+//     if (Object.keys(changes).length === 0) {
+//       setIsSubmitting(false);
+//       router.push(`/host/create/${eventId}/additional`);
+//       return;
+//     }
+
+//     try {
+//       const response = await fetchWithAuth(
+//         `/event/host/base-event/${eventId}/`,
+//         {
+//           method: 'PATCH',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(changes),
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error(`Failed to save: ${response.status}`);
+//       }
+
+//       await response.json();
+      
+      
+//       router.push(`/host/create/${eventId}/additional`);
+//     } catch (error) {
+//       console.error('Error saving basic details:', error);
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   }
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0, y: 20 }}
+//       animate={{ opacity: 1, y: 0 }}
+//       transition={{ duration: 0.5 }}
+//     >
+//       <div className="mb-8">
+//         <motion.h1 
+//           className="text-3xl font-bold text-green-800"
+//           initial={{ opacity: 0, x: -20 }}
+//           animate={{ opacity: 1, x: 0 }}
+//           transition={{ duration: 0.5, delay: 0.2 }}
+//         >
+//           Basic Details
+//         </motion.h1>
+//         <motion.p 
+//           className="mt-2 text-green-700"
+//           initial={{ opacity: 0, x: -20 }}
+//           animate={{ opacity: 1, x: 0 }}
+//           transition={{ duration: 0.5, delay: 0.3 }}
+//         >
+//           Let's start with the essentials for your event
+//         </motion.p>
+//       </div>
+      
+//       <Card className="p-6 border-green-100 shadow-lg bg-white/80 backdrop-blur-sm">
+//         <Form {...form}>
+//           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+//             <FormField
+//               name="title"
+//               control={form.control}
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel className="text-green-800 font-medium">Event Title</FormLabel>
+//                   <FormControl>
+//                     <Input 
+//                       placeholder="Enter event title" 
+//                       {...field} 
+//                       className="border-green-200 focus-visible:ring-green-500 transition-all duration-300"
+//                     />
+//                   </FormControl>
+//                   <FormDescription className="text-green-600 flex items-center gap-2">
+//                     <Sparkles className="h-4 w-4" />
+//                     A clear, concise name for your event
+//                   </FormDescription>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+
+//             <FormField
+//               name="short_description"
+//               control={form.control}
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel className="text-green-800 font-medium">Short Description</FormLabel>
+//                   <FormControl>
+//                     <div className="relative">
+//                       <Textarea
+//                         placeholder="Briefly describe your event"
+//                         {...field}
+//                         rows={3}
+//                         maxLength={200}
+//                         className="border-green-200 focus-visible:ring-green-500 transition-all duration-300"
+//                         onChange={(e) => {
+//                           field.onChange(e);
+//                           setCharCount(e.target.value.length);
+//                         }}
+//                       />
+//                       <span className={`absolute bottom-2 right-2 text-xs ${charCount > 180 ? 'text-amber-500' : 'text-green-600'}`}>
+//                         {charCount}/200
+//                       </span>
+//                     </div>
+//                   </FormControl>
+//                   <FormDescription className="text-green-600">
+//                     A short summary that will appear in event listings
+//                   </FormDescription>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+
+//             <motion.div 
+//               className="flex justify-end space-x-4 pt-4"
+//               initial={{ opacity: 0, y: 20 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ duration: 0.5, delay: 0.4 }}
+//             >
+//               <Button
+//                 type="button"
+//                 variant="outline"
+//                 onClick={() => router.push('/host/dashboard')}
+//                 className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 transition-all duration-300"
+//               >
+//                 Cancel
+//               </Button>
+//               <Button 
+//                 type="submit" 
+//                 disabled={isSubmitting}
+//                 className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
+//               >
+//                 {isSubmitting ? (
+//                   <div className="flex items-center gap-2">
+//                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+//                     <span>Saving...</span>
+//                   </div>
+//                 ) : (
+//                   "Save & Continue"
+//                 )}
+//               </Button>
+//             </motion.div>
+//           </form>
+//         </Form>
+//       </Card>
+//     </motion.div>
+//   );
+// }
+
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { motion, AnimatePresence } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/ui/card"
+import { fetchWithAuth } from "@/app/api"
+import { getChangedFields } from "./utility"
+import { Sparkles, ArrowRight, ArrowLeft, Edit, FileText, PenLine } from 'lucide-react'
 
 export function BasicDetailsForm({ initialData, eventId }) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [charCount, setCharCount] = useState(initialData?.short_description?.length || 0)
+  const [animateForm, setAnimateForm] = useState(false)
 
   // Store initial data in a ref to persist original values
   const originalDataRef = useRef({
-    title: initialData?.title || '',
-    short_description: initialData?.short_description || '',
-  });
+    title: initialData?.title || "",
+    short_description: initialData?.short_description || "",
+  })
 
   const form = useForm({
     defaultValues: {
-      title: initialData?.title || '',
-      short_description: initialData?.short_description || '',
+      title: initialData?.title || "",
+      short_description: initialData?.short_description || "",
     },
-  });
+  })
+
+  // Watch the short description field to update character count
+  const shortDescription = form.watch("short_description")
+
+  useEffect(() => {
+    setCharCount(shortDescription?.length || 0)
+  }, [shortDescription])
+
+  useEffect(() => {
+    // Trigger animation after component mounts
+    setAnimateForm(true)
+  }, [])
 
   async function onSubmit(data) {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
-    const changes = getChangedFields(originalDataRef.current, data);
+    const changes = getChangedFields(originalDataRef.current, data)
     if (Object.keys(changes).length === 0) {
-      setIsSubmitting(false);
-      router.push(`/host/create/${eventId}/additional`);
-      return;
+      setIsSubmitting(false)
+      router.push(`/host/create/${eventId}/additional`)
+      return
     }
 
     try {
-      const response = await fetchWithAuth(
-        `/event/host/base-event/${eventId}/`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(changes),
-        }
-      );
+      const response = await fetchWithAuth(`/event/host/base-event/${eventId}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(changes),
+      })
 
       if (!response.ok) {
-        throw new Error(`Failed to save: ${response.status}`);
+        throw new Error(`Failed to save: ${response.status}`)
       }
 
-      await response.json();
-      router.push(`/host/create/${eventId}/additional`);
+      await response.json()
+      router.push(`/host/create/${eventId}/additional`)
     } catch (error) {
-      console.error('Error saving basic details:', error);
+      console.error("Error saving basic details:", error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  }
+
   return (
-    <Card className="p-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            name="title"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Event Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter event title" {...field} />
-                </FormControl>
-                <FormDescription>
-                  A clear, concise name for your event
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+    <motion.div
+      initial="hidden"
+      animate={animateForm ? "visible" : "hidden"}
+      variants={containerVariants}
+      className="mb-20"
+    >
+      <motion.div className="mb-8" variants={itemVariants}>
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h1 className="text-3xl font-bold text-green-800 flex items-center">
+            <FileText className="mr-3 h-8 w-8 text-green-600" />
+            Basic Details
+          </h1>
+          <p className="mt-2 text-green-700 ml-11">Let's start with the essentials for your event</p>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        variants={itemVariants}
+        whileHover={{ scale: 1.01 }}
+        transition={{ duration: 0.2 }}
+        className="relative"
+      >
+        <motion.div
+          className="absolute -top-4 -right-4 h-20 w-20 bg-green-100 rounded-full z-0 opacity-70"
+          animate={{
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
+
+        <Card className="p-6 border-green-100 shadow-lg bg-white/90 backdrop-blur-sm relative z-10 overflow-hidden">
+          <motion.div
+            className="absolute top-0 right-0 w-40 h-40 bg-green-50 rounded-full -translate-y-20 translate-x-20 z-0"
+            animate={{
+              rotate: 360,
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
           />
 
-          <FormField
-            name="short_description"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Short Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Briefly describe your event"
-                    {...field}
-                    rows={3}
-                  />
-                </FormControl>
-                <FormDescription>
-                  A short summary that will appear in event listings (max 200
-                  characters)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10">
+              <motion.div variants={itemVariants}>
+                <FormField
+                  name="title"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                        <PenLine className="h-4 w-4" />
+                        Event Title
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter event title"
+                          {...field}
+                          className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                        />
+                      </FormControl>
+                      <FormDescription className="text-green-600 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4" />A clear, concise name for your event
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
 
-          <div className="flex justify-end space-x-4 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push('/host/dashboard')}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save & Continue'}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </Card>
-  );
+              <motion.div variants={itemVariants}>
+                <FormField
+                  name="short_description"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                        <Edit className="h-4 w-4" />
+                        Short Description
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Textarea
+                            placeholder="Briefly describe your event"
+                            {...field}
+                            rows={3}
+                            maxLength={200}
+                            className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                            onChange={(e) => {
+                              field.onChange(e)
+                              setCharCount(e.target.value.length)
+                            }}
+                          />
+                          <motion.span
+                            className={`absolute bottom-2 right-2 text-xs ${
+                              charCount > 180 ? "text-amber-500" : "text-green-600"
+                            }`}
+                            animate={charCount > 180 ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ duration: 0.5, repeat: charCount > 180 ? Infinity : 0 }}
+                          >
+                            {charCount}/200
+                          </motion.span>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="text-green-600">
+                        A short summary that will appear in event listings
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                className="flex justify-end space-x-4 pt-4"
+                variants={itemVariants}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push("/host/dashboard")}
+                    className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 transition-all duration-300 group"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4 group-hover:animate-pulse" />
+                    Cancel
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300 group"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                        <span>Saving...</span>
+                      </div>
+                    ) : (
+                      <>
+                        Save & Continue
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+              </motion.div>
+            </form>
+          </Form>
+        </Card>
+      </motion.div>
+    </motion.div>
+  )
 }

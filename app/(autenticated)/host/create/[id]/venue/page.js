@@ -12,11 +12,6 @@ export default async function VenuePage({ params }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Venue</h1>
-        <p className="mt-2 text-muted-foreground">Provide details about where your event will take place</p>
-      </div>
-
       <VenueForm initialData={venueDetails} eventId={id} />
     </div>
   )
