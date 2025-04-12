@@ -163,12 +163,13 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
       console.log(response)
 
       if (isNew) {
-        // Add the new sponsor with the ID from the response
         setSponsors([...sponsors, response])
+         
       } else {
         // Update the existing sponsor
         setSponsors(sponsors.map((s) => (s.id === editingSponsor.id ? response : s)))
       }
+      console.log(sponsors)
 
       setSponsorDialogOpen(false)
     } catch (error) {
@@ -180,7 +181,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
 
   // Handle adding a new prize
   const handleAddPrize = () => {
-    const newPrize = { title: "", description: "", value: "", image: "" }
+    const newPrize = { title: "", description: "", amount: "", image: "" }
     setEditingPrize(newPrize)
     setOriginalPrize(JSON.parse(JSON.stringify(newPrize)))
     setPrizeDialogOpen(true)
@@ -251,7 +252,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
       const formData = new FormData()
       formData.append("title", editingPrize.title)
       formData.append("description", editingPrize.description || "")
-      formData.append("value", editingPrize.value || "")
+      formData.append("amount", editingPrize.amount || "")
 
       // Add image file if it exists
       const imageFile = prizeImages[editingPrize.id || "new"]
@@ -441,7 +442,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
                               >
                                 {sponsor.logo ? (
                                   <Image
-                                    src={sponsor.logo || "/placeholder.svg"}
+                                    src={sponsor.logo.replace("localhost","127.0.0.1") || "/placeholder.svg"}
                                     alt={sponsor.name}
                                     width={96}
                                     height={96}
@@ -560,7 +561,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-8 w-8 bg-white/80 hover:bg-white text-green-700"
+                                        className="h-8 w-8 cursor-pointer bg-white/80 hover:bg-white text-green-700"
                                       >
                                         <MoreVertical className="h-4 w-4" />
                                       </Button>
@@ -588,7 +589,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
                                   {prize.image && (
                                     <div className="relative w-full md:w-48 h-40 flex-shrink-0">
                                       <Image
-                                        src={prize.image || "/placeholder.svg"}
+                                        src={prize.image.replace("localhost","127.0.0.1") || "/placeholder.svg"}
                                         alt={prize.title}
                                         fill
                                         className="object-cover"
@@ -607,13 +608,13 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
                                         </div>
                                         <h3 className="font-bold text-lg text-green-800">{prize.title}</h3>
                                       </div>
-                                      {prize.value && (
+                                      {prize.amount && (
                                         <motion.div
                                           whileHover={{ scale: 1.05 }}
                                           className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium flex items-center gap-1"
                                         >
                                           <Sparkles className="h-3.5 w-3.5" />
-                                          {prize.value}
+                                          {prize.amount}
                                         </motion.div>
                                       )}
                                     </div>
@@ -883,13 +884,13 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
                   transition={{ duration: 0.3, delay: 0.2 }}
                   className="grid gap-2"
                 >
-                  <Label htmlFor="prize-value" className="text-green-800">
-                    Value
+                  <Label htmlFor="prize-amount" className="text-green-800">
+                    Amount
                   </Label>
                   <Input
-                    id="prize-value"
-                    value={editingPrize.value || ""}
-                    onChange={(e) => handlePrizeChange("value", e.target.value)}
+                    id="prize-amount"
+                    value={editingPrize.amount || ""}
+                    onChange={(e) => handlePrizeChange("amount", e.target.value)}
                     placeholder="₹10,000"
                     className="border-green-200 focus-visible:ring-green-500 transition-all duration-300"
                   />
