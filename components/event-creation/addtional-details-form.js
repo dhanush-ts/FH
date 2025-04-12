@@ -170,7 +170,7 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
             className="relative"
           >
             <motion.div
-              className="absolute -top-4 -right-4 h-20 w-20 bg-green-100 rounded-full z-0 opacity-70"
+              className="absolute -top-4 -right-4 h-20 w-20 bg-green-600 rounded-full z-0 opacity-70"
               animate={{
                 scale: [1, 1.1, 1],
               }}
