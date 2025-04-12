@@ -29,7 +29,7 @@ export function BasicDetailsForm({ initialData, eventId }) {
   })
 
   // Get cached data if available
-  const cachedData = getCurrentSectionData("basic")
+  const cachedData = getCurrentSectionData(`basic`)
 
   const form = useForm({
     defaultValues: {

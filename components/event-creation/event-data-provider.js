@@ -10,10 +10,8 @@ export const EventFormProvider = ({ children }) => {
   const [initializedSections, setInitializedSections] = useState(new Set())
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
-  // Track changed fields for a specific section
   const setChangedFields = useCallback((section, fields) => {
     setSectionChanges((prev) => {
-      // Skip update if nothing changed
       if (
         prev[section]?.isDirty === Object.keys(fields).length > 0 &&
         JSON.stringify(prev[section]?.changedFields) === JSON.stringify(fields)

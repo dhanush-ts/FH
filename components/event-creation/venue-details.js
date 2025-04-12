@@ -31,7 +31,7 @@ export function VenueForm({ initialData, eventId }) {
   const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
 
   // Get cached data if available
-  const cachedData = getCurrentSectionData("venue")
+  const cachedData = getCurrentSectionData(`venue`)
 
   // Store original data for change detection
   const originalDataRef = useRef({
@@ -74,7 +74,7 @@ export function VenueForm({ initialData, eventId }) {
 
     try {
       // Determine if we need PUT or PATCH
-      const method = isInitialEmpty ? "PUT" : "PATCH"
+      const method = isInitialEmpty ? "POST" : "PATCH"
       const url = `/event/host/venue-detail/${eventId}/`
 
       // Only send changed fields if using PATCH

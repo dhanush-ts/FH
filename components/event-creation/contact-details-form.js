@@ -30,7 +30,7 @@ export function ContactDetailsForm({ initialData, eventId }) {
   })
 
   // Get cached data if available
-  const cachedData = getCurrentSectionData("contact-detail");
+  const cachedData = getCurrentSectionData(`contact-detail`);
   console.log(cachedData)
 
   const isInitialEmpty = Object.values(initialData || {}).every((v) => v === null || v === "")

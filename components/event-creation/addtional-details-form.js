@@ -31,7 +31,7 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
   })
 
   // Get cached data if available
-  const cachedData = getCurrentSectionData("additional")
+  const cachedData = getCurrentSectionData(`additional`)
 
   const isInitialEmpty = Object.values(initialData || {}).every((v) => v === null || v === "")
 

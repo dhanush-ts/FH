@@ -31,8 +31,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
   const [bannerFile, setBannerFile] = useState(null)
   const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
   console.log(bannerPreview)
-  // Get cached data if available
-  const cachedData = getCurrentSectionData("media")
+  const cachedData = getCurrentSectionData(`media`)
 
   // Initialize editor state from cached data or initial data
   const [editorState, setEditorState] = useState(() => {
