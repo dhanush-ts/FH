@@ -328,7 +328,7 @@ export function VenueForm({ initialData, eventId }) {
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => router.push(`/host/create/${eventId}/schedule`)}
+                            onClick={() => router.push(`/host/create/${eventId}/contact`)}
                             className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 transition-all duration-300 group"
                           >
                             <ArrowLeft className="mr-2 h-4 w-4 group-hover:animate-pulse" />

@@ -6,7 +6,6 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 const EventFormContext = createContext(undefined)
 
 export const EventFormProvider = ({ children }) => {
-  // Initialize state with empty section changes
   const [sectionChanges, setSectionChanges] = useState({})
   const [initializedSections, setInitializedSections] = useState(new Set())
   const [isInitialLoad, setIsInitialLoad] = useState(true)

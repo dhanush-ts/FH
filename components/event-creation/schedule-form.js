@@ -251,7 +251,7 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
       }
 
       // Navigate to next section
-      router.push(`/host/create/${eventId}/venue`)
+      router.push(`/host/create/${eventId}/contact`)
 
     } catch (error) {
       console.error("Error saving schedule:", error)
