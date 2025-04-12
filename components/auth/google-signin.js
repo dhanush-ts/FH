@@ -4,7 +4,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/providers';
 
-const Login = () => {
+const Login = ({callbackUrl}) => {
     const { isAuthenticated, setIsAuthenticated } = useAuth();
     const router = useRouter();
     const handleLoginSuccess = async (response) => {
@@ -24,7 +24,7 @@ const Login = () => {
         if(data?.detail === "Successful"){
             setIsAuthenticated(true);
             console.log(isAuthenticated)
-            router.push("/");
+            router.push(callbackUrl);
         }
         console.log("Backend Response:", data);
     };

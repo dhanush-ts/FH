@@ -45,6 +45,7 @@ export default function LoginForm({ className, ...props }) {
 
       if (data.detail === "Successful") {
         setIsAuthenticated(true)
+        console.log("Tried to redirect")
         router.push(callbackUrl) // 👈 redirect to where user originally tried to go
       } else {
         setError("Invalid credentials. Please try again.")
@@ -147,7 +148,7 @@ export default function LoginForm({ className, ...props }) {
               <div className="flex -mx-3">
                 <div className="w-full px-3">
                   {/* <GoogleButton /> */}
-                  <Login />
+                  <Login callbackUrl={callbackUrl} />
                 </div>
               </div>
 

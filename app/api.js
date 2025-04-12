@@ -23,8 +23,9 @@ export async function fetchWithAuth(url, options = {},key = false) {
         // if (success) {
         //     response = await fetch(`${api}${url}`, options);  // Retry request
         // } else {
-            // redirectToLogin(); // ✅ Redirect to login if refresh fails
+        //     redirectToLogin(); // ✅ Redirect to login if refresh fails
         // }
+            // redirectToLogin(); // ✅ Redirect to login if refresh fails
     // }
 
     return response;
