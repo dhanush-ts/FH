@@ -29,6 +29,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { fetchWithAuth } from "@/app/api"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { useEventFormContext } from "./event-data-provider"
 
 // Helper function to check which fields have changed
 const getChangedFields = (original, current) => {
@@ -59,6 +60,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
   const [prizeImages, setPrizeImages] = useState({})
   const [draggedItem, setDraggedItem] = useState(null)
   const [dragOverItem, setDragOverItem] = useState(null)
+  const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
 
   // Dialog states
   const [editingSponsor, setEditingSponsor] = useState(null)
@@ -166,7 +168,6 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
         setSponsors([...sponsors, response])
          
       } else {
-        // Update the existing sponsor
         setSponsors(sponsors.map((s) => (s.id === editingSponsor.id ? response : s)))
       }
       console.log(sponsors)
@@ -290,6 +291,7 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
 
   // Handle navigation to next section
   const handleContinue = () => {
+    clearSectionChanges("sponsors")
     router.push(`/host/create/${eventId}/schedule`)
   }
 

@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { TimePickerDemo } from "./time-picker"
 import { getChangedFields } from "./utility"
+import { useEventFormContext } from "./event-data-provider"
 
 export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
   const router = useRouter()
@@ -27,6 +28,7 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
   const [faqs, setFaqs] = useState(initialFaq)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingIndex, setEditingIndex] = useState(null)
+  const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
 
   const originalTimelinesRef = useRef(JSON.parse(JSON.stringify(initialTimeline)))
   const originalFaqsRef = useRef(JSON.parse(JSON.stringify(initialFaq)))
@@ -251,6 +253,7 @@ export function ScheduleForm({initialTimeline ,initialFaq = [], eventId }) {
       }
 
       // Navigate to next section
+      clearSectionChanges("schedule")
       router.push(`/host/create/${eventId}/contact`)
 
     } catch (error) {

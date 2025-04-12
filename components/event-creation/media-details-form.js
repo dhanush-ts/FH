@@ -30,7 +30,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
   const [bannerPreview, setBannerPreview] = useState(null)
   const [bannerFile, setBannerFile] = useState(null)
   const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
-
+  console.log(bannerPreview)
   // Get cached data if available
   const cachedData = getCurrentSectionData("media")
 
@@ -49,6 +49,15 @@ export function MediaDetailsForm({ initialData, eventId }) {
     }
     return EditorState.createEmpty()
   })
+
+  function normalizeHtml(html) {
+    return html
+      .replace(/>\s+</g, '><') // Remove whitespace between tags
+      .replace(/\s{2,}/g, ' ') // Replace multiple spaces with a single space
+      .replace(/[\n\r\t]/g, '') // Remove newlines, carriage returns, and tabs
+      .trim(); // Remove leading and trailing whitespace
+  }
+  
 
   // Store original data for comparison
   const originalDataRef = useRef({
@@ -102,6 +111,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
     Object.entries(currentFormData).forEach(([key, value]) => {
       if (key === "banner") return // Skip banner comparison
 
+      if (key === "about_event") {
+        const normalizedHtml = normalizeHtml(value)
+        const normalizedOriginalHtml = normalizeHtml(originalDataRef.current[key])
+        if (normalizedHtml !== normalizedOriginalHtml) {
+          changedFields[key] = value
+        }
+      }
+
       if (originalDataRef.current[key] !== value) {
         if (value instanceof Date && originalDataRef.current[key] instanceof Date) {
           if (value.getTime() !== originalDataRef.current[key].getTime()) {
@@ -116,8 +133,9 @@ export function MediaDetailsForm({ initialData, eventId }) {
     if (bannerFile) {
       changedFields.banner = bannerFile
     }
-
     setChangedFields("media", changedFields)
+    console.log("Changed fields:", changedFields.about_event)
+    console.log("Cached data:", originalDataRef.current.about_event)
   }, [formValues, editorState, bannerFile, cacheFormData, setChangedFields])
 
   useEffect(() => {
@@ -171,7 +189,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
       }
 
       // Clear changes after successful save
-      clearSectionChanges("media")
+      clearSectionChanges("media-detail")
 
       // Update original data reference
       originalDataRef.current = {
