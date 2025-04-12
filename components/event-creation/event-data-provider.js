@@ -131,6 +131,16 @@ export const EventFormProvider = ({ children }) => {
     }
   }, [])
 
+  // Clear cached form data for a specific section
+const clearCachedFormData = () => {
+  console.log("Clearing cached form data")
+  setSectionChanges({})
+  setInitializedSections(new Set())
+  setIsInitialLoad(true)
+  localStorage.clear();
+}
+
+
   const contextValue = {
     sectionChanges,
     setChangedFields,
@@ -140,6 +150,7 @@ export const EventFormProvider = ({ children }) => {
     isFormDirty,
     hasInitializedSection,
     markSectionInitialized,
+    clearCachedFormData,
   }
 
   return <EventFormContext.Provider value={contextValue}>{children}</EventFormContext.Provider>

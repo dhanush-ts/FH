@@ -9,6 +9,8 @@ import { motion } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useEventFormContext } from "./event-data-provider"
 import { useEffect, useState } from "react"
+import { useAuth } from "@/app/providers"
+import { useEventContext } from "./event-context"
 
 const SECTIONS = [
   {
@@ -62,29 +64,21 @@ const SECTIONS = [
       },
 ]
 
-export function ProgressSidebar({ eventId, currentSection = "basic" }) {
+export function ProgressSidebar({ currentSection = "basic" }) {
   const router = useRouter()
   const pathname = usePathname()
-  const { isFormDirty, hasInitializedSection, clearSectionChanges } = useEventFormContext()
+  const { isFormDirty, hasInitializedSection, clearSectionChanges, clearCachedFormData } = useEventFormContext()
   const [completedSections, setCompletedSections] = useState([])
   const progress = Math.round((completedSections.length / SECTIONS.length) * 100)
-
-  useEffect(() => {
-    const completed = SECTIONS.filter((section) => {
-      const sectionIndex = SECTIONS.findIndex((s) => s.id === section.id)
-      const currentIndex = SECTIONS.findIndex((s) => s.id === currentSection)
-      return sectionIndex < currentIndex
-    }).map((section) => section.id)
-
-    setCompletedSections(completed)
-  }, [currentSection])
+  const { eventId } = useEventContext()
 
   useEffect(() => {
     for (const section of SECTIONS) {
+      clearCachedFormData(section.id)
       clearSectionChanges(section.id)
       }
+      console.log("called")
     },[eventId])
-
 
   const handleSectionClick = (sectionId, path) => {
     router.push(`/host/create/${eventId}/${path}`)

@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
   if (isAuthenticated === null) return null; 
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, profile, setProfile }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, profile, setProfile}}>
       {children}
     </AuthContext.Provider>
   );
