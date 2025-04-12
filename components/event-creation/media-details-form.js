@@ -353,6 +353,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         Registration End Date & Time
                       </FormLabel>
                       <div className="flex gap-2">
+                        <div className="w-3/5">
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -389,11 +390,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
                             </motion.div>
                           </PopoverContent>
                         </Popover>
+                        </div>
 
                         <TimePickerDemo
                           date={field.value}
                           setDate={(date) => setTimeForDate("registration_end_date", date)}
-                          className="w-[140px] flex-shrink-0"
+                          className="w-[80px] flex-shrink-0"
                         />
                       </div>
                       <FormDescription className="text-green-600">
@@ -410,13 +412,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                className="grid grid-cols-2 gap-6"
               >
                 <FormField
                   control={form.control}
                   name="start_date"
+                  className=""
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col w-3/5">
                       <FormLabel className="text-green-800 font-medium flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
                         Start Date & Time
@@ -462,7 +465,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         <TimePickerDemo
                           date={field.value}
                           setDate={(date) => setTimeForDate("start_date", date)}
-                          className="w-[140px] flex-shrink-0"
+                          className="w-[80px] flex-shrink-0"
                         />
                       </div>
                       <FormDescription className="text-green-600">When your event begins</FormDescription>
@@ -475,7 +478,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                   control={form.control}
                   name="end_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col w-3/5">
                       <FormLabel className="text-green-800 font-medium flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
                         End Date & Time
@@ -521,7 +524,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         <TimePickerDemo
                           date={field.value}
                           setDate={(date) => setTimeForDate("end_date", date)}
-                          className="w-[140px] flex-shrink-0"
+                          className="w-[80px] flex-shrink-0"
                         />
                       </div>
                       <FormDescription className="text-green-600">When your event concludes</FormDescription>

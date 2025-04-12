@@ -18,14 +18,14 @@ export async function fetchWithAuth(url, options = {},key = false) {
 
     let response = await fetch(`${api}${url}`, options);
 
-    if (response.status === 401) {
+    // if (response.status === 401) {
         // const success = await refreshAccessToken();
         // if (success) {
         //     response = await fetch(`${api}${url}`, options);  // Retry request
         // } else {
-            redirectToLogin(); // ✅ Redirect to login if refresh fails
+            // redirectToLogin(); // ✅ Redirect to login if refresh fails
         // }
-    }
+    // }
 
     return response;
 }

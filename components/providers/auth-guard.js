@@ -1,25 +1,25 @@
-// components/AuthGuard.tsx (Client Component)
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/app/providers";
-import { useRouter } from "next/navigation";
-import Loading from "@/app/loading";
+import { useEffect, useState } from "react"
+import { useAuth } from "@/app/providers"
+import { useRouter, usePathname } from "next/navigation"
+import Loading from "@/app/loading"
 
 export default function AuthGuard({ children }) {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
+  const [checkingAuth, setCheckingAuth] = useState(true)
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/');
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`)
     } else {
-      setCheckingAuth(false);
+      setCheckingAuth(false)
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, pathname, router])
 
-  if (checkingAuth) return <Loading />;
+  if (checkingAuth) return <Loading />
 
-  return <>{children}</>;
+  return <>{children}</>
 }

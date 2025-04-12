@@ -1,15 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { fetchWithAuth } from "@/app/api"
 import { useAuth } from "@/app/providers"
 import Link from "next/link"
-// import GoogleButton from "./google-button"
 import Login from "./google-signin"
 import OptimizedLottie from "../ui/display-lottie"
 
 export default function LoginForm({ className, ...props }) {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/"
+  console.log("Redirecting to:", callbackUrl) // 🔍
   const { isAuthenticated, setIsAuthenticated } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -19,7 +21,7 @@ export default function LoginForm({ className, ...props }) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/")
+      router.push(callbackUrl)
     }
   }, [isAuthenticated, router])
 
@@ -36,16 +38,14 @@ export default function LoginForm({ className, ...props }) {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       })
 
       const data = await response.json()
+
       if (data.detail === "Successful") {
         setIsAuthenticated(true)
-        router.push("/")
+        router.push(callbackUrl) // 👈 redirect to where user originally tried to go
       } else {
         setError("Invalid credentials. Please try again.")
       }
