@@ -187,23 +187,6 @@ export function ProgressSidebar({ currentSection = "basic" }) {
             </ul>
           </nav>
 
-          {/* <motion.div
-            className="mt-6 rounded-lg bg-green-50 p-4 border border-green-100 shadow-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-          >
-            <div className="relative flex items-start gap-3">
-              <Info className="absolute h-10 w-10 -top-7 -left-7 text-green-600" />
-              <div>
-                <h4 className="font-medium text-green-800">Unsaved Changes</h4>
-                <p className="text-sm text-green-700">
-                  Sections with unsaved changes are marked with an asterisk (*). Your changes are preserved when
-                  navigating between sections.
-                </p>
-              </div>
-            </div>
-          </motion.div> */}
         </div>
       </aside>
     </TooltipProvider>
