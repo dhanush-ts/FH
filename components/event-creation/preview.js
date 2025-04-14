@@ -256,7 +256,7 @@ export default function EventPage({ id }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Hero Section - Full width banner */}
-      <div className="relative max-w-xl rounded-2xl m-auto w-full overflow-hidden">
+      <div className="relative  m-auto w-full overflow-hidden">
         <div className="max-h-screen inset-0">
           <Image
             src={eventData.banner || "/placeholder.svg?height=600&width=1200"}

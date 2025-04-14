@@ -4,27 +4,64 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import Image from "next/image"
-import { format } from "date-fns"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 import { motion } from "framer-motion"
-import { CalendarIcon, Upload, ImageIcon, Calendar, Globe, ArrowRight, ArrowLeft, Sparkles } from "lucide-react"
+import {
+  CalendarIcon,
+  Upload,
+  ImageIcon,
+  Calendar,
+  Globe,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
+  HelpCircle,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
 import { fetchWithAuth } from "@/app/api"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 import draftToHtml from "draftjs-to-html"
 import htmlToDraft from "html-to-draftjs"
 import { Editor } from "react-draft-wysiwyg"
 import { EditorState, convertToRaw, ContentState } from "draft-js"
-import { TimePickerDemo } from "./time-picker"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+
+{
+  /* Add this after the imports */
+}
+;<style jsx global>{`
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  
+  .react-datepicker__input-container input {
+    width: 100%;
+  }
+  
+  .react-datepicker-popper {
+    z-index: 10;
+  }
+  
+  @media (max-width: 640px) {
+    .react-datepicker__time-container {
+      width: 100%;
+      max-width: 200px;
+    }
+    
+    .react-datepicker__time-box {
+      width: 100% !important;
+    }
+  }
+`}</style>
 
 export function MediaDetailsForm({ initialData, eventId }) {
+  const [initial, setInital] = useState(initialData?.id)
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bannerPreview, setBannerPreview] = useState(null)
@@ -51,12 +88,11 @@ export function MediaDetailsForm({ initialData, eventId }) {
 
   function normalizeHtml(html) {
     return html
-      .replace(/>\s+</g, '><') // Remove whitespace between tags
-      .replace(/\s{2,}/g, ' ') // Replace multiple spaces with a single space
-      .replace(/[\n\r\t]/g, '') // Remove newlines, carriage returns, and tabs
-      .trim(); // Remove leading and trailing whitespace
+      .replace(/>\s+</g, "><") // Remove whitespace between tags
+      .replace(/\s{2,}/g, " ") // Replace multiple spaces with a single space
+      .replace(/[\n\r\t]/g, "") // Remove newlines, carriage returns, and tabs
+      .trim() // Remove leading and trailing whitespace
   }
-  
 
   // Store original data for comparison
   const originalDataRef = useRef({
@@ -111,30 +147,46 @@ export function MediaDetailsForm({ initialData, eventId }) {
       if (key === "banner") return // Skip banner comparison
 
       if (key === "about_event") {
-        const normalizedHtml = normalizeHtml(value)
-        const normalizedOriginalHtml = normalizeHtml(originalDataRef.current[key])
-        if (normalizedHtml !== normalizedOriginalHtml) {
+        const normalizedCurrentHtml = normalizeHtml(value)
+        const normalizedOriginalHtml = normalizeHtml(originalDataRef.current[key] || "")
+
+        // Compare normalized HTML content
+        if (normalizedCurrentHtml !== normalizedOriginalHtml) {
           changedFields[key] = value
         }
-      }
+      } else if (key.includes("date")) {
+        // Special handling for date fields
+        const originalDate = originalDataRef.current[key]
+        const currentDate = value
 
-      if (originalDataRef.current[key] !== value) {
-        if (value instanceof Date && originalDataRef.current[key] instanceof Date) {
-          if (value.getTime() !== originalDataRef.current[key].getTime()) {
+        // Only compare relevant date parts (year, month, day, hour, minute)
+        // This ignores seconds and milliseconds which can cause false change detection
+        if (originalDate && currentDate) {
+          const sameDate =
+            originalDate.getFullYear() === currentDate.getFullYear() &&
+            originalDate.getMonth() === currentDate.getMonth() &&
+            originalDate.getDate() === currentDate.getDate() &&
+            originalDate.getHours() === currentDate.getHours() &&
+            originalDate.getMinutes() === currentDate.getMinutes()
+
+          if (!sameDate) {
             changedFields[key] = value
           }
-        } else {
+        } else if (originalDate !== currentDate) {
+          // One is null and the other isn't
           changedFields[key] = value
         }
+      } else if (originalDataRef.current[key] !== value) {
+        changedFields[key] = value
       }
     })
 
     if (bannerFile) {
       changedFields.banner = bannerFile
     }
+
     setChangedFields("media", changedFields)
-    console.log("Changed fields:", changedFields.about_event)
-    console.log("Cached data:", originalDataRef.current.about_event)
+    console.log(changedFields)
   }, [formValues, editorState, bannerFile, cacheFormData, setChangedFields])
 
   useEffect(() => {
@@ -165,17 +217,47 @@ export function MediaDetailsForm({ initialData, eventId }) {
         formData.append("banner", bannerFile)
       }
 
+      // Format dates in the required format with timezone offset
+      const formatDateWithTimezone = (date) => {
+        if (!date) return null
+
+        // Get timezone offset in hours and minutes
+        const tzOffset = date.getTimezoneOffset()
+        const tzOffsetHours = Math.abs(Math.floor(tzOffset / 60))
+        const tzOffsetMinutes = Math.abs(tzOffset % 60)
+
+        // Format the timezone string (e.g., +05:30)
+        const tzSign = tzOffset <= 0 ? "+" : "-"
+        const tzString = `${tzSign}${tzOffsetHours.toString().padStart(2, "0")}:${tzOffsetMinutes.toString().padStart(2, "0")}`
+
+        // Format the date in ISO format with custom timezone
+        const year = date.getFullYear()
+        const month = (date.getMonth() + 1).toString().padStart(2, "0")
+        const day = date.getDate().toString().padStart(2, "0")
+        const hours = date.getHours().toString().padStart(2, "0")
+        const minutes = date.getMinutes().toString().padStart(2, "0")
+
+        return `${year}-${month}-${day}T${hours}:${minutes}:00${tzString}`
+      }
+
       // Add other fields
       formData.append("about_event", aboutHtml)
       formData.append("mode", data.mode)
-      formData.append("start_date", data.start_date.toISOString())
-      formData.append("end_date", data.end_date.toISOString())
-      formData.append("registration_end_date", data.registration_end_date.toISOString())
+      formData.append("start_date", formatDateWithTimezone(data.start_date))
+      formData.append("end_date", data.end_date ? formatDateWithTimezone(data.end_date) : "")
+      formData.append("registration_end_date", formatDateWithTimezone(data.registration_end_date))
+
+      // For debugging - log the formatted dates
+      console.log({
+        start_date: formatDateWithTimezone(data.start_date),
+        end_date: data.end_date ? formatDateWithTimezone(data.end_date) : null,
+        registration_end_date: formatDateWithTimezone(data.registration_end_date),
+      })
 
       const response = await fetchWithAuth(
         `/event/host/base-event-detail/${eventId}/`,
         {
-          method: "PATCH",
+          method: initial ? "PATCH" : "POST",
           body: formData,
         },
         true,
@@ -205,431 +287,395 @@ export function MediaDetailsForm({ initialData, eventId }) {
     }
   }
 
-  const setDateWithTime = (field, date) => {
-    const currentDate = form.getValues(field)
-    if (date && currentDate) {
-      date.setHours(currentDate.getHours())
-      date.setMinutes(currentDate.getMinutes())
-    }
-    form.setValue(field, date)
-  }
-
-  const setTimeForDate = (field, time) => {
-    form.setValue(field, time)
-  }
+  // Remove these functions as they're no longer needed
+  // const setDateWithTime = (field, date) => { ... }
+  // const setTimeForDate = (field, time) => { ... }
 
   return (
-    <FormWrapper section="media" initialData={originalDataRef.current}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-20"
-      >
-        <div className="mb-8">
-          <motion.h1
-            className="text-3xl font-bold text-green-800"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Media & Timing
-          </motion.h1>
-          <motion.p
-            className="mt-2 text-green-700"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            Set up your event's visual appearance and schedule
-          </motion.p>
-        </div>
+    <TooltipProvider>
+      <FormWrapper section="media" initialData={originalDataRef.current}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-20"
+        >
+          <div className="mb-8">
+            <motion.h1
+              className="text-3xl font-bold text-green-800"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Media & Timing
+            </motion.h1>
+            <motion.p
+              className="mt-2 text-green-700"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              Set up your event's visual appearance and schedule
+            </motion.p>
+          </div>
 
-        <Card className="p-6 border-green-100 shadow-lg bg-white/80 backdrop-blur-sm overflow-hidden">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* Banner Upload */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                <FormField
-                  control={form.control}
-                  name="banner"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                        <ImageIcon className="h-4 w-4" />
-                        Event Banner
-                      </FormLabel>
-                      <FormControl>
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          className="relative w-full h-48 border-dashed border-2 border-green-300 rounded-lg flex items-center justify-center overflow-hidden bg-green-50"
-                        >
-                          {bannerPreview ? (
-                            <>
-                              <Image
-                                src={bannerPreview || "/placeholder.svg"}
-                                alt="Banner Preview"
-                                fill
-                                style={{ objectFit: "cover" }}
-                                className="z-10"
-                              />
-                              <div className="absolute inset-0 bg-black/30 z-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <p className="text-white font-medium">Click to change banner</p>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="flex flex-col items-center justify-center text-green-600">
-                              <motion.div
-                                animate={{ y: [0, -5, 0] }}
-                                transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-                              >
-                                <Upload className="h-10 w-10 mb-2" />
-                              </motion.div>
-                              <p className="font-medium">Upload Event Banner</p>
-                              <p className="text-sm text-green-500 mt-1">Recommended size: 1200 x 600 px</p>
-                            </div>
-                          )}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                handleFileUpload(e.target.files[0])
-                                field.onChange(e.target.files[0])
-                              }
-                            }}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
-                          />
-                        </motion.div>
-                      </FormControl>
-                      <FormDescription className="text-green-600">
-                        This image will be displayed at the top of your event page
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
-
-              {/* Event Mode and Registration End Date in a flex row */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="mode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                        <Globe className="h-4 w-4" />
-                        Event Mode
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Card className="p-6 border-green-100 shadow-lg bg-white/80 backdrop-blur-sm overflow-hidden">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                {/* Banner Upload */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="banner"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                          <ImageIcon className="h-4 w-4" />
+                          Event Banner
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-green-800 text-white border-green-700">
+                              <p>
+                                Upload a high-quality image to represent your event. Recommended size: 1200 x 600 px
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
                         <FormControl>
-                          <SelectTrigger className="border-green-200 focus:ring-green-500 transition-all duration-300">
-                            <SelectValue placeholder="Select event mode" />
-                          </SelectTrigger>
+                          <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            className="relative w-full h-48 border-dashed border-2 border-green-300 rounded-lg flex items-center justify-center overflow-hidden bg-green-50"
+                          >
+                            {bannerPreview ? (
+                              <>
+                                <Image
+                                  src={bannerPreview || "/placeholder.svg"}
+                                  alt="Banner Preview"
+                                  fill
+                                  style={{ objectFit: "cover" }}
+                                  className="z-10"
+                                />
+                                <div className="absolute inset-0 bg-black/30 z-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <p className="text-white font-medium">Click to change banner</p>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center text-green-600">
+                                <motion.div
+                                  animate={{ y: [0, -5, 0] }}
+                                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+                                >
+                                  <Upload className="h-10 w-10 mb-2" />
+                                </motion.div>
+                                <p className="font-medium">Upload Event Banner</p>
+                                <p className="text-sm text-green-500 mt-1">Recommended size: 1200 x 600 px</p>
+                              </div>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                if (e.target.files?.[0]) {
+                                  handleFileUpload(e.target.files[0])
+                                  field.onChange(e.target.files[0])
+                                }
+                              }}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
+                            />
+                          </motion.div>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Online" className="focus:bg-green-50 focus:text-green-900">
-                            <div className="flex items-center gap-2">
-                              <Globe className="h-4 w-4 text-green-600" />
-                              <span>Online</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Offline" className="focus:bg-green-50 focus:text-green-900">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-green-600" />
-                              <span>Offline</span>
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription className="text-green-600">
-                        Choose whether your event will be held online or at a physical location
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="registration_end_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Registration End Date & Time
-                      </FormLabel>
-                      <div className="flex gap-2">
-                        <div className="w-3/5">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full justify-between border-green-200 hover:bg-green-50 hover:text-green-800 transition-all duration-300",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <CalendarIcon className="h-4 w-4 text-green-600" />
-                                  <span>{field.value ? format(field.value, "PPP") : "Pick a date"}</span>
-                                </div>
-                                <CalendarIcon className="h-4 w-4 text-green-600 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <CalendarComponent
-                                mode="single"
-                                selected={field.value}
-                                onSelect={(date) => setDateWithTime("registration_end_date", date)}
-                                disabled={(date) => date < new Date()}
-                                initialFocus
-                                className="rounded-md border border-green-200"
-                              />
-                            </motion.div>
-                          </PopoverContent>
-                        </Popover>
-                        </div>
-
-                        <TimePickerDemo
-                          date={field.value}
-                          setDate={(date) => setTimeForDate("registration_end_date", date)}
-                          className="w-[80px] flex-shrink-0"
-                        />
-                      </div>
-                      <FormDescription className="text-green-600">
-                        The deadline for participants to register for your event
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
-
-              {/* Start Date, End Date */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="grid grid-cols-2 gap-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="start_date"
-                  className=""
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col w-3/5">
-                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Start Date & Time
-                      </FormLabel>
-                      <div className="flex gap-2">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full justify-between border-green-200 hover:bg-green-50 hover:text-green-800 transition-all duration-300",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <CalendarIcon className="h-4 w-4 text-green-600" />
-                                  <span>{field.value ? format(field.value, "PPP") : "Pick a date"}</span>
-                                </div>
-                                <CalendarIcon className="h-4 w-4 text-green-600 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <CalendarComponent
-                                mode="single"
-                                selected={field.value}
-                                onSelect={(date) => setDateWithTime("start_date", date)}
-                                disabled={(date) => date < new Date()}
-                                initialFocus
-                                className="rounded-md border border-green-200"
-                              />
-                            </motion.div>
-                          </PopoverContent>
-                        </Popover>
-
-                        <TimePickerDemo
-                          date={field.value}
-                          setDate={(date) => setTimeForDate("start_date", date)}
-                          className="w-[80px] flex-shrink-0"
-                        />
-                      </div>
-                      <FormDescription className="text-green-600">When your event begins</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="end_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col w-3/5">
-                      <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        End Date & Time
-                      </FormLabel>
-                      <div className="flex gap-2">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full justify-between border-green-200 hover:bg-green-50 hover:text-green-800 transition-all duration-300",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <CalendarIcon className="h-4 w-4 text-green-600" />
-                                  <span>{field.value ? format(field.value, "PPP") : "Pick a date"}</span>
-                                </div>
-                                <CalendarIcon className="h-4 w-4 text-green-600 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <CalendarComponent
-                                mode="single"
-                                selected={field.value}
-                                onSelect={(date) => setDateWithTime("end_date", date)}
-                                disabled={(date) => date < new Date()}
-                                initialFocus
-                                className="rounded-md border border-green-200"
-                              />
-                            </motion.div>
-                          </PopoverContent>
-                        </Popover>
-
-                        <TimePickerDemo
-                          date={field.value}
-                          setDate={(date) => setTimeForDate("end_date", date)}
-                          className="w-[80px] flex-shrink-0"
-                        />
-                      </div>
-                      <FormDescription className="text-green-600">When your event concludes</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
-
-              {/* About Event */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <FormLabel className="text-green-800 font-medium flex items-center gap-2 mb-2">
-                  <Sparkles className="h-4 w-4" />
-                  About the Event
-                </FormLabel>
-                <div className="border border-green-200 bg-white rounded-md p-2 min-h-[200px] focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1 transition-all duration-300">
-                  <Editor
-                    editorState={editorState}
-                    onEditorStateChange={setEditorState}
-                    wrapperClassName="demo-wrapper"
-                    editorClassName="demo-editor"
-                    toolbar={{
-                      options: ["inline", "list", "link", "textAlign", "history"],
-                      inline: {
-                        options: ["bold", "italic", "underline"],
-                        bold: { className: "text-green-800" },
-                        italic: { className: "text-green-800" },
-                        underline: { className: "text-green-800" },
-                      },
-                      list: {
-                        options: ["unordered", "ordered"],
-                        unordered: { className: "text-green-800" },
-                        ordered: { className: "text-green-800" },
-                      },
-                    }}
-                  />
-                </div>
-                <FormDescription className="text-green-600 mt-2">
-                  Provide detailed information about your event to attract participants
-                </FormDescription>
-              </motion.div>
-
-              <motion.div
-                className="flex justify-between space-x-4 pt-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.push(`/host/create/${eventId}/additional`)}
-                    className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 transition-all duration-300 group"
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4 group-hover:animate-pulse" />
-                    Previous
-                  </Button>
-                </motion.div>
-
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300 group"
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                        <span>Saving...</span>
-                      </div>
-                    ) : (
-                      <>
-                        Save & Continue
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </>
+                        <FormDescription className="text-green-600">
+                          {/* This image will be displayed at the top of your event page */}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  </Button>
+                  />
                 </motion.div>
-              </motion.div>
-            </form>
-          </Form>
-        </Card>
-      </motion.div>
-    </FormWrapper>
+
+                {/* Event Mode and Registration End Date in a flex row */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  <FormField
+                    control={form.control}
+                    name="mode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          Event Mode
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-green-800 text-white border-green-700">
+                              <p>Choose whether your event will be held online or at a physical location</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="border-green-200 focus:ring-green-500 transition-all duration-300">
+                              <SelectValue placeholder="Select event mode" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Online" className="focus:bg-green-50 focus:text-green-900">
+                              <div className="flex items-center gap-2">
+                                <Globe className="h-4 w-4 text-green-600" />
+                                <span>Online</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="Offline" className="focus:bg-green-50 focus:text-green-900">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-green-600" />
+                                <span>Offline</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription className="text-green-600">
+                          {/* Choose whether your event will be held online or at a physical location */}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Registration End Date */}
+                  <FormField
+                    control={form.control}
+                    name="registration_end_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          Registration End Date & Time
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-green-800 text-white border-green-700">
+                              <p>
+                                The deadline for participants to register for your event. Registration will close at
+                                this time.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative w-full">
+                            <DatePicker
+                              selected={field.value}
+                              onChange={(date) => field.onChange(date)}
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={15}
+                              dateFormat="MMMM d, yyyy h:mm aa"
+                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              minDate={new Date()}
+                              placeholderText="Select date and time"
+                            />
+                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-green-600">
+                          {/* The deadline for participants to register for your event */}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Start Date, End Date */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  {/* Start Date and End Date */}
+                  <FormField
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          Start Date & Time
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-green-800 text-white border-green-700">
+                              <p>When your event begins. This will be displayed on your event page.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative w-full">
+                            <DatePicker
+                              selected={field.value}
+                              onChange={(date) => field.onChange(date)}
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={15}
+                              dateFormat="MMMM d, yyyy h:mm aa"
+                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              minDate={new Date()}
+                              placeholderText="Select date and time"
+                            />
+                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
+                          </div>
+                        </FormControl>
+                        {/* <FormDescription className="text-green-600">When your event begins</FormDescription> */}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="end_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          End Date & Time
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-green-800 text-white border-green-700">
+                              <p>When your event concludes. Must be after the start date.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative w-full">
+                            <DatePicker
+                              selected={field.value}
+                              onChange={(date) => field.onChange(date)}
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={15}
+                              dateFormat="MMMM d, yyyy h:mm aa"
+                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              minDate={field.value < new Date() ? new Date() : field.value}
+                              placeholderText="Select date and time"
+                            />
+                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
+                          </div>
+                        </FormControl>
+                        {/* <FormDescription className="text-green-600">When your event concludes</FormDescription> */}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* About Event */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <FormLabel className="text-green-800 font-medium flex items-center gap-2 mb-2">
+                    <Sparkles className="h-4 w-4" />
+                    About the Event
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-green-800 text-white border-green-700">
+                        <p>
+                          Provide detailed information about your event to attract participants. Include key details,
+                          highlights, and what attendees can expect.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <div className="border border-green-200 bg-white rounded-md p-2 min-h-[200px] focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1 transition-all duration-300">
+                    <Editor
+                      editorState={editorState}
+                      onEditorStateChange={setEditorState}
+                      wrapperClassName="demo-wrapper"
+                      editorClassName="demo-editor"
+                      toolbar={{
+                        options: ["inline", "list", "link", "textAlign", "history"],
+                        inline: {
+                          options: ["bold", "italic", "underline"],
+                          bold: { className: "text-green-800" },
+                          italic: { className: "text-green-800" },
+                          underline: { className: "text-green-800" },
+                        },
+                        list: {
+                          options: ["unordered", "ordered"],
+                          unordered: { className: "text-green-800" },
+                          ordered: { className: "text-green-800" },
+                        },
+                      }}
+                    />
+                  </div>
+                  <FormDescription className="text-green-600 mt-2">
+                    {/* Provide detailed information about your event to attract participants */}
+                  </FormDescription>
+                </motion.div>
+
+                <motion.div
+                  className="flex justify-between space-x-4 pt-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.push(`/host/create/${eventId}/additional`)}
+                      className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 transition-all duration-300 group"
+                    >
+                      <ArrowLeft className="mr-2 h-4 w-4 group-hover:animate-pulse" />
+                      Previous
+                    </Button>
+                  </motion.div>
+
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300 group"
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                          <span>Saving...</span>
+                        </div>
+                      ) : (
+                        <>
+                          Save & Continue
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </form>
+            </Form>
+          </Card>
+        </motion.div>
+      </FormWrapper>
+    </TooltipProvider>
   )
 }

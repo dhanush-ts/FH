@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 export const Tabs = ({ tabs: propTabs, containerClassName, activeTabClassName, tabClassName, contentClassName }) => {
   const [active, setActive] = useState(propTabs[0])
   const [hoverTab, setHoverTab] = useState(null);
   const [tabs, setTabs] = useState(propTabs)
+  const isMobile = useMediaQuery("(max-width: 768px)")
 
   const moveSelectedTabToTop = (idx) => {
     const newTabs = [...propTabs]
@@ -73,7 +75,11 @@ export const Tabs = ({ tabs: propTabs, containerClassName, activeTabClassName, t
                 ? "text-white" 
                 : "text-green-700 dark:text-green-400"
             )}>
-              {tab.title}
+              {isMobile?active.value === tab.value
+      ? tab.title // full label for active tab
+      : tab.title.length > 4
+        ? `${tab.title.slice(0, 4)}...` // shortened label for inactive tabs
+        : tab.title:tab.title}
             </span>
           </button>
         ))}

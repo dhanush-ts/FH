@@ -14,6 +14,16 @@ import { toast } from "sonner"
 import { Upload, X } from "lucide-react"
 import { fetchWithAuth } from "@/app/api"
 import { useAuth } from "@/app/providers"
+ 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 
 export default function CreateHackathonDialog({ open, onOpenChange }) {
@@ -25,6 +35,7 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
   const fileInputRef = useRef(null)
+  const [eventType, setEventType] = useState("Hackathon")
 
   // Fix for dialog closing immediately
   useEffect(() => {
@@ -84,6 +95,7 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
       const df = new FormData()
       df.append("title", title)
       df.append("short_description", shortDescription)
+      df.append("type", eventType)
 
       if (logoFile) {
         df.append("logo", logoFile)
@@ -100,12 +112,13 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
         body: df,
       })
 
+      const data = await response.json()
+      console.log("Response data:", data)
 
       if (!response.ok) {
         throw new Error("Failed to create hackathon")
       }
 
-      const data = await response.json()
 
       toast("Hackathon created successfully!")
 
@@ -184,7 +197,7 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
                 >
                   {logoFile ? "Change Logo" : "Select Logo"}
                 </Button>
-                <p className="text-xs text-muted-foreground mt-1">Recommended: Square image, at least 300x300px</p>
+                <p className="text-xs text-muted-foreground mt-1">Upload a 300x300px file</p>
               </div>
             </div>
           </div>
@@ -205,7 +218,31 @@ export default function CreateHackathonDialog({ open, onOpenChange }) {
             <p className="text-xs text-muted-foreground">{shortDescription.length}/150 characters</p>
           </div>
 
-        
+          <div className="space-y-2">
+            <Label htmlFor="eventType" className="text-sm font-medium">
+              Event Type <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              id="eventType"
+              value={eventType} onValueChange={setEventType}
+              className="w-full border rounded-md px-3 py-2 text-sm"
+              required
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a fruit" />
+              </SelectTrigger>
+              <SelectContent>
+              <SelectGroup>
+                <SelectItem  value="Hackathon">Hackathon</SelectItem >
+                <SelectItem  value="Competition">Competition</SelectItem >
+                <SelectItem  value="Hiring Challenge">Hiring Challenge</SelectItem >
+                <SelectItem  value="Symposium">Symposium</SelectItem >
+                <SelectItem  value="Workshop">Workshop</SelectItem >
+              </SelectGroup>
+            </SelectContent>
+            </Select>
+          </div>
+
 
           <div className="pt-4">
             <Button type="submit" disabled={isLoading} className="w-full font-semibold">

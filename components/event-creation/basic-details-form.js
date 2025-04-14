@@ -26,6 +26,7 @@ export function BasicDetailsForm({ initialData, eventId }) {
   const originalDataRef = useRef({
     title: initialData?.title || "",
     short_description: initialData?.short_description || "",
+    event_type: initialData?.event_type || "",
   })
 
   // Get cached data if available
@@ -35,6 +36,7 @@ export function BasicDetailsForm({ initialData, eventId }) {
     defaultValues: {
       title: cachedData.title || initialData?.title || "",
       short_description: cachedData.short_description || initialData?.short_description || "",
+      event_type: cachedData.event_type || initialData?.event_type || "",
     },
   })
 

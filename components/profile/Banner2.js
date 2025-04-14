@@ -67,7 +67,7 @@ export async function ProfileBanner() {
             </div>
 
             {/* Social Links */}
-            <div className="mt-4">
+            <div className="mt-4 w-full justify-center flex md:flex-col">
               <ProfileSocialLinks
                 githubUrl={profileData.github_url}
                 linkedinUrl={profileData.linkedin_url}
