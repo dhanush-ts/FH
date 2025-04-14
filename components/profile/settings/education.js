@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { fetchWithAuth } from "@/app/api"
-import { GraduationCap, Building, Calendar, Plus, Pencil, Trash2, Save, X } from "lucide-react"
+import { GraduationCap, Building, Calendar, Plus, Pencil, Trash2, Save, X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -25,15 +25,30 @@ export default function EducationSettingsForm() {
   const [editingId, setEditingId] = useState(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteId, setDeleteId] = useState(null)
+  const [collegeSuggestions, setCollegeSuggestions] = useState([]);
 
   // Form state
   const [formData, setFormData] = useState({
     degree: "",
-    institution: "",
+    institution_id: "",
     start_year: "",
     end_year: "",
     grade: "",
   })
+
+  const fetchCollegeSuggestions = async (query) => {
+    if (!query || query.length < 3) return;
+    
+    try {
+      const response = await fetchWithAuth(`/common/dropdown/colleges/?q=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCollegeSuggestions(data);
+      }
+    } catch (error) {
+      console.error("Error fetching college suggestions:", error);
+    }
+  };
 
   // Fetch education data
   useEffect(() => {
@@ -69,11 +84,12 @@ export default function EducationSettingsForm() {
   const resetForm = () => {
     setFormData({
       degree: "",
-      institution: "",
+      institution_id: "",
       start_year: "",
       end_year: "",
       grade: "",
     })
+    setCollegeSuggestions([]);
   }
 
   const handleAddSubmit = async (e) => {
@@ -83,7 +99,7 @@ export default function EducationSettingsForm() {
       // Format data according to the expected API structure
       const apiData = {
         degree: formData.degree,
-        institution: formData.institution,
+        institution_id: formData.institution_id,
         start_year: Number.parseInt(formData.start_year),
         end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
         grade: formData.grade,
@@ -96,12 +112,13 @@ export default function EducationSettingsForm() {
         },
         body: JSON.stringify(apiData),
       })
+      const newEducation = await response.json()
+      console.log(newEducation)
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`)
       }
 
-      const newEducation = await response.json()
       setEntries((prev) => [...prev, newEducation].sort((a, b) => b.start_year - a.start_year))
       setIsAddingNew(false)
       resetForm()
@@ -122,7 +139,7 @@ export default function EducationSettingsForm() {
       // Format data according to the expected API structure
       const apiData = {
         degree: formData.degree,
-        institution: formData.institution,
+        institution_id: formData.institution_id,
         start_year: Number.parseInt(formData.start_year),
         end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
         grade: formData.grade,
@@ -180,7 +197,7 @@ export default function EducationSettingsForm() {
   const startEdit = (education) => {
     setFormData({
       degree: education.degree,
-      institution: education.institution,
+      institution_id: education.institution_id,
       start_year: education.start_year,
       end_year: education.end_year || "",
       grade: education.grade || "",
@@ -232,17 +249,41 @@ export default function EducationSettingsForm() {
 
               <form onSubmit={editingId ? handleEditSubmit : handleAddSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="institution">
-                    Institution <span className="text-red-500">*</span>
+                  <Label htmlFor="institution_id">
+                    institution_id <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    id="institution"
-                    name="institution"
-                    value={formData.institution}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Stanford University"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="institution_id"
+                      name="institution_id"
+                      value={formData.institution_id}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        if (e.target.value.length > 2) {
+                          fetchCollegeSuggestions(e.target.value);
+                        }
+                      }}
+                      placeholder="e.g. Stanford University"
+                      required
+                    />
+                    {collegeSuggestions.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
+                        {collegeSuggestions.map((college) => (
+                          <div
+                            key={college.id}
+                            className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                            onClick={() => {
+                              setFormData({...formData, institution_id: college.name});
+                              setCollegeSuggestions([]);
+                            }}
+                          >
+                            <div className="font-medium">{college.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{college.location}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -358,7 +399,7 @@ export default function EducationSettingsForm() {
                       <h4 className="font-medium text-lg">{entry.degree}</h4>
                       <div className="flex items-center text-muted-foreground">
                         <Building className="h-4 w-4 mr-1" />
-                        {entry.institution}
+                        {entry.institution_id}
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground mt-1">
                         <Calendar className="h-3.5 w-3.5 mr-1" />
