@@ -7,17 +7,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { fetchWithAuth } from "@/app/api"
-import { GraduationCap, Building, Calendar, Plus, Pencil, Trash2, Save, X } from "lucide-react"
+import { Briefcase, Building, Calendar, Plus, Pencil, Trash2, Save, X } from "lucide-react"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,n
+  DialogTitle,
 } from "@/components/ui/dialog"
 
-export default function EducationSettingsForm() {
+export default function WorkExperienceForm() {
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [entries, setEntries] = useState([])
@@ -25,52 +25,66 @@ export default function EducationSettingsForm() {
   const [editingId, setEditingId] = useState(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteId, setDeleteId] = useState(null)
-  const [collegeSuggestions, setCollegeSuggestions] = useState([])
+  const [companySuggestions, setCompanySuggestions] = useState([])
 
   // Form state
   const [formData, setFormData] = useState({
-    degree: "",
-    institution: "",
-    institution_id: null,
+    title: "",
+    company: "",
+    company_id: null,
     start_year: "",
     end_year: "",
-    grade: "",
+    description: "",
   })
 
-  const fetchCollegeSuggestions = async (query) => {
+  const fetchCompanySuggestions = async (query) => {
     if (!query || query.length < 3) return
 
     try {
-      const response = await fetchWithAuth(`/common/dropdown/colleges/?q=${encodeURIComponent(query)}`)
+      const response = await fetchWithAuth(`/common/dropdown/companies/?q=${encodeURIComponent(query)}`)
       if (response.ok) {
         const data = await response.json()
-        setCollegeSuggestions(data)
+        setCompanySuggestions(data)
       }
     } catch (error) {
-      console.error("Error fetching college suggestions:", error)
+      console.error("Error fetching company suggestions:", error)
     }
   }
 
-  // Fetch education data
+  // Fetch work experience data
   useEffect(() => {
-    const getEducationData = async () => {
+    let isMounted = true
+
+    const getWorkExperienceData = async () => {
       try {
         setLoading(true)
-        const response = await fetchWithAuth("/user/education/")
+        const response = await fetchWithAuth("/user/work-experience/")
         const data = await response.json()
+
+        if (!isMounted) return
+
         if (data.length !== 0) {
           setEntries(data.sort((a, b) => -a.start_year + b.start_year))
         } else {
           setEntries(data)
         }
       } catch (error) {
-        toast.error("Failed to load education data")
+        if (isMounted) {
+          toast.error("Failed to load work experience data")
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
-    getEducationData()
+    getWorkExperienceData()
+
+    // Cleanup function to prevent state updates if component unmounts
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   // Form handlers
@@ -84,14 +98,14 @@ export default function EducationSettingsForm() {
 
   const resetForm = () => {
     setFormData({
-      degree: "",
-      institution: "",
-      institution_id: null,
+      title: "",
+      company: "",
+      company_id: null,
       start_year: "",
       end_year: "",
-      grade: "",
+      description: "",
     })
-    setCollegeSuggestions([])
+    setCompanySuggestions([])
   }
 
   const handleAddSubmit = async (e) => {
@@ -100,14 +114,14 @@ export default function EducationSettingsForm() {
       setActionLoading(true)
       // Format data according to the expected API structure
       const apiData = {
-        degree: formData.degree,
-        institution_id: formData.institution_id,
+        title: formData.title,
+        company_id: formData.company_id,
         start_year: Number.parseInt(formData.start_year),
         end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
-        grade: formData.grade,
+        description: formData.description,
       }
 
-      const response = await fetchWithAuth("/user/education/", {
+      const response = await fetchWithAuth("/user/work-experience/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,13 +133,13 @@ export default function EducationSettingsForm() {
         throw new Error(`Error: ${response.status}`)
       }
 
-      const newEducation = await response.json()
-      setEntries((prev) => [...prev, newEducation].sort((a, b) => b.start_year - a.start_year))
+      const newExperience = await response.json()
+      setEntries((prev) => [...prev, newExperience].sort((a, b) => b.start_year - a.start_year))
       setIsAddingNew(false)
       resetForm()
-      toast.success("Education added successfully")
+      toast.success("Work experience added successfully")
     } catch (error) {
-      toast.error("Error adding education")
+      toast.error("Error adding work experience")
     } finally {
       setActionLoading(false)
     }
@@ -139,14 +153,14 @@ export default function EducationSettingsForm() {
       setActionLoading(true)
       // Format data according to the expected API structure
       const apiData = {
-        degree: formData.degree,
-        institution_id: formData.institution_id,
+        title: formData.title,
+        company_id: formData.company_id,
         start_year: Number.parseInt(formData.start_year),
         end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
-        grade: formData.grade,
+        description: formData.description,
       }
 
-      const response = await fetchWithAuth(`/user/education/${editingId}/`, {
+      const response = await fetchWithAuth(`/user/work-experience/${editingId}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -158,17 +172,17 @@ export default function EducationSettingsForm() {
         throw new Error(`Error: ${response.status}`)
       }
 
-      const updatedEducation = await response.json()
+      const updatedExperience = await response.json()
       setEntries((prev) =>
         prev
-          .map((item) => (item.id === updatedEducation.id ? updatedEducation : item))
+          .map((item) => (item.id === updatedExperience.id ? updatedExperience : item))
           .sort((a, b) => b.start_year - a.start_year),
       )
       setEditingId(null)
       resetForm()
-      toast.success("Education updated successfully")
+      toast.success("Work experience updated successfully")
     } catch (error) {
-      toast.error("Error updating education")
+      toast.error("Error updating work experience")
     } finally {
       setActionLoading(false)
     }
@@ -177,14 +191,14 @@ export default function EducationSettingsForm() {
   const handleDelete = async (id) => {
     try {
       setActionLoading(true)
-      await fetchWithAuth(`/user/education/${id}/`, {
+      await fetchWithAuth(`/user/work-experience/${id}/`, {
         method: "DELETE",
       })
       setEntries((prev) => prev.filter((item) => item.id !== id))
-      toast.success("Education deleted successfully")
+      toast.success("Work experience deleted successfully")
       setDeleteDialogOpen(false)
     } catch (error) {
-      toast.error("Error deleting education")
+      toast.error("Error deleting work experience")
     } finally {
       setActionLoading(false)
     }
@@ -195,16 +209,16 @@ export default function EducationSettingsForm() {
     setDeleteDialogOpen(true)
   }
 
-  const startEdit = (education) => {
+  const startEdit = (experience) => {
     setFormData({
-      degree: education.degree,
-      institution: education.institution,
-      institution_id: education.institution_id,
-      start_year: education.start_year,
-      end_year: education.end_year || "",
-      grade: education.grade || "",
+      title: experience.title,
+      company: experience.company,
+      company_id: experience.company_id,
+      start_year: experience.start_year,
+      end_year: experience.end_year || "",
+      description: experience.description || "",
     })
-    setEditingId(education.id)
+    setEditingId(experience.id)
     setIsAddingNew(false)
   }
 
@@ -228,16 +242,16 @@ export default function EducationSettingsForm() {
       <Card className="border border-green-200 dark:border-green-700 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <GraduationCap className="h-5 w-5 text-primary" />
-            Education Management
+            <Briefcase className="h-5 w-5 text-primary" />
+            Work Experience
           </CardTitle>
-          <CardDescription>Add, edit, or remove your educational background</CardDescription>
+          <CardDescription>Add, edit, or remove your professional work experience</CardDescription>
         </CardHeader>
         <CardContent>
           {!isAddingNew && !editingId && (
             <Button onClick={() => setIsAddingNew(true)} className="mb-6">
               <Plus className="h-4 w-4 mr-2" />
-              Add Education
+              Add Work Experience
             </Button>
           )}
 
@@ -245,61 +259,61 @@ export default function EducationSettingsForm() {
           {(isAddingNew || editingId) && (
             <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-lg mb-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <GraduationCap className="h-5 w-5 text-primary" />
-                {editingId ? "Edit Education" : "Add New Education"}
+                <Briefcase className="h-5 w-5 text-primary" />
+                {editingId ? "Edit Work Experience" : "Add New Work Experience"}
               </h3>
 
               <form onSubmit={editingId ? handleEditSubmit : handleAddSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="institution">
-                    Institution <span className="text-red-500">*</span>
+                  <Label htmlFor="title">
+                    Job Title <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="e.g. Software Engineer"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="company">
+                    Company <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
-                      id="institution"
-                      name="institution"
-                      value={formData.institution}
+                      id="company"
+                      name="company"
+                      value={formData.company}
                       onChange={(e) => {
                         handleInputChange(e)
                         if (e.target.value.length > 2) {
-                          fetchCollegeSuggestions(e.target.value)
+                          fetchCompanySuggestions(e.target.value)
                         }
                       }}
-                      placeholder="e.g. Stanford University"
+                      placeholder="e.g. Google"
                       required
                     />
-                    {collegeSuggestions.length > 0 && (
+                    {companySuggestions.length > 0 && (
                       <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
-                        {collegeSuggestions.map((college) => (
+                        {companySuggestions.map((company) => (
                           <div
-                            key={college.id}
+                            key={company.id}
                             className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                             onClick={() => {
-                              setFormData({ ...formData, institution: college.name, institution_id: college.id })
-                              setCollegeSuggestions([])
+                              setFormData({ ...formData, company: company.name, company_id: company.id })
+                              setCompanySuggestions([])
                             }}
                           >
-                            <div className="font-medium">{college.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{college.location}</div>
+                            <div className="font-medium">{company.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{company.location}</div>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="degree">
-                    Degree <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="degree"
-                    name="degree"
-                    value={formData.degree}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Bachelor of Science in Computer Science"
-                    required
-                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -320,7 +334,7 @@ export default function EducationSettingsForm() {
 
                   <div className="space-y-2">
                     <Label htmlFor="end_year">
-                      End Year <span className="text-gray-400 text-xs">(Optional)</span>
+                      End Year <span className="text-gray-400 text-xs">(Leave blank if current)</span>
                     </Label>
                     <Input
                       id="end_year"
@@ -334,19 +348,15 @@ export default function EducationSettingsForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="grade">
-                    Grade <span className="text-gray-400 text-xs">(Optional)</span>
+                  <Label htmlFor="description">
+                    Description <span className="text-gray-400 text-xs">(Optional)</span>
                   </Label>
                   <Input
-                    id="grade"
-                    name="grade"
-                    type="number"
-                    value={formData.grade || ""}
+                    id="description"
+                    name="description"
+                    value={formData.description || ""}
                     onChange={handleInputChange}
-                    placeholder="Grade (1-10)"
-                    max={"10"}
-                    min={"1"}
-                    step="0.1"
+                    placeholder="Brief description of your role and responsibilities"
                   />
                 </div>
 
@@ -374,18 +384,18 @@ export default function EducationSettingsForm() {
             </div>
           )}
 
-          {/* Education List */}
+          {/* Work Experience List */}
           {entries.length === 0 ? (
             <div className="text-center p-8 border border-dashed rounded-lg">
-              <GraduationCap className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-              <h3 className="text-lg font-medium mb-1">No education entries yet</h3>
+              <Briefcase className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+              <h3 className="text-lg font-medium mb-1">No work experience entries yet</h3>
               <p className="text-muted-foreground mb-4">
-                Add your educational background to showcase your qualifications
+                Add your professional experience to showcase your career history
               </p>
               {!isAddingNew && (
                 <Button onClick={() => setIsAddingNew(true)} variant="outline">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Education
+                  Add Work Experience
                 </Button>
               )}
             </div>
@@ -398,15 +408,16 @@ export default function EducationSettingsForm() {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-medium text-lg">{entry.degree}</h4>
+                      <h4 className="font-medium text-lg">{entry.title}</h4>
                       <div className="flex items-center text-muted-foreground">
                         <Building className="h-4 w-4 mr-1" />
-                        {entry.institution}
+                        {entry.company}
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground mt-1">
                         <Calendar className="h-3.5 w-3.5 mr-1" />
                         {entry.start_year} - {entry.end_year || "Present"}
                       </div>
+                      {entry.description && <p className="mt-2 text-sm text-muted-foreground">{entry.description}</p>}
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -442,9 +453,9 @@ export default function EducationSettingsForm() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete Education</DialogTitle>
+            <DialogTitle>Delete Work Experience</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this education entry? This action cannot be undone.
+              Are you sure you want to delete this work experience entry? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex justify-end gap-2 sm:justify-end">

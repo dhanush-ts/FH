@@ -5,6 +5,7 @@ import Achievements from "@/components/profile/Achievements"
 import ProfileSkeleton from "@/components/profile/profile-skeleton"
 import EducationTimeline from "@/components/profile/Education"
 import { ProfileBanner } from "@/components/profile/Banner2"
+import WorkExp from "@/components/profile/work-exp"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -102,20 +103,20 @@ export default function ProfilePage() {
       value: "work experience",
       content: (
         <section
-          aria-labelledby="achievements-heading"
+          aria-labelledby="work-experience-heading"
           className="w-full relative rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 border border-green-200 dark:border-green-800/30"
         >
           <h2
-            id="achievements-heading"
+            id="work-experience-heading"
             className="text-xl font-semibold text-green-800 dark:text-green-300 mb-6 flex items-center gap-2"
           >
             <span className="bg-green-100 dark:bg-green-800/30 p-2 rounded-full">
-              🏆
+              🏢
             </span>
-            Achievement Highlights
+            Work Experience
           </h2>
           <Suspense fallback={<ProfileSkeleton type="achievements" />}>
-            <Achievements />
+            <WorkExp />
           </Suspense>
         </section>
       ),

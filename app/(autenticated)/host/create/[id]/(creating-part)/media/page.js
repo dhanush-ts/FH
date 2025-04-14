@@ -1,5 +1,5 @@
 import serverSideFetch from "@/app/service"
-import { MediaDetailsForm } from "@/components/event-creation/media-details-form"
+import { MediaDetailsForm } from "@/components/event-creation/media-details-form";
 
 export const metadata = {
   title: "Media | Create Event",

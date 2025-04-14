@@ -1,6 +1,7 @@
 "use client";
 export const api = "http://localhost:8000/api";
 import { redirectToLogin } from "@/lib/routerService";
+import { toast } from "sonner";
 
 
 export async function fetchWithAuth(url, options = {},key = false) { 
@@ -17,6 +18,11 @@ export async function fetchWithAuth(url, options = {},key = false) {
     }
 
     let response = await fetch(`${api}${url}`, options);
+    const cloned = response.clone();
+    const data = await cloned.json();
+
+    toast(JSON.stringify(data));
+    // console.log(data)
 
     // if (response.status === 401) {
         // const success = await refreshAccessToken();

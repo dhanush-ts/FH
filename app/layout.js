@@ -2,6 +2,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AuthProvider } from "./providers"; 
+import { Toaster } from "@/components/ui/sonner";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GlobalRouterProvider from "@/components/providers/global-router";
 import SmoothScrollWrapper from "@/components/ui/LenisScrollWrap";
@@ -30,7 +31,8 @@ export default function RootLayout({ children }) {
           <SmoothScrollWrapper>
               <Header />
                 <GlobalRouterProvider />  
-                {children}
+                <Toaster />
+                 {children}
                 <Footer />
             </SmoothScrollWrapper>
           </AuthProvider>

@@ -4,8 +4,6 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import Image from "next/image"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
 import { motion } from "framer-motion"
 import {
   CalendarIcon,
@@ -31,34 +29,6 @@ import { EditorState, convertToRaw, ContentState } from "draft-js"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
-
-{
-  /* Add this after the imports */
-}
-;<style jsx global>{`
-  .react-datepicker-wrapper {
-    width: 100%;
-  }
-  
-  .react-datepicker__input-container input {
-    width: 100%;
-  }
-  
-  .react-datepicker-popper {
-    z-index: 10;
-  }
-  
-  @media (max-width: 640px) {
-    .react-datepicker__time-container {
-      width: 100%;
-      max-width: 200px;
-    }
-    
-    .react-datepicker__time-box {
-      width: 100% !important;
-    }
-  }
-`}</style>
 
 export function MediaDetailsForm({ initialData, eventId }) {
   const [initial, setInital] = useState(initialData?.id)
@@ -101,6 +71,9 @@ export function MediaDetailsForm({ initialData, eventId }) {
     mode: initialData?.mode || "Online",
     start_date: initialData?.start_date ? new Date(initialData.start_date) : new Date(),
     end_date: initialData?.end_date ? new Date(initialData.end_date) : new Date(),
+    registration_start_date: initialData?.registration_start_date
+      ? new Date(initialData.registration_start_date)
+      : new Date(),
     registration_end_date: initialData?.registration_end_date
       ? new Date(initialData.registration_end_date)
       : new Date(),
@@ -112,20 +85,25 @@ export function MediaDetailsForm({ initialData, eventId }) {
       about_event: cachedData?.about_event || initialData?.about_event || "",
       mode: cachedData?.mode || initialData?.mode || "Online",
       start_date: cachedData?.start_date
-        ? new Date(cachedData.start_date)
+        ? new Date(cachedData.start_date).toISOString().slice(0, 16)
         : initialData?.start_date
-          ? new Date(initialData.start_date)
-          : new Date(),
+          ? new Date(initialData.start_date).toISOString().slice(0, 16)
+          : new Date().toISOString().slice(0, 16),
       end_date: cachedData?.end_date
-        ? new Date(cachedData.end_date)
+        ? new Date(cachedData.end_date).toISOString().slice(0, 16)
         : initialData?.end_date
-          ? new Date(initialData.end_date)
-          : new Date(),
+          ? new Date(initialData.end_date).toISOString().slice(0, 16)
+          : new Date().toISOString().slice(0, 16),
+      registration_start_date: cachedData?.registration_start_date
+        ? new Date(cachedData.registration_start_date).toISOString().slice(0, 16)
+        : initialData?.registration_start_date
+          ? new Date(initialData.registration_start_date).toISOString().slice(0, 16)
+          : new Date().toISOString().slice(0, 16),
       registration_end_date: cachedData?.registration_end_date
-        ? new Date(cachedData.registration_end_date)
+        ? new Date(cachedData.registration_end_date).toISOString().slice(0, 16)
         : initialData?.registration_end_date
-          ? new Date(initialData.registration_end_date)
-          : new Date(),
+          ? new Date(initialData.registration_end_date).toISOString().slice(0, 16)
+          : new Date().toISOString().slice(0, 16),
     },
   })
 
@@ -157,17 +135,20 @@ export function MediaDetailsForm({ initialData, eventId }) {
       } else if (key.includes("date")) {
         // Special handling for date fields
         const originalDate = originalDataRef.current[key]
-        const currentDate = value
+        const currentDate = value ? new Date(value) : null
 
-        // Only compare relevant date parts (year, month, day, hour, minute)
-        // This ignores seconds and milliseconds which can cause false change detection
+        // Check if both dates exist before comparing
         if (originalDate && currentDate) {
+          // Convert string dates to Date objects if needed
+          const origDate = originalDate instanceof Date ? originalDate : new Date(originalDate)
+          const currDate = currentDate instanceof Date ? currentDate : new Date(currentDate)
+
           const sameDate =
-            originalDate.getFullYear() === currentDate.getFullYear() &&
-            originalDate.getMonth() === currentDate.getMonth() &&
-            originalDate.getDate() === currentDate.getDate() &&
-            originalDate.getHours() === currentDate.getHours() &&
-            originalDate.getMinutes() === currentDate.getMinutes()
+            origDate.getFullYear() === currDate.getFullYear() &&
+            origDate.getMonth() === currDate.getMonth() &&
+            origDate.getDate() === currDate.getDate() &&
+            origDate.getHours() === currDate.getHours() &&
+            origDate.getMinutes() === currDate.getMinutes()
 
           if (!sameDate) {
             changedFields[key] = value
@@ -218,8 +199,10 @@ export function MediaDetailsForm({ initialData, eventId }) {
       }
 
       // Format dates in the required format with timezone offset
-      const formatDateWithTimezone = (date) => {
-        if (!date) return null
+      const formatDateWithTimezone = (dateString) => {
+        if (!dateString) return null
+
+        const date = new Date(dateString)
 
         // Get timezone offset in hours and minutes
         const tzOffset = date.getTimezoneOffset()
@@ -245,12 +228,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
       formData.append("mode", data.mode)
       formData.append("start_date", formatDateWithTimezone(data.start_date))
       formData.append("end_date", data.end_date ? formatDateWithTimezone(data.end_date) : "")
+      formData.append("registration_start_date", formatDateWithTimezone(data.registration_start_date))
       formData.append("registration_end_date", formatDateWithTimezone(data.registration_end_date))
 
       // For debugging - log the formatted dates
       console.log({
         start_date: formatDateWithTimezone(data.start_date),
         end_date: data.end_date ? formatDateWithTimezone(data.end_date) : null,
+        registration_start_date: formatDateWithTimezone(data.registration_start_date),
         registration_end_date: formatDateWithTimezone(data.registration_end_date),
       })
 
@@ -286,10 +271,6 @@ export function MediaDetailsForm({ initialData, eventId }) {
       setIsSubmitting(false)
     }
   }
-
-  // Remove these functions as they're no longer needed
-  // const setDateWithTime = (field, date) => { ... }
-  // const setTimeForDate = (field, time) => { ... }
 
   return (
     <TooltipProvider>
@@ -475,22 +456,61 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative w-full">
-                            <DatePicker
-                              selected={field.value}
-                              onChange={(date) => field.onChange(date)}
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                            <input
+                              type="datetime-local"
+                              {...field}
                               className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              minDate={new Date()}
-                              placeholderText="Select date and time"
                             />
                             <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                           </div>
                         </FormControl>
                         <FormDescription className="text-green-600">
                           {/* The deadline for participants to register for your event */}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Registration Start Date */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.25 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="registration_start_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          Registration Start Date & Time
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-green-800 text-white border-green-700">
+                              <p>
+                                When registration opens for your event. Participants can register starting from this
+                                time.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative w-full">
+                            <input
+                              type="datetime-local"
+                              {...field}
+                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            />
+                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-green-600">
+                          {/* When registration opens for your event */}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -525,21 +545,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative w-full">
-                            <DatePicker
-                              selected={field.value}
-                              onChange={(date) => field.onChange(date)}
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                            <input
+                              type="datetime-local"
+                              {...field}
                               className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              minDate={new Date()}
-                              placeholderText="Select date and time"
                             />
                             <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                           </div>
                         </FormControl>
-                        {/* <FormDescription className="text-green-600">When your event begins</FormDescription> */}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -564,21 +577,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         </FormLabel>
                         <FormControl>
                           <div className="relative w-full">
-                            <DatePicker
-                              selected={field.value}
-                              onChange={(date) => field.onChange(date)}
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                            <input
+                              type="datetime-local"
+                              {...field}
                               className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              minDate={field.value < new Date() ? new Date() : field.value}
-                              placeholderText="Select date and time"
                             />
                             <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                           </div>
                         </FormControl>
-                        {/* <FormDescription className="text-green-600">When your event concludes</FormDescription> */}
                         <FormMessage />
                       </FormItem>
                     )}

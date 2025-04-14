@@ -33,6 +33,12 @@ export default function ProfileSettingsSidebar() {
       href: "/profile/settings/achievements",
       icon: <Trophy className="h-4 w-4 mr-2" />,
     },
+    {
+      id: "work-experience",
+      label: "Work Experience",
+      href: "/profile/settings/experience",
+      icon: <Trophy className="h-4 w-4 mr-2" />,
+    },
   ]
 
   return (
