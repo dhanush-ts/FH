@@ -187,7 +187,7 @@ export function ProgressSidebar({ currentSection = "basic" }) {
             </ul>
           </nav>
 
-          <motion.div
+          {/* <motion.div
             className="mt-6 rounded-lg bg-green-50 p-4 border border-green-100 shadow-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -203,7 +203,7 @@ export function ProgressSidebar({ currentSection = "basic" }) {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       </aside>
     </TooltipProvider>
