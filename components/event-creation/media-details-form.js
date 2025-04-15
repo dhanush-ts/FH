@@ -21,48 +21,25 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { fetchWithAuth } from "@/app/api"
-// import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
-// import draftToHtml from "draftjs-to-html"
-// import htmlToDraft from "html-to-draftjs"
-// import { Editor } from "react-draft-wysiwyg"
-// import { EditorState, convertToRaw, ContentState } from "draft-js"
+import "@mdxeditor/editor/style.css"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { ForwardRefEditor } from "../mdx-editor/forward-ref-editor"
 
 export function MediaDetailsForm({ initialData, eventId }) {
-  const [initial, setInital] = useState(initialData?.id)
+  const [initial, setInitial] = useState(initialData?.id)
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bannerPreview, setBannerPreview] = useState(null)
   const [bannerFile, setBannerFile] = useState(null)
   const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
-  console.log(bannerPreview)
-  const cachedData = getCurrentSectionData(`media`)
 
-  // Initialize editor state from cached data or initial data
-  const [editorState, setEditorState] = useState(() => {
-    if (cachedData?.about_event) {
-      const blocksFromHtml = htmlToDraft(cachedData.about_event)
-      const { contentBlocks, entityMap } = blocksFromHtml
-      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap)
-      return EditorState.createWithContent(contentState)
-    } else if (initialData?.about_event) {
-      const blocksFromHtml = htmlToDraft(initialData.about_event)
-      const { contentBlocks, entityMap } = blocksFromHtml
-      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap)
-      return EditorState.createWithContent(contentState)
-    }
-    return EditorState.createEmpty()
-  })
+  // Track mounted status
+  const isMountedRef = useRef(false)
 
-  function normalizeHtml(html) {
-    return html
-      .replace(/>\s+</g, "><") // Remove whitespace between tags
-      .replace(/\s{2,}/g, " ") // Replace multiple spaces with a single space
-      .replace(/[\n\r\t]/g, "") // Remove newlines, carriage returns, and tabs
-      .trim() // Remove leading and trailing whitespace
-  }
+  // Local state for markdown
+  const [markdown, setMarkdown] = useState("")
 
   // Store original data for comparison
   const originalDataRef = useRef({
@@ -79,165 +56,177 @@ export function MediaDetailsForm({ initialData, eventId }) {
       : new Date(),
   })
 
+  // Convert date to UTC string
+  const convertToUTC = (dateString) => {
+    if (!dateString) return ""
+    const date = new Date(dateString)
+    return date.toISOString().slice(0, 16)
+  }
+
+  // Form setup
   const form = useForm({
     defaultValues: {
       banner: null,
-      about_event: cachedData?.about_event || initialData?.about_event || "",
-      mode: cachedData?.mode || initialData?.mode || "Online",
-      start_date: cachedData?.start_date
-        ? new Date(cachedData.start_date).toISOString().slice(0, 16)
-        : initialData?.start_date
-          ? new Date(initialData.start_date).toISOString().slice(0, 16)
-          : new Date().toISOString().slice(0, 16),
-      end_date: cachedData?.end_date
-        ? new Date(cachedData.end_date).toISOString().slice(0, 16)
-        : initialData?.end_date
-          ? new Date(initialData.end_date).toISOString().slice(0, 16)
-          : new Date().toISOString().slice(0, 16),
-      registration_start_date: cachedData?.registration_start_date
-        ? new Date(cachedData.registration_start_date).toISOString().slice(0, 16)
-        : initialData?.registration_start_date
-          ? new Date(initialData.registration_start_date).toISOString().slice(0, 16)
-          : new Date().toISOString().slice(0, 16),
-      registration_end_date: cachedData?.registration_end_date
-        ? new Date(cachedData.registration_end_date).toISOString().slice(0, 16)
-        : initialData?.registration_end_date
-          ? new Date(initialData.registration_end_date).toISOString().slice(0, 16)
-          : new Date().toISOString().slice(0, 16),
+      about_event: "",
+      mode: "Online",
+      start_date: convertToUTC(new Date()),
+      end_date: convertToUTC(new Date()),
+      registration_start_date: convertToUTC(new Date()),
+      registration_end_date: convertToUTC(new Date()),
     },
   })
 
-  // Watch form values for changes
-  const formValues = form.watch()
-
-  // Update context when form values change
+  // Initialize component with proper lifecycle handling
   useEffect(() => {
-    const currentFormData = {
-      ...formValues,
-      about_event: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+    isMountedRef.current = true
+
+    // Get cached data
+    const cachedData = getCurrentSectionData("media")
+
+    // Set initial markdown value
+    if (isMountedRef.current) {
+      setMarkdown(cachedData?.about_event || initialData?.about_event || "")
     }
 
-    cacheFormData("media", currentFormData)
+    // Set form values
+    if (isMountedRef.current) {
+      form.reset({
+        banner: null,
+        about_event: cachedData?.about_event || initialData?.about_event || "",
+        mode: cachedData?.mode || initialData?.mode || "Online",
+        start_date: cachedData?.start_date
+          ? convertToUTC(cachedData.start_date)
+          : initialData?.start_date
+            ? convertToUTC(initialData.start_date)
+            : convertToUTC(new Date()),
+        end_date: cachedData?.end_date
+          ? convertToUTC(cachedData.end_date)
+          : initialData?.end_date
+            ? convertToUTC(initialData.end_date)
+            : convertToUTC(new Date()),
+        registration_start_date: cachedData?.registration_start_date
+          ? convertToUTC(cachedData.registration_start_date)
+          : initialData?.registration_start_date
+            ? convertToUTC(initialData.registration_start_date)
+            : convertToUTC(new Date()),
+        registration_end_date: cachedData?.registration_end_date
+          ? convertToUTC(cachedData.registration_end_date)
+          : initialData?.registration_end_date
+            ? convertToUTC(initialData.registration_end_date)
+            : convertToUTC(new Date()),
+      })
+    }
 
-    // Calculate changed fields
-    const changedFields = {}
-    Object.entries(currentFormData).forEach(([key, value]) => {
-      if (key === "banner") return // Skip banner comparison
+    // Set banner preview
+    if (isMountedRef.current) {
+      if (cachedData?.banner) {
+        setBannerPreview(cachedData.banner)
+      } else if (initialData?.banner) {
+        setBannerPreview(initialData.banner)
+      }
+    }
 
-      if (key === "about_event") {
-        const normalizedCurrentHtml = normalizeHtml(value)
-        const normalizedOriginalHtml = normalizeHtml(originalDataRef.current[key] || "")
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [initialData, getCurrentSectionData])
 
-        // Compare normalized HTML content
-        if (normalizedCurrentHtml !== normalizedOriginalHtml) {
-          changedFields[key] = value
+  // Watch form values with subscription to avoid update-before-mount issues
+  useEffect(() => {
+    if (!isMountedRef.current) return
+
+    const subscription = form.watch((values) => {
+      if (isMountedRef.current) {
+        const currentFormData = {
+          ...values,
+          about_event: markdown,
         }
-      } else if (key.includes("date")) {
-        // Special handling for date fields
-        const originalDate = originalDataRef.current[key]
-        const currentDate = value ? new Date(value) : null
 
-        // Check if both dates exist before comparing
-        if (originalDate && currentDate) {
-          // Convert string dates to Date objects if needed
-          const origDate = originalDate instanceof Date ? originalDate : new Date(originalDate)
-          const currDate = currentDate instanceof Date ? currentDate : new Date(currentDate)
+        cacheFormData("media", currentFormData)
 
-          const sameDate =
-            origDate.getFullYear() === currDate.getFullYear() &&
-            origDate.getMonth() === currDate.getMonth() &&
-            origDate.getDate() === currDate.getDate() &&
-            origDate.getHours() === currDate.getHours() &&
-            origDate.getMinutes() === currDate.getMinutes()
+        const changedFields = {}
+        Object.entries(currentFormData).forEach(([key, value]) => {
+          if (key === "banner") return
 
-          if (!sameDate) {
+          if (key === "about_event") {
+            if (value !== (originalDataRef.current[key] || "")) {
+              changedFields[key] = value
+            }
+          } else if (key.includes("date")) {
+            const originalDate = originalDataRef.current[key]
+            const currentDate = value ? new Date(value) : null
+
+            if (originalDate && currentDate) {
+              const origDate = originalDate instanceof Date ? originalDate : new Date(originalDate)
+              const currDate = currentDate instanceof Date ? currentDate : new Date(currentDate)
+
+              const sameDate =
+                origDate.getFullYear() === currDate.getFullYear() &&
+                origDate.getMonth() === currDate.getMonth() &&
+                origDate.getDate() === currDate.getDate() &&
+                origDate.getHours() === currDate.getHours() &&
+                origDate.getMinutes() === currDate.getMinutes()
+
+              if (!sameDate) {
+                changedFields[key] = value
+              }
+            } else if (originalDate !== currentDate) {
+              changedFields[key] = value
+            }
+          } else if (originalDataRef.current[key] !== value) {
             changedFields[key] = value
           }
-        } else if (originalDate !== currentDate) {
-          // One is null and the other isn't
-          changedFields[key] = value
+        })
+
+        if (bannerFile) {
+          changedFields.banner = bannerFile
         }
-      } else if (originalDataRef.current[key] !== value) {
-        changedFields[key] = value
+
+        setChangedFields("media", changedFields)
       }
     })
 
-    if (bannerFile) {
-      changedFields.banner = bannerFile
-    }
+    return () => subscription.unsubscribe()
+  }, [form, markdown, bannerFile, cacheFormData, setChangedFields])
 
-    setChangedFields("media", changedFields)
-    console.log(changedFields)
-  }, [formValues, editorState, bannerFile, cacheFormData, setChangedFields])
-
-  useEffect(() => {
-    if (cachedData?.banner) {
-      setBannerPreview(cachedData.banner)
-    } else if (initialData?.banner && !bannerPreview) {
-      setBannerPreview(initialData.banner)
-    }
-  }, [initialData, bannerPreview, cachedData])
-
-  const handleFileUpload = async (file) => {
-    const objectUrl = URL.createObjectURL(file)
-    setBannerPreview(objectUrl)
-    setBannerFile(file)
-    form.setValue("banner", file)
-  }
-
-  async function onSubmit(data) {
-    setIsSubmitting(true)
-    const aboutHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+  // Handle file input
+  const handleFileUpload = (file) => {
+    if (!file || !isMountedRef.current) return
 
     try {
-      // Prepare form data
+      const objectUrl = URL.createObjectURL(file)
+      setBannerPreview(objectUrl)
+      setBannerFile(file)
+      form.setValue("banner", file)
+    } catch (error) {
+      console.error("Error handling file upload:", error)
+    }
+  }
+
+  // Submit form
+  async function onSubmit(data) {
+    if (!isMountedRef.current) return
+    setIsSubmitting(true)
+
+    try {
       const formData = new FormData()
 
-      // Add banner if changed
       if (bannerFile) {
         formData.append("banner", bannerFile)
       }
 
-      // Format dates in the required format with timezone offset
-      const formatDateWithTimezone = (dateString) => {
+      const formatDateToUTC = (dateString) => {
         if (!dateString) return null
-
         const date = new Date(dateString)
-
-        // Get timezone offset in hours and minutes
-        const tzOffset = date.getTimezoneOffset()
-        const tzOffsetHours = Math.abs(Math.floor(tzOffset / 60))
-        const tzOffsetMinutes = Math.abs(tzOffset % 60)
-
-        // Format the timezone string (e.g., +05:30)
-        const tzSign = tzOffset <= 0 ? "+" : "-"
-        const tzString = `${tzSign}${tzOffsetHours.toString().padStart(2, "0")}:${tzOffsetMinutes.toString().padStart(2, "0")}`
-
-        // Format the date in ISO format with custom timezone
-        const year = date.getFullYear()
-        const month = (date.getMonth() + 1).toString().padStart(2, "0")
-        const day = date.getDate().toString().padStart(2, "0")
-        const hours = date.getHours().toString().padStart(2, "0")
-        const minutes = date.getMinutes().toString().padStart(2, "0")
-
-        return `${year}-${month}-${day}T${hours}:${minutes}:00${tzString}`
+        return date.toISOString()
       }
 
-      // Add other fields
-      formData.append("about_event", aboutHtml)
+      formData.append("about_event", markdown)
       formData.append("mode", data.mode)
-      formData.append("start_date", formatDateWithTimezone(data.start_date))
-      formData.append("end_date", data.end_date ? formatDateWithTimezone(data.end_date) : "")
-      formData.append("registration_start_date", formatDateWithTimezone(data.registration_start_date))
-      formData.append("registration_end_date", formatDateWithTimezone(data.registration_end_date))
-
-      // For debugging - log the formatted dates
-      console.log({
-        start_date: formatDateWithTimezone(data.start_date),
-        end_date: data.end_date ? formatDateWithTimezone(data.end_date) : null,
-        registration_start_date: formatDateWithTimezone(data.registration_start_date),
-        registration_end_date: formatDateWithTimezone(data.registration_end_date),
-      })
+      formData.append("start_date", formatDateToUTC(data.start_date))
+      formData.append("end_date", data.end_date ? formatDateToUTC(data.end_date) : "")
+      formData.append("registration_start_date", formatDateToUTC(data.registration_start_date))
+      formData.append("registration_end_date", formatDateToUTC(data.registration_end_date))
 
       const response = await fetchWithAuth(
         `/event/host/base-event-detail/${eventId}/`,
@@ -247,20 +236,19 @@ export function MediaDetailsForm({ initialData, eventId }) {
         },
         true,
       )
-      const k = await response.json()
-      console.log(k)
+
+      const result = await response.json()
+      console.log(result)
 
       if (!response.ok) {
         throw new Error(`Failed to save: ${response.status}`)
       }
 
-      // Clear changes after successful save
       clearSectionChanges("media-detail")
 
-      // Update original data reference
       originalDataRef.current = {
         ...data,
-        about_event: aboutHtml,
+        about_event: markdown,
         banner: bannerPreview,
       }
 
@@ -268,7 +256,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
     } catch (error) {
       console.error("Error saving media details:", error)
     } finally {
-      setIsSubmitting(false)
+      if (isMountedRef.current) setIsSubmitting(false)
+    }
+  }
+
+  // Handle markdown changes safely
+  const handleMarkdownChange = (value) => {
+    if (isMountedRef.current) {
+      setMarkdown(value)
     }
   }
 
@@ -335,13 +330,19 @@ export function MediaDetailsForm({ initialData, eventId }) {
                           >
                             {bannerPreview ? (
                               <>
-                                <Image
-                                  src={bannerPreview || "/placeholder.svg"}
-                                  alt="Banner Preview"
-                                  fill
-                                  style={{ objectFit: "cover" }}
-                                  className="z-10"
-                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <Image
+                                    src={bannerPreview || "/placeholder.svg"}
+                                    alt="Banner Preview"
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                    className="z-10"
+                                    onError={(e) => {
+                                      console.error("Image failed to load")
+                                      e.target.style.display = "none"
+                                    }}
+                                  />
+                                </div>
                                 <div className="absolute inset-0 bg-black/30 z-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                                   <p className="text-white font-medium">Click to change banner</p>
                                 </div>
@@ -380,12 +381,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
                   />
                 </motion.div>
 
-                {/* Event Mode and Registration End Date in a flex row */}
+                {/* Event Mode */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  className="grid grid-cols-1 gap-6"
                 >
                   <FormField
                     control={form.control}
@@ -433,52 +434,70 @@ export function MediaDetailsForm({ initialData, eventId }) {
                     )}
                   />
 
-                  {/* Registration End Date */}
-                </motion.div>
-
-                {/* Registration Start Date */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.25 }}
-                >
-                  <FormField
-                    control={form.control}
-                    name="registration_start_date"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          Registration Start Date & Time
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-green-800 text-white border-green-700">
-                              <p>
-                                When registration opens for your event. Participants can register starting from this
-                                time.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <input
-                              type="datetime-local"
-                              {...field}
-                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            />
-                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
-                          </div>
-                        </FormControl>
-                        <FormDescription className="text-green-600">
-                          {/* When registration opens for your event */}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Registration Dates (combined in one field) */}
+                  <div>
+                    <FormLabel className="text-green-800 font-medium flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Registration Period
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-green-800 text-white border-green-700">
+                          <p>When registration opens and closes for your event</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </FormLabel>
+                    <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                      <div className="relative w-full">
+                        <FormField
+                          control={form.control}
+                          name="registration_start_date"
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <div className="relative w-full">
+                                  <input
+                                    type="datetime-local"
+                                    {...field}
+                                    className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  />
+                                  <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <span className="text-xs text-green-600 block mt-1">Start</span>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <span className="text-green-600">to</span>
+                      </div>
+                      <div className="relative w-full">
+                        <FormField
+                          control={form.control}
+                          name="registration_end_date"
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <div className="relative w-full">
+                                  <input
+                                    type="datetime-local"
+                                    {...field}
+                                    className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  />
+                                  <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <span className="text-xs text-green-600 block mt-1">End</span>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
 
                 {/* Start Date, End Date */}
@@ -554,7 +573,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                   />
                 </motion.div>
 
-                {/* About Event */}
+                {/* About Event - MDX Editor */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -576,26 +595,9 @@ export function MediaDetailsForm({ initialData, eventId }) {
                     </Tooltip>
                   </FormLabel>
                   <div className="border border-green-200 bg-white rounded-md p-2 min-h-[200px] focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1 transition-all duration-300">
-                    <Editor
-                      editorState={editorState}
-                      onEditorStateChange={setEditorState}
-                      wrapperClassName="demo-wrapper"
-                      editorClassName="demo-editor"
-                      toolbar={{
-                        options: ["inline", "list", "link", "textAlign", "history"],
-                        inline: {
-                          options: ["bold", "italic", "underline"],
-                          bold: { className: "text-green-800" },
-                          italic: { className: "text-green-800" },
-                          underline: { className: "text-green-800" },
-                        },
-                        list: {
-                          options: ["unordered", "ordered"],
-                          unordered: { className: "text-green-800" },
-                          ordered: { className: "text-green-800" },
-                        },
-                      }}
-                    />
+                    {isMountedRef.current && (
+                      <ForwardRefEditor markdown={markdown} onChange={handleMarkdownChange} className="min-h-[200px]" />
+                    )}
                   </div>
                   <FormDescription className="text-green-600 mt-2">
                     {/* Provide detailed information about your event to attract participants */}

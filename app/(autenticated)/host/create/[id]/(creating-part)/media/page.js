@@ -13,7 +13,7 @@ export default async function MediaPage({ params }) {
   return (
     <div className="mx-auto max-w-3xl">
 
-      {/* <MediaDetailsForm initialData={eventDetails} eventId={id} /> */}
+      <MediaDetailsForm initialData={eventDetails} eventId={id} />
     </div>
   )
 }
