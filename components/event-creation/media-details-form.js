@@ -25,7 +25,7 @@ import "@mdxeditor/editor/style.css"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
-import { ForwardRefEditor } from "../mdx-editor/forward-ref-editor"
+import { MDXEditorTabs } from "../mdx-editor/mdx-editor-tabs"
 
 export function MediaDetailsForm({ initialData, eventId }) {
   const [initial, setInitial] = useState(initialData?.id)
@@ -35,11 +35,11 @@ export function MediaDetailsForm({ initialData, eventId }) {
   const [bannerFile, setBannerFile] = useState(null)
   const { cacheFormData, setChangedFields, clearSectionChanges, getCurrentSectionData } = useEventFormContext()
 
-  // Track mounted status
-  const isMountedRef = useRef(false)
+  // Track if component is mounted to prevent state updates after unmount
+  const isMountedRef = useRef(true)
 
-  // Local state for markdown
-  const [markdown, setMarkdown] = useState("")
+  // Get cached data once on mount
+  const cachedDataRef = useRef(getCurrentSectionData("media"))
 
   // Store original data for comparison
   const originalDataRef = useRef({
@@ -56,87 +56,68 @@ export function MediaDetailsForm({ initialData, eventId }) {
       : new Date(),
   })
 
-  // Convert date to UTC string
-  const convertToUTC = (dateString) => {
-    if (!dateString) return ""
-    const date = new Date(dateString)
-    return date.toISOString().slice(0, 16)
+  // Local state for markdown content
+  const [markdown, setMarkdown] = useState(() => {
+    return cachedDataRef.current?.about_event || initialData?.about_event || ""
+  })
+
+  // Convert date to ISO string for datetime-local inputs
+  const convertToDateTimeLocal = (date) => {
+    if (!date) return ""
+    const d = new Date(date)
+    return d.toISOString().slice(0, 16)
   }
 
-  // Form setup
+  // Form setup with default values
   const form = useForm({
     defaultValues: {
       banner: null,
       about_event: "",
-      mode: "Online",
-      start_date: convertToUTC(new Date()),
-      end_date: convertToUTC(new Date()),
-      registration_start_date: convertToUTC(new Date()),
-      registration_end_date: convertToUTC(new Date()),
+      mode: cachedDataRef.current?.mode || initialData?.mode || "Online",
+      start_date: convertToDateTimeLocal(cachedDataRef.current?.start_date || initialData?.start_date || new Date()),
+      end_date: convertToDateTimeLocal(cachedDataRef.current?.end_date || initialData?.end_date || new Date()),
+      registration_start_date: convertToDateTimeLocal(
+        cachedDataRef.current?.registration_start_date || initialData?.registration_start_date || new Date(),
+      ),
+      registration_end_date: convertToDateTimeLocal(
+        cachedDataRef.current?.registration_end_date || initialData?.registration_end_date || new Date(),
+      ),
     },
   })
 
-  // Initialize component with proper lifecycle handling
+  // Set up cleanup on unmount
   useEffect(() => {
-    isMountedRef.current = true
-
-    // Get cached data
-    const cachedData = getCurrentSectionData("media")
-
-    // Set initial markdown value
-    if (isMountedRef.current) {
-      setMarkdown(cachedData?.about_event || initialData?.about_event || "")
-    }
-
-    // Set form values
-    if (isMountedRef.current) {
-      form.reset({
-        banner: null,
-        about_event: cachedData?.about_event || initialData?.about_event || "",
-        mode: cachedData?.mode || initialData?.mode || "Online",
-        start_date: cachedData?.start_date
-          ? convertToUTC(cachedData.start_date)
-          : initialData?.start_date
-            ? convertToUTC(initialData.start_date)
-            : convertToUTC(new Date()),
-        end_date: cachedData?.end_date
-          ? convertToUTC(cachedData.end_date)
-          : initialData?.end_date
-            ? convertToUTC(initialData.end_date)
-            : convertToUTC(new Date()),
-        registration_start_date: cachedData?.registration_start_date
-          ? convertToUTC(cachedData.registration_start_date)
-          : initialData?.registration_start_date
-            ? convertToUTC(initialData.registration_start_date)
-            : convertToUTC(new Date()),
-        registration_end_date: cachedData?.registration_end_date
-          ? convertToUTC(cachedData.registration_end_date)
-          : initialData?.registration_end_date
-            ? convertToUTC(initialData.registration_end_date)
-            : convertToUTC(new Date()),
-      })
-    }
-
-    // Set banner preview
-    if (isMountedRef.current) {
-      if (cachedData?.banner) {
-        setBannerPreview(cachedData.banner)
-      } else if (initialData?.banner) {
-        setBannerPreview(initialData.banner)
-      }
-    }
-
     return () => {
       isMountedRef.current = false
     }
-  }, [initialData, getCurrentSectionData])
+  }, [])
 
-  // Watch form values with subscription to avoid update-before-mount issues
+  // Initialize banner preview
   useEffect(() => {
-    if (!isMountedRef.current) return
+    if (cachedDataRef.current?.banner) {
+      setBannerPreview(cachedDataRef.current.banner)
+    } else if (initialData?.banner) {
+      setBannerPreview(initialData.banner)
+    }
+  }, [initialData])
 
+  // Handle form value changes and update context
+  // This is debounced to prevent excessive updates
+  const updateFormCache = useRef(null)
+
+  useEffect(() => {
     const subscription = form.watch((values) => {
-      if (isMountedRef.current) {
+      if (!isMountedRef.current) return
+
+      // Clear any pending updates
+      if (updateFormCache.current) {
+        clearTimeout(updateFormCache.current)
+      }
+
+      // Schedule a new update
+      updateFormCache.current = setTimeout(() => {
+        if (!isMountedRef.current) return
+
         const currentFormData = {
           ...values,
           about_event: markdown,
@@ -144,15 +125,24 @@ export function MediaDetailsForm({ initialData, eventId }) {
 
         cacheFormData("media", currentFormData)
 
+        // Calculate changed fields
         const changedFields = {}
-        Object.entries(currentFormData).forEach(([key, value]) => {
-          if (key === "banner") return
 
-          if (key === "about_event") {
-            if (value !== (originalDataRef.current[key] || "")) {
-              changedFields[key] = value
-            }
-          } else if (key.includes("date")) {
+        // Check banner
+        if (bannerFile) {
+          changedFields.banner = bannerFile
+        }
+
+        // Check markdown content
+        if (markdown !== (originalDataRef.current.about_event || "")) {
+          changedFields.about_event = markdown
+        }
+
+        // Check other fields
+        Object.entries(values).forEach(([key, value]) => {
+          if (key === "banner" || key === "about_event") return
+
+          if (key.includes("date")) {
             const originalDate = originalDataRef.current[key]
             const currentDate = value ? new Date(value) : null
 
@@ -160,6 +150,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
               const origDate = originalDate instanceof Date ? originalDate : new Date(originalDate)
               const currDate = currentDate instanceof Date ? currentDate : new Date(currentDate)
 
+              // Compare only date parts that matter
               const sameDate =
                 origDate.getFullYear() === currDate.getFullYear() &&
                 origDate.getMonth() === currDate.getMonth() &&
@@ -178,18 +169,25 @@ export function MediaDetailsForm({ initialData, eventId }) {
           }
         })
 
-        if (bannerFile) {
-          changedFields.banner = bannerFile
-        }
-
         setChangedFields("media", changedFields)
-      }
+      }, 300) // Debounce for 300ms
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      if (updateFormCache.current) {
+        clearTimeout(updateFormCache.current)
+      }
+      subscription.unsubscribe()
+    }
   }, [form, markdown, bannerFile, cacheFormData, setChangedFields])
 
-  // Handle file input
+  // Handle markdown changes
+  const handleMarkdownChange = (value) => {
+    if (!isMountedRef.current) return
+    setMarkdown(value)
+  }
+
+  // Handle file upload
   const handleFileUpload = (file) => {
     if (!file || !isMountedRef.current) return
 
@@ -203,7 +201,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
     }
   }
 
-  // Submit form
+  // Form submission
   async function onSubmit(data) {
     if (!isMountedRef.current) return
     setIsSubmitting(true)
@@ -211,16 +209,19 @@ export function MediaDetailsForm({ initialData, eventId }) {
     try {
       const formData = new FormData()
 
+      // Add banner if changed
       if (bannerFile) {
         formData.append("banner", bannerFile)
       }
 
+      // Format dates in the required format
       const formatDateToUTC = (dateString) => {
         if (!dateString) return null
         const date = new Date(dateString)
         return date.toISOString()
       }
 
+      // Add other fields
       formData.append("about_event", markdown)
       formData.append("mode", data.mode)
       formData.append("start_date", formatDateToUTC(data.start_date))
@@ -238,14 +239,15 @@ export function MediaDetailsForm({ initialData, eventId }) {
       )
 
       const result = await response.json()
-      console.log(result)
 
       if (!response.ok) {
         throw new Error(`Failed to save: ${response.status}`)
       }
 
+      // Clear changes after successful save
       clearSectionChanges("media-detail")
 
+      // Update original data reference
       originalDataRef.current = {
         ...data,
         about_event: markdown,
@@ -256,14 +258,9 @@ export function MediaDetailsForm({ initialData, eventId }) {
     } catch (error) {
       console.error("Error saving media details:", error)
     } finally {
-      if (isMountedRef.current) setIsSubmitting(false)
-    }
-  }
-
-  // Handle markdown changes safely
-  const handleMarkdownChange = (value) => {
-    if (isMountedRef.current) {
-      setMarkdown(value)
+      if (isMountedRef.current) {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -365,7 +362,6 @@ export function MediaDetailsForm({ initialData, eventId }) {
                               onChange={(e) => {
                                 if (e.target.files?.[0]) {
                                   handleFileUpload(e.target.files[0])
-                                  field.onChange(e.target.files[0])
                                 }
                               }}
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
@@ -573,7 +569,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                   />
                 </motion.div>
 
-                {/* About Event - MDX Editor */}
+                {/* About Event - MDX Editor with Tabs */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -594,13 +590,11 @@ export function MediaDetailsForm({ initialData, eventId }) {
                       </TooltipContent>
                     </Tooltip>
                   </FormLabel>
-                  <div className="border border-green-200 bg-white rounded-md p-2 min-h-[200px] focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1 transition-all duration-300">
-                    {isMountedRef.current && (
-                      <ForwardRefEditor markdown={markdown} onChange={handleMarkdownChange} className="min-h-[200px]" />
-                    )}
+                  <div className="border border-green-200 bg-white rounded-md min-h-[200px] focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1 transition-all duration-300">
+                    <MDXEditorTabs markdown={markdown} onChange={handleMarkdownChange} className="min-h-[200px]" />
                   </div>
                   <FormDescription className="text-green-600 mt-2">
-                    {/* Provide detailed information about your event to attract participants */}
+                    Use the tabs to switch between editing markdown and previewing the result
                   </FormDescription>
                 </motion.div>
 

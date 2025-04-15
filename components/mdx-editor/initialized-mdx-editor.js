@@ -7,7 +7,17 @@ import {
   quotePlugin,
   thematicBreakPlugin,
   markdownShortcutPlugin,
+  linkPlugin,
+  tablePlugin,
+  imagePlugin,
+  codeBlockPlugin,
+  codeMirrorPlugin,
+  toolbarPlugin,
   MDXEditor,
+  MDXEditorMethods,
+  DiffSourceToggleWrapper,
+  UndoRedo,
+  diffSourcePlugin
 } from "@mdxeditor/editor"
 
 // Only import this to the next file
@@ -37,17 +47,33 @@ export default function InitializedMDXEditor({
 
   return (
     <MDXEditor
+      ref={editorRef}
+      markdown={markdown}
+      onChange={onChange}
       plugins={[
         headingsPlugin(),
         listsPlugin(),
         quotePlugin(),
         thematicBreakPlugin(),
         markdownShortcutPlugin(),
-      ]}
-      markdown={markdown}
-      onChange={onChange}
+        linkPlugin(),
+        tablePlugin(),
+        imagePlugin(),
+        codeBlockPlugin(),
+        codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', html: 'HTML' } }),
+        diffSourcePlugin({ diffMarkdown: 'An older version', viewMode: 'rich-text' }),
+        toolbarPlugin({
+          toolbarContents: () => (
+            <DiffSourceToggleWrapper>
+              <UndoRedo />
+            </DiffSourceToggleWrapper>
+             )
+          })
+        ]}
       {...props}
-      ref={editorRef}
     />
   )
 }
+
+// Import the toolbar namespace to use in the toolbarPlugin
+// import * as toolbar from '@mdxeditor/editor/plugins/toolbar'
