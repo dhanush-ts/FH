@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import {
+  MDXEditor,
   headingsPlugin,
   listsPlugin,
   quotePlugin,
@@ -13,30 +14,33 @@ import {
   codeBlockPlugin,
   codeMirrorPlugin,
   toolbarPlugin,
-  MDXEditor,
-  MDXEditorMethods,
+  diffSourcePlugin,
   DiffSourceToggleWrapper,
   UndoRedo,
-  diffSourcePlugin
-} from "@mdxeditor/editor"
+  BoldItalicUnderlineToggles,
+  ListsToggle,
+  BlockTypeSelect,
+  InsertImage,
+  InsertTable,
+  InsertThematicBreak,
+  InsertCodeBlock,
+  CreateLink,
+  Separator
+} from '@mdxeditor/editor';
 
-// Only import this to the next file
 export default function InitializedMDXEditor({
   editorRef,
   markdown,
   onChange,
   ...props
 }) {
-  // Use a state to track if component is mounted
   const [isMounted, setIsMounted] = useState(false)
-  
-  // Set mounted state after component mounts
+
   useEffect(() => {
     setIsMounted(true)
     return () => setIsMounted(false)
   }, [])
 
-  // Only render the editor when the component is mounted
   if (!isMounted) {
     return (
       <div className="border border-gray-200 rounded-md p-4 h-[200px] flex items-center justify-center">
@@ -60,20 +64,33 @@ export default function InitializedMDXEditor({
         tablePlugin(),
         imagePlugin(),
         codeBlockPlugin(),
-        codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', html: 'HTML' } }),
-        diffSourcePlugin({ diffMarkdown: 'An older version', viewMode: 'rich-text' }),
+        codeMirrorPlugin({
+          codeBlockLanguages: {
+            js: "JavaScript",
+            css: "CSS",
+            html: "HTML",
+          },
+        }),
+        diffSourcePlugin({ viewMode: 'rich-text' }),
         toolbarPlugin({
           toolbarContents: () => (
             <DiffSourceToggleWrapper>
+              <BoldItalicUnderlineToggles />
+              <Separator />
+              <BlockTypeSelect />
+              <ListsToggle />
+              <InsertImage />
+              <InsertTable />
+              <InsertThematicBreak />
+              <InsertCodeBlock />
+              <CreateLink />
+              <Separator />
               <UndoRedo />
             </DiffSourceToggleWrapper>
-             )
-          })
-        ]}
+          ),
+        }),
+      ]}
       {...props}
     />
   )
 }
-
-// Import the toolbar namespace to use in the toolbarPlugin
-// import * as toolbar from '@mdxeditor/editor/plugins/toolbar'
