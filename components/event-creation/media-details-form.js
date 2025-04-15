@@ -453,7 +453,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
                               </p>
                             </TooltipContent>
                           </Tooltip>
-                        </FormLabel>
+                        </FormLabel> 
                         <FormControl>
                           <div className="relative w-full">
                             <input

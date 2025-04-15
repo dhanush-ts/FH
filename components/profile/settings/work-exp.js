@@ -29,12 +29,12 @@ export default function WorkExperienceForm() {
 
   // Form state
   const [formData, setFormData] = useState({
-    title: "",
-    company: "",
-    company_id: null,
+    role: "",
+    organization: "",
+    organization_id: null,
     start_year: "",
     end_year: "",
-    description: "",
+    // description: "",
   })
 
   const fetchCompanySuggestions = async (query) => {
@@ -98,12 +98,12 @@ export default function WorkExperienceForm() {
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      company: "",
-      company_id: null,
+      role: "",
+      organization: "",
+      organization_id: null,
       start_year: "",
       end_year: "",
-      description: "",
+      // description: "",
     })
     setCompanySuggestions([])
   }
@@ -114,11 +114,11 @@ export default function WorkExperienceForm() {
       setActionLoading(true)
       // Format data according to the expected API structure
       const apiData = {
-        title: formData.title,
-        company_id: formData.company_id,
+        role: formData.role,
+        organization_id: formData.organization_id,
         start_year: Number.parseInt(formData.start_year),
         end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
-        description: formData.description,
+        // description: formData.description,
       }
 
       const response = await fetchWithAuth("/user/work-experience/", {
@@ -153,11 +153,11 @@ export default function WorkExperienceForm() {
       setActionLoading(true)
       // Format data according to the expected API structure
       const apiData = {
-        title: formData.title,
-        company_id: formData.company_id,
+        role: formData.role,
+        organization_id: formData.organization_id,
         start_year: Number.parseInt(formData.start_year),
         end_year: formData.end_year ? Number.parseInt(formData.end_year) : null,
-        description: formData.description,
+        // description: formData.description,
       }
 
       const response = await fetchWithAuth(`/user/work-experience/${editingId}/`, {
@@ -211,12 +211,12 @@ export default function WorkExperienceForm() {
 
   const startEdit = (experience) => {
     setFormData({
-      title: experience.title,
-      company: experience.company,
-      company_id: experience.company_id,
+      role: experience.role,
+      organization: experience.organization,
+      organization_id: experience.organization_id,
       start_year: experience.start_year,
       end_year: experience.end_year || "",
-      description: experience.description || "",
+      // description: experience.description || "",
     })
     setEditingId(experience.id)
     setIsAddingNew(false)
@@ -265,13 +265,13 @@ export default function WorkExperienceForm() {
 
               <form onSubmit={editingId ? handleEditSubmit : handleAddSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">
+                  <Label htmlFor="role">
                     Job Title <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    id="title"
-                    name="title"
-                    value={formData.title}
+                    id="role"
+                    name="role"
+                    value={formData.role}
                     onChange={handleInputChange}
                     placeholder="e.g. Software Engineer"
                     required
@@ -279,14 +279,14 @@ export default function WorkExperienceForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="company">
-                    Company <span className="text-red-500">*</span>
+                  <Label htmlFor="organization">
+                    organization <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
-                      id="company"
-                      name="company"
-                      value={formData.company}
+                      id="organization"
+                      name="organization"
+                      value={formData.organization}
                       onChange={(e) => {
                         handleInputChange(e)
                         if (e.target.value.length > 2) {
@@ -298,17 +298,17 @@ export default function WorkExperienceForm() {
                     />
                     {companySuggestions.length > 0 && (
                       <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
-                        {companySuggestions.map((company) => (
+                        {companySuggestions.map((organization) => (
                           <div
-                            key={company.id}
+                            key={organization.id}
                             className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                             onClick={() => {
-                              setFormData({ ...formData, company: company.name, company_id: company.id })
+                              setFormData({ ...formData, organization: organization.name, organization_id: organization.id })
                               setCompanySuggestions([])
                             }}
                           >
-                            <div className="font-medium">{company.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{company.location}</div>
+                            <div className="font-medium">{organization.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{organization.location}</div>
                           </div>
                         ))}
                       </div>
@@ -347,7 +347,7 @@ export default function WorkExperienceForm() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="description">
                     Description <span className="text-gray-400 text-xs">(Optional)</span>
                   </Label>
@@ -358,7 +358,7 @@ export default function WorkExperienceForm() {
                     onChange={handleInputChange}
                     placeholder="Brief description of your role and responsibilities"
                   />
-                </div>
+                </div> */}
 
                 <div className="flex justify-end gap-2 pt-4">
                   <Button type="button" variant="outline" onClick={cancelForm} disabled={actionLoading}>
@@ -408,16 +408,16 @@ export default function WorkExperienceForm() {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-medium text-lg">{entry.title}</h4>
+                      <h4 className="font-medium text-lg">{entry.role}</h4>
                       <div className="flex items-center text-muted-foreground">
                         <Building className="h-4 w-4 mr-1" />
-                        {entry.company}
+                        {entry.organization}
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground mt-1">
                         <Calendar className="h-3.5 w-3.5 mr-1" />
                         {entry.start_year} - {entry.end_year || "Present"}
                       </div>
-                      {entry.description && <p className="mt-2 text-sm text-muted-foreground">{entry.description}</p>}
+                      {/* {entry.description && <p className="mt-2 text-sm text-muted-foreground">{entry.description}</p>} */}
                     </div>
                     <div className="flex gap-2">
                       <Button

@@ -148,15 +148,6 @@ export default async function WorkExp() {
                           {entry.start_year} - {entry.end_year || "Present"}
                         </span>
                       </div>
-
-                      {entry.grade && (
-                        <div className="flex items-center text-sm">
-                          <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700">
-                            <Award className="h-3.5 w-3.5" />
-                            <span className="font-medium">{entry.grade} GPA</span>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>

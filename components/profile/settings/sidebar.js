@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { User, GraduationCap, Briefcase, Trophy } from "lucide-react"
+import { User, GraduationCap, Briefcase, Trophy, Building } from "lucide-react"
 
 export default function ProfileSettingsSidebar() {
   const pathname = usePathname()
@@ -37,7 +37,7 @@ export default function ProfileSettingsSidebar() {
       id: "work-experience",
       label: "Work Experience",
       href: "/profile/settings/experience",
-      icon: <Trophy className="h-4 w-4 mr-2" />,
+      icon: <Building className="h-4 w-4 mr-2" />,
     },
   ]
 
