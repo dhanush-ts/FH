@@ -21,11 +21,11 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { fetchWithAuth } from "@/app/api"
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
-import draftToHtml from "draftjs-to-html"
-import htmlToDraft from "html-to-draftjs"
-import { Editor } from "react-draft-wysiwyg"
-import { EditorState, convertToRaw, ContentState } from "draft-js"
+// import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
+// import draftToHtml from "draftjs-to-html"
+// import htmlToDraft from "html-to-draftjs"
+// import { Editor } from "react-draft-wysiwyg"
+// import { EditorState, convertToRaw, ContentState } from "draft-js"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
@@ -434,43 +434,6 @@ export function MediaDetailsForm({ initialData, eventId }) {
                   />
 
                   {/* Registration End Date */}
-                  <FormField
-                    control={form.control}
-                    name="registration_end_date"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel className="text-green-800 font-medium flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          Registration End Date & Time
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="h-4 w-4 text-green-500 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-green-800 text-white border-green-700">
-                              <p>
-                                The deadline for participants to register for your event. Registration will close at
-                                this time.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </FormLabel> 
-                        <FormControl>
-                          <div className="relative w-full">
-                            <input
-                              type="datetime-local"
-                              {...field}
-                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            />
-                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
-                          </div>
-                        </FormControl>
-                        <FormDescription className="text-green-600">
-                          {/* The deadline for participants to register for your event */}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </motion.div>
 
                 {/* Registration Start Date */}

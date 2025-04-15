@@ -86,7 +86,7 @@ export function ProgressSidebar({ currentSection = "basic" }) {
 
   return (
     <TooltipProvider delayDuration={100}>
-      <aside className="w-full md:w-80 h-fit">
+      <aside className="w-full md:w-80">
         <div className="flex flex-col p-6">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-green-800">Event Progress</h2>

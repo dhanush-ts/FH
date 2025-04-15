@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { getChangedFields } from "./utility"
 import { useEventFormContext } from "./event-data-provider"
+import { formatForDateTimeInput, formatDateForBackend } from "@/lib/date-utils"
 
 export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
   const router = useRouter()
@@ -78,7 +79,7 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
 
   const handleDateTimeChange = (index, field, value) => {
     const newTimelines = [...timelines]
-    newTimelines[index] = { ...newTimelines[index], [field]: new Date(value).toISOString() }
+    newTimelines[index] = { ...newTimelines[index], [field]: formatDateForBackend(value) }
     setTimelines(newTimelines)
   }
 
@@ -352,9 +353,7 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                                 <div className="relative w-full">
                                   <input
                                     type="datetime-local"
-                                    value={
-                                      timeline.start_at ? new Date(timeline.start_at).toISOString().slice(0, 16) : ""
-                                    }
+                                    value={timeline.start_at ? formatForDateTimeInput(new Date(timeline.start_at)) : ""}
                                     onChange={(e) => handleDateTimeChange(index, "start_at", e.target.value)}
                                     className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                   />
@@ -369,7 +368,7 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                                 <div className="relative w-full">
                                   <input
                                     type="datetime-local"
-                                    value={timeline.end_at ? new Date(timeline.end_at).toISOString().slice(0, 16) : ""}
+                                    value={timeline.end_at ? formatForDateTimeInput(new Date(timeline.end_at)) : ""}
                                     onChange={(e) => handleDateTimeChange(index, "end_at", e.target.value)}
                                     className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                   />
