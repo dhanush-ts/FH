@@ -40,10 +40,10 @@ export default function EventPage({ id }) {
 
   const sectionRefs = {
     overview: useRef(null),
+    prizes: useRef(null),
     schedule: useRef(null),
     sponsors: useRef(null),
     venue: useRef(null),
-    prizes: useRef(null),
     faq: useRef(null),
     contact: useRef(null),
   }
@@ -433,7 +433,7 @@ export default function EventPage({ id }) {
                           width={800}
                           height={450}
                           className="w-full object-cover"
-                        />
+                          />
                       </div>
                     )}
 
@@ -449,6 +449,62 @@ export default function EventPage({ id }) {
                 </div>
               </motion.section>
 
+                  {hasPrizes && (
+                    <motion.section
+                      id="prizes"
+                      ref={sectionRefs.prizes}
+                      className="scroll-mt-8"
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.7 }}
+                      viewport={{ once: true }}
+                    >
+                      <h2 className="mb-6 inline-block border-b-2 border-green-500 pb-2 text-3xl font-bold text-green-800">
+                        Prizes
+                      </h2>
+                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {eventData.prizes.map((prize, index) => (
+                          <motion.div
+                            key={prize.id}
+                            initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: index * 0.2 }}
+                            viewport={{ once: true }}
+                            whileHover={{ y: -5 }}
+                            className="overflow-hidden rounded-xl border border-green-100 bg-white shadow-lg transition-all duration-300 hover:shadow-xl"
+                          >
+                            {prize.image ? (
+                              <div className="relative h-48 w-full bg-green-100">
+                                <Image
+                                  src={fixImageUrl(prize.image) || "/placeholder.svg"}
+                                  alt={`${prize.title || "Prize"} image`}
+                                  width={400}
+                                  height={200}
+                                  className="h-full w-full object-cover"
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-green-900/80 to-transparent p-4 text-white">
+                                  <h3 className="text-xl font-bold">{prize.title}</h3>
+                                  {prize.amount && (
+                                    <p className="text-lg font-semibold">₹{prize.amount.toLocaleString()}</p>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="p-4 bg-green-50">
+                                <h3 className="text-xl font-bold text-green-800">{prize.title}</h3>
+                                {prize.amount && (
+                                  <p className="text-lg font-semibold text-green-700">₹{prize.amount.toLocaleString()}</p>
+                                )}
+                              </div>
+                            )}
+                            <div className="p-4">
+                              {prize.description && <p className="text-gray-700">{prize.description}</p>}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.section>
+                  )}
               {/* Schedule Section */}
               {hasSchedule && (
                 <motion.section
@@ -611,62 +667,6 @@ export default function EventPage({ id }) {
               )}
 
               {/* Prizes Section */}
-              {hasPrizes && (
-                <motion.section
-                  id="prizes"
-                  ref={sectionRefs.prizes}
-                  className="scroll-mt-8"
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7 }}
-                  viewport={{ once: true }}
-                >
-                  <h2 className="mb-6 inline-block border-b-2 border-green-500 pb-2 text-3xl font-bold text-green-800">
-                    Prizes
-                  </h2>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {eventData.prizes.map((prize, index) => (
-                      <motion.div
-                        key={prize.id}
-                        initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.2 }}
-                        viewport={{ once: true }}
-                        whileHover={{ y: -5 }}
-                        className="overflow-hidden rounded-xl border border-green-100 bg-white shadow-lg transition-all duration-300 hover:shadow-xl"
-                      >
-                        {prize.image ? (
-                          <div className="relative h-48 w-full bg-green-100">
-                            <Image
-                              src={fixImageUrl(prize.image) || "/placeholder.svg"}
-                              alt={`${prize.title || "Prize"} image`}
-                              width={400}
-                              height={200}
-                              className="h-full w-full object-cover"
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-green-900/80 to-transparent p-4 text-white">
-                              <h3 className="text-xl font-bold">{prize.title}</h3>
-                              {prize.amount && (
-                                <p className="text-lg font-semibold">₹{prize.amount.toLocaleString()}</p>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="p-4 bg-green-50">
-                            <h3 className="text-xl font-bold text-green-800">{prize.title}</h3>
-                            {prize.amount && (
-                              <p className="text-lg font-semibold text-green-700">₹{prize.amount.toLocaleString()}</p>
-                            )}
-                          </div>
-                        )}
-                        <div className="p-4">
-                          {prize.description && <p className="text-gray-700">{prize.description}</p>}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.section>
-              )}
 
               {/* FAQ Section */}
               {hasFaqs && (

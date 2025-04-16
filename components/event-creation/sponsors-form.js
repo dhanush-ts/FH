@@ -281,6 +281,8 @@ export function SponsorsForm({ initialSponsors = [], initialPrizes = [], eventId
         setPrizes(prizes.map((p) => (p.id === editingPrize.id ? response : p)))
       }
 
+      setPrizeImages({});
+
       setPrizeDialogOpen(false)
     } catch (error) {
       console.error("Error saving prize:", error)
