@@ -1,5 +1,6 @@
 "use client";
 export const api = "http://localhost:8000/api";
+// export const api = "https://santhoshp.pythonanywhere.com/api";
 import { redirectToLogin } from "@/lib/routerService";
 import { toast } from "sonner";
 

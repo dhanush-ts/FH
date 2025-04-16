@@ -3,6 +3,7 @@ import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/providers';
+import { api } from '@/app/api';
 
 const GoogleSignUp = () => {
     const { isAuthenticated, setIsAuthenticated } = useAuth();
@@ -11,7 +12,7 @@ const GoogleSignUp = () => {
     const handleRegisterSuccess = async (response) => {
         const credential = response.credential; 
 
-        const res = await fetch("http://localhost:8000/api/auth/register/google/", {
+        const res = await fetch(`${api}/auth/register/google/`, {
             method: "POST",
             credentials: "include",
             headers: { 

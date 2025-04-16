@@ -3,6 +3,7 @@ import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/providers';
+import { api } from '@/app/api';
 
 const Login = ({callbackUrl}) => {
     const { isAuthenticated, setIsAuthenticated } = useAuth();
@@ -10,7 +11,7 @@ const Login = ({callbackUrl}) => {
     const handleLoginSuccess = async (response) => {
         const credential = response.credential;
 
-        const res = await fetch("http://localhost:8000/api/auth/login/google/", {
+        const res = await fetch(`${api}/auth/login/google/`, {
             method: "POST",
             credentials: "include",
             headers: {

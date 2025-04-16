@@ -17,11 +17,29 @@ import {
   ExternalLink,
   ChevronDown,
 } from "lucide-react"
+import { fetchWithAuth } from "@/app/api"
 
 export default function EventPage({ id }) {
   const [activeSection, setActiveSection] = useState("overview")
   const [isScrolled, setIsScrolled] = useState(false)
   const [openFaqId, setOpenFaqId] = useState(null)
+  const [eventData, setEventData] = useState(null);
+  useEffect(() =>{
+    const fetchEventData = async () => {
+      try {
+        const response = await fetchWithAuth(`/event/host/preview/${id}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setEventData(data);
+      } catch (error) {
+        console.error("Error fetching event data:", error);
+      }
+    };
+
+    fetchEventData();
+  },[])
 
   const sectionRefs = {
     overview: useRef(null),
@@ -76,7 +94,7 @@ export default function EventPage({ id }) {
   }, [])
 
   // Event data
-  const eventData = {
+  const eventdata = {
     title: "basic details sdafsadf dsafsd",
     logo: "http://127.0.0.1:8000/media/event/logo/cropped_image_1_zWJHtwA.png",
     short_description: "nice event this is going to be",
@@ -904,3 +922,4 @@ export default function EventPage({ id }) {
     </div>
   )
 }
+

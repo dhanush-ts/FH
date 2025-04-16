@@ -90,19 +90,6 @@ export function ProgressSidebar({ currentSection = "basic" }) {
         <div className="flex flex-col p-6">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-green-800">Event Progress</h2>
-            <motion.div
-              initial={{ rotate: -90 }}
-              animate={{ rotate: 0 }}
-              transition={{ duration: 1, delay: 0.5, type: "spring" }}
-            >
-              <CircularProgressIndicator
-                value={progress}
-                size={60}
-                strokeWidth={5}
-                className="text-green-600"
-                backgroundClassName="text-green-100"
-              />
-            </motion.div>
           </div>
 
           <nav className="flex-1">
