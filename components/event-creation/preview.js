@@ -8,6 +8,7 @@ import { Calendar, Clock, MapPin, Users, Mail, Phone, Instagram, Globe, ChevronR
 // import { fetchEventData } from "@/lib/api"
 import EventSkeleton from "./event-skeleton"
 import { fetchWithAuth } from "@/app/api"
+import MarkdownViewer from "./mdviewer"
 
 export default function EventPage({ id }) {
   const [activeSection, setActiveSection] = useState("overview")
@@ -343,12 +344,12 @@ export default function EventPage({ id }) {
                       </p>
                     )}
 
-                    {eventData.mode && (
+                    {eventData.event_detail.mode && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
                           <Clock className="h-4 w-4 text-green-600" aria-hidden="true" />
                         </span>
-                        Event type: {eventData.mode}
+                        Event type: {eventData.event_detail.mode}
                       </p>
                     )}
 
@@ -402,14 +403,12 @@ export default function EventPage({ id }) {
                 transition={{ duration: 0.7 }}
                 viewport={{ once: true }}
               >
-                <h2 className="mb-6 inline-block border-b-2 border-green-500 pb-2 text-3xl font-bold text-green-800">
-                  Overview
-                </h2>
                 <div className="space-y-6 rounded-xl border border-green-100 bg-white p-6 shadow-lg">
+                    {/* Display event banner in overview section */}
                   {/* Logo and basic details */}
                   <div className="flex flex-col items-center gap-4 md:flex-row">
                     {eventData.base_event?.logo && (
-                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-full bg-white p-1 shadow-md">
+                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border bg-white p-1 shadow-md">
                         <Image
                           src={fixImageUrl(eventData.base_event.logo) || "/placeholder.svg"}
                           alt={`${eventTitle} logo`}
@@ -426,27 +425,27 @@ export default function EventPage({ id }) {
                       )}
                     </div>
                   </div>
+                    {eventData.event_detail?.banner && (
+                      <div className="mt-6 overflow-hidden rounded-lg">
+                        <Image
+                          src={fixImageUrl(eventData.event_detail.banner) || "/placeholder.svg"}
+                          alt={`${eventTitle} detailed view`}
+                          width={800}
+                          height={450}
+                          className="w-full object-cover"
+                        />
+                      </div>
+                    )}
 
                   {/* About event content */}
                   {eventData.event_detail?.about_event && (
-                    <div
-                      className="prose prose-green max-w-none text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: eventData.event_detail.about_event }}
-                    />
+                    // <div
+                    //   className="prose prose-green max-w-none text-gray-700"
+                    //   dangerouslySetInnerHTML={{ __html: eventData.event_detail.about_event }}
+                    // />
+                    <MarkdownViewer content={eventData.event_detail.about_event} /> 
                   )}
 
-                  {/* Display event banner in overview section */}
-                  {eventData.event_detail?.banner && (
-                    <div className="mt-6 overflow-hidden rounded-lg">
-                      <Image
-                        src={fixImageUrl(eventData.event_detail.banner) || "/placeholder.svg"}
-                        alt={`${eventTitle} detailed view`}
-                        width={800}
-                        height={450}
-                        className="w-full object-cover"
-                      />
-                    </div>
-                  )}
                 </div>
               </motion.section>
 
