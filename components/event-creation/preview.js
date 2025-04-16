@@ -4,47 +4,43 @@ import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { format } from "date-fns"
 import { motion, AnimatePresence } from "framer-motion"
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Mail,
-  Phone,
-  Instagram,
-  Globe,
-  ChevronRight,
-  ExternalLink,
-  ChevronDown,
-} from "lucide-react"
+import { Calendar, Clock, MapPin, Users, Mail, Phone, Instagram, Globe, ChevronRight, ExternalLink, ChevronDown } from 'lucide-react'
+// import { fetchEventData } from "@/lib/api"
+import EventSkeleton from "./event-skeleton"
 import { fetchWithAuth } from "@/app/api"
 
 export default function EventPage({ id }) {
   const [activeSection, setActiveSection] = useState("overview")
   const [isScrolled, setIsScrolled] = useState(false)
   const [openFaqId, setOpenFaqId] = useState(null)
-  const [eventdata, seteventdata] = useState(null);
-  useEffect(() =>{
-    const fetcheventdata = async () => {
-      try {
-        const response = await fetchWithAuth(`/event/host/preview/${id}`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        seteventdata(data);
-      } catch (error) {
-        console.error("Error fetching event data:", error);
-      }
-    };
+  const [eventData, setEventData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-    fetcheventdata();
-  },[])
+  // Fetch event data
+  useEffect(() => {
+    const getEventData = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetchWithAuth(`/event/host/preview/${id}`);
+        const data = await response.json();
+        setEventData(data)
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching event data:", err)
+        setError("Failed to load event data. Please try again later.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    getEventData()
+  }, [id])
 
   const sectionRefs = {
     overview: useRef(null),
     schedule: useRef(null),
-    sponsers: useRef(null),
+    sponsors: useRef(null),
     venue: useRef(null),
     prizes: useRef(null),
     faq: useRef(null),
@@ -58,27 +54,37 @@ export default function EventPage({ id }) {
     setActiveSection(sectionId)
   }
 
+  // Improved scroll and intersection observer for better section detection
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100)
     }
 
+    // Improved observer options for better accuracy
     const observerOptions = {
       root: null,
-      rootMargin: "-100px 0px -40% 0px",
-      threshold: 0,
+      // Adjusted rootMargin to better detect the current section
+      rootMargin: "-10% 0px -70% 0px", 
+      threshold: [0.1, 0.2, 0.3, 0.4, 0.5], // Multiple thresholds for better accuracy
     }
 
     const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id)
-        }
-      })
+      // Find the most visible section
+      const visibleEntries = entries.filter(entry => entry.isIntersecting)
+      
+      if (visibleEntries.length > 0) {
+        // Sort by visibility ratio to get the most visible section
+        const mostVisible = visibleEntries.reduce((prev, current) => 
+          prev.intersectionRatio > current.intersectionRatio ? prev : current
+        )
+        
+        setActiveSection(mostVisible.target.id)
+      }
     }
 
     const observer = new IntersectionObserver(observerCallback, observerOptions)
 
+    // Observe all section refs
     Object.values(sectionRefs).forEach((ref) => {
       if (ref.current) {
         observer.observe(ref.current)
@@ -91,138 +97,41 @@ export default function EventPage({ id }) {
       observer.disconnect()
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [])
+  }, [sectionRefs])
 
-  // Event data
-  const eventdata1 = {
-    title: "basic details sdafsadf dsafsd",
-    logo: "http://127.0.0.1:8000/media/event/logo/cropped_image_1_zWJHtwA.png",
-    short_description: "nice event this is going to be",
-    banner: "http://127.0.0.1:8000/media/event/banner/banner_i0fGzju.webp",
-    about_event:
-      "<p>fsafsa f<strong>dsafdsf dasff</strong><strong><em>dsaf sadfdsaf sdfa</em></strong></p>\r\n<p><strong><em>fdksahfjsk afh</em></strong></p>\r\n<p><strong><em>dsfasdaf</em></strong><em>dfafsdf af</em></p>\r\n<p><strong>lkfjdlsdaf</strong><strong><em>lkdfjlasdf</em></strong></p>\r\n<p><em> fasdfasdf sdafsdaf seafsdffdsfadasf sdafsdfa dsafdsaf dsafsdf asdfdf sdafdfadafsdaf</em></p>\r\n<p><em>update</em></p>",
-    mode: "Online",
-    start_date: "2025-04-17T07:30:00+05:30",
-    end_date: "2025-04-18T00:00:00+05:30",
-    registration_end_date: "2025-04-10T10:45:00+05:30",
-    sponsers: [
-      {
-        id: "ba094040-6190-4844-b6dd-19a71c2d1f21",
-        name: "fdasfdsaf",
-        logo: "http://127.0.0.1:8000/media/event/sponser/cropped_image_qMzPqGJ.png",
-        priority: 17,
-      },
-      {
-        id: "e0b379a7-3d4a-421f-bc17-ec3551214585",
-        name: "now",
-        logo: "http://127.0.0.1:8000/media/event/sponser/cropped-1x1_icon_logo_1.jpg",
-        priority: 5,
-      },
-      {
-        id: "83ac3aee-2801-49b6-b1f4-65ed7502ed34",
-        name: "new sponsor",
-        logo: "http://127.0.0.1:8000/media/event/sponser/cropped-1x1_icon_logo_1_P1fT192.jpg",
-        priority: 4,
-      },
-      {
-        id: "b9ffe4e1-8864-4bca-8e34-3763ec6bc590",
-        name: "old name",
-        logo: "http://127.0.0.1:8000/media/event/sponser/hogwarts_1_eSQ0ABT.jpg",
-        priority: 3,
-      },
-      {
-        id: "24116c08-8676-462a-b41e-fd85f7f51767",
-        name: "sdfaf",
-        logo: "http://127.0.0.1:8000/media/event/sponser/cropped_image_1_8LkvX5d.png",
-        priority: 2,
-      },
-    ],
-    venue: {
-      place: "VR Mall da",
-      address: "Anna Nagar (near Koyambedu), Chennai thandalam",
-      gmaps_link: "https://maps.app.goo.gl/dWrEadupcXdxHFKZ6edfsdfad",
-    },
-    registration: {
-      url: "https://designali.in",
-      team_min_size: 1,
-      team_max_size: 4,
-      registration_cost: 2000,
-    },
-    schedule: [
-      {
-        id: "93381f4e-5089-4ca4-b10f-6ea133942f90",
-        title: "fdgdfg",
-        description: "fdsfa sfsafsda fsad",
-        start_at: "2025-04-11T00:00:10.348000+05:30",
-        end_at: "2025-04-11T08:45:10.348000+05:30",
-      },
-      {
-        id: "b668ae84-35f9-461b-b76f-1a831fe0a9c9",
-        title: "dsafdsa f",
-        description: "dfs daf",
-        start_at: "2025-04-11T00:00:59.820000+05:30",
-        end_at: "2025-04-11T14:25:59.820000+05:30",
-      },
-      {
-        id: "67d11dbb-7391-499e-a42c-947808c511e0",
-        title: "new event",
-        description: "neeww devent",
-        start_at: "2025-04-12T00:00:51.393000+05:30",
-        end_at: "2025-04-12T14:45:51.393000+05:30",
-      },
-    ],
-    contact: {
-      email: "myemail@gmail.com",
-      phone: "7200281984",
-      instagram_url: "http://127.0.0.1:3000/host/create/d0f19a9d-e853-4550-b6e7-1656b54e0a3c/contact",
-      other_url: "http://127.0.0.1:3000/host/create/d0f19a9d-e853-4550-b6e7-1656b54e0a3c/contact",
-    },
-    faqs: [
-      {
-        id: "2ae41404-0914-4968-8f58-8ed62a310845",
-        question: "sdfsdafas dsfasdasdf",
-        answer: "sdfsd afasdf",
-        priority: 0,
-      },
-      {
-        id: "95293f92-488b-4b41-9d31-ad79dc453ff3",
-        question: "sdfsdafas",
-        answer: "sdfsd afasdf",
-        priority: 0,
-      },
-      {
-        id: "3d391ca9-5a38-4b97-bae4-671cc0ff9442",
-        question: "sdaf safd",
-        answer: "dsaf sadf",
-        priority: 0,
-      },
-    ],
-    prizes: [
-      {
-        id: "614998ea-087c-4f84-9d95-ff5638c2bf89",
-        title: "2ndd",
-        description: "Maasa 2ned prizedd",
-        amount: 200002,
-        image: "http://127.0.0.1:8000/media/event/sponser/hogwarts_1_eSQ0ABT.jpg",
-        priority: 0,
-      },
-      {
-        id: "614998ea-087c-4f8fdas4-9d95-ff5638c2bf89",
-        title: "2ndd",
-        description: "Maasa 2ned prizedd",
-        amount: 200002,
-        image: "http://127.0.0.1:8000/media/event/sponser/hogwarts_1_eSQ0ABT.jpg",
-        priority: 0,
-      },
-      {
-        id: "504a2643-f4ad-4c67-a10d-eb70cb24caa9",
-        title: "another prize",
-        description: "vaada maapula vala palam thoupula",
-        amount: 323232,
-        image: null,
-        priority: 0,
-      },
-    ],
+  // Show loading state
+  if (isLoading) {
+    return <EventSkeleton />
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-red-600">Error Loading Event</h2>
+          <p className="mt-2 text-gray-600">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Show not found state
+  if (!eventData) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-green-800">Event Not Found</h2>
+          <p className="mt-2 text-gray-600">The event you're looking for doesn't exist or has been removed.</p>
+        </div>
+      </div>
+    )
   }
 
   // Format dates
@@ -235,56 +144,65 @@ export default function EventPage({ id }) {
   }
 
   // Group schedule by date
-  const scheduleByDate = eventdata?.timelines?.reduce((acc, event) => {
+  const scheduleByDate = eventData.timelines?.reduce((acc, event) => {
     const date = format(new Date(event.start_at), "yyyy-MM-dd")
     if (!acc[date]) {
       acc[date] = []
     }
     acc[date].push(event)
     return acc
-  }, {})
+  }, {}) || {}
 
-  // Sort sponsers by priority
-  const sortedsponsers = [...(eventdata?.sponsers || [])].sort((a, b) => b.priority - a.priority)
+  // Sort sponsors by priority
+  const sortedSponsors = [...(eventData.sponsers || [])].sort((a, b) => b.priority - a.priority)
 
   // Check if sections have data
-  const hasSchedule = eventdata?.timelines && eventdata?.timelines.length > 0
-  const hassponsers = eventdata?.sponsers && eventdata?.sponsers.length > 0
-  const hasVenue = eventdata?.venue_detail && (eventdata?.venue_detail.place || eventdata?.venue_detail.address || eventdata?.venue_detail.gmaps_link)
-  const hasPrizes = eventdata?.prizes && eventdata.prizes.length > 0
-  const hasFaqs = eventdata?.faqs && eventdata.faqs.length > 0
+  const hasSchedule = eventData.timelines && eventData.timelines.length > 0
+  const hasSponsors = eventData.sponsers && eventData.sponsers.length > 0
+  const hasVenue = eventData.venue_detail && (eventData.venue_detail.place || eventData.venue_detail.address || eventData.venue_detail.gmaps_link)
+  const hasPrizes = eventData.prizes && eventData.prizes.length > 0
+  const hasFaqs = eventData.faqs && eventData.faqs.length > 0
   const hasContact =
-    eventdata?.contact_detail &&
-    (eventdata?.contact_detail.email ||
-      eventdata?.contact_detail.phone ||
-      eventdata?.contact_detail.instagram_url ||
-      eventdata?.contact_detail.other_url)
+    eventData.contact_detail &&
+    (eventData.contact_detail.email ||
+      eventData.contact_detail.phone ||
+      eventData.contact_detail.instagram_url ||
+      eventData.contact_detail.other_url)
 
   // Filter out sections without data
   const availableSections = {
     overview: true, // Always show overview
     schedule: hasSchedule,
-    sponsers: hassponsers,
+    sponsors: hasSponsors,
     venue: hasVenue,
     prizes: hasPrizes,
     faq: hasFaqs,
     contact: hasContact,
   }
 
+  // Fix image URLs
+  function fixImageUrl(url){
+    if (!url) return "/placeholder.svg"
+    return url.replace("localhost", "127.0.0.1")
+  }
+
+  // Get event title for SEO
+  const eventTitle = eventData.base_event?.title || "Event Details"
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Hero Section - Full width banner */}
-      <div className="relative  m-auto w-full overflow-hidden">
-        <div className="max-h-screen inset-0">
+      <div className="relative m-auto w-full overflow-hidden">
+        {/* <div className="max-h-screen inset-0">
           <Image
-            src={eventdata?.event_detail?.banner.replace("localhost","127.0.0.1") || "/placeholder.svg?height=600&width=1200"}
-            alt={eventdata?.base_event?.title}
+            src={fixImageUrl(eventData.event_detail?.banner) || "/placeholder.svg?height=600&width=1200"}
+            alt={`${eventTitle} banner image`}
             width={1920}
             height={1080}
             className="h-full w-full object-cover"
             priority
           />
-        </div>
+        </div> */}
         <div className="absolute inset-0" />
       </div>
 
@@ -296,66 +214,68 @@ export default function EventPage({ id }) {
         className="bg-green-700 py-6 text-white shadow-lg"
       >
         <div className="container mx-auto grid grid-cols-1 gap-6 px-4 sm:grid-cols-2 md:grid-cols-4">
-          {eventdata?.event_detail?.start_date && eventdata?.event_detail?.end_date && (
+          {eventData.event_detail?.start_date && eventData.event_detail?.end_date && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               className="flex items-center gap-3"
             >
-              <Calendar className="h-6 w-6 text-green-200" />
+              <Calendar className="h-6 w-6 text-green-200" aria-hidden="true" />
               <div>
                 <p className="text-sm text-green-200">Date</p>
                 <p className="font-medium">
-                  {format(new Date(eventdata?.event_detail?.start_date), "MMM dd")} -{" "}
-                  {format(new Date(eventdata?.event_detail?.end_date), "MMM dd, yyyy")}
+                  {format(new Date(eventData.event_detail.start_date), "MMM dd")} -{" "}
+                  {format(new Date(eventData.event_detail.end_date), "MMM dd, yyyy")}
                 </p>
               </div>
             </motion.div>
           )}
 
-          {eventdata?.mode && (
+          {eventData.mode && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex items-center gap-3"
             >
-              <Clock className="h-6 w-6 text-green-200" />
+              <Clock className="h-6 w-6 text-green-200" aria-hidden="true" />
               <div>
                 <p className="text-sm text-green-200">Mode</p>
-                <p className="font-medium">{eventdata.mode}</p>
+                <p className="font-medium">{eventData.mode}</p>
               </div>
             </motion.div>
           )}
 
-          {eventdata?.venue_detail && eventdata?.venue_detail.place && (
+          {eventData.venue_detail && eventData.venue_detail.place && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex items-center gap-3"
             >
-              <MapPin className="h-6 w-6 text-green-200" />
+              <MapPin className="h-6 w-6 text-green-200" aria-hidden="true" />
               <div>
                 <p className="text-sm text-green-200">Location</p>
-                <p className="font-medium">{eventdata?.venue_detail.place}</p>
+                <p className="font-medium">{eventData.venue_detail.place}</p>
               </div>
             </motion.div>
           )}
 
-          {eventdata?.additional_event_detail && eventdata?.additional_event_detail.team_min_size && eventdata?.additional_event_detail.team_max_size && (
+          {eventData.additional_event_detail && 
+           eventData.additional_event_detail.team_min_size && 
+           eventData.additional_event_detail.team_max_size && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="flex items-center gap-3"
             >
-              <Users className="h-6 w-6 text-green-200" />
+              <Users className="h-6 w-6 text-green-200" aria-hidden="true" />
               <div>
                 <p className="text-sm text-green-200">Team Size</p>
                 <p className="font-medium">
-                  {eventdata?.additional_event_detail.team_min_size} - {eventdata?.additional_event_detail.team_max_size} Members
+                  {eventData.additional_event_detail.team_min_size} - {eventData.additional_event_detail.team_max_size} Members
                 </p>
               </div>
             </motion.div>
@@ -376,7 +296,7 @@ export default function EventPage({ id }) {
             >
               <div className="rounded-xl border border-green-200 bg-white px-4 py-2 shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl">
                 <h3 className="ml-2 mt-1 mb-2 text-lg font-semibold text-green-800">Event Sections</h3>
-                <nav className="flex flex-col gap-2">
+                <nav className="flex flex-col gap-2" aria-label="Event navigation">
                   {Object.keys(sectionRefs).map((section) => {
                     // Skip sections without data
                     if (!availableSections[section]) return null
@@ -390,12 +310,14 @@ export default function EventPage({ id }) {
                         className={`group flex cursor-pointer items-center rounded-lg px-4 py-3 text-left text-sm font-medium transition-all duration-200 ${
                           activeSection === section ? "bg-green-600 text-white" : "text-gray-600 hover:bg-green-50"
                         }`}
+                        aria-current={activeSection === section ? "true" : "false"}
                       >
                         <span className="relative capitalize">{section}</span>
                         <ChevronRight
                           className={`ml-auto h-4 w-4 transition-transform duration-200 ${
                             activeSection === section ? "text-white" : "text-gray-400 group-hover:text-green-600"
                           }`}
+                          aria-hidden="true"
                         />
                       </motion.button>
                     )
@@ -403,7 +325,7 @@ export default function EventPage({ id }) {
                 </nav>
               </div>
 
-              {eventdata?.additional_event_detail && (
+              {eventData.additional_event_detail && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -412,53 +334,54 @@ export default function EventPage({ id }) {
                 >
                   <h3 className="mb-2 text-lg font-semibold text-green-800">Registration</h3>
                   <div className="space-y-3">
-                    {eventdata?.event_detail?.registration_end_date && (
+                    {eventData.event_detail?.registration_end_date && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
-                          <Calendar className="h-4 w-4 text-green-600" />
+                          <Calendar className="h-4 w-4 text-green-600" aria-hidden="true" />
                         </span>
-                        Registration ends: {formatDate(eventdata?.event_detail?.registration_end_date)}
+                        Registration ends: {formatDate(eventData.event_detail.registration_end_date)}
                       </p>
                     )}
 
-                    {eventdata.mode && (
+                    {eventData.mode && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
-                          <Clock className="h-4 w-4 text-green-600" />
+                          <Clock className="h-4 w-4 text-green-600" aria-hidden="true" />
                         </span>
-                        Event type: {eventdata.mode}
+                        Event type: {eventData.mode}
                       </p>
                     )}
 
-                    {eventdata?.additional_event_detail.team_min_size && eventdata?.additional_event_detail.team_max_size && (
+                    {eventData.additional_event_detail.team_min_size && eventData.additional_event_detail.team_max_size && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
-                          <Users className="h-4 w-4 text-green-600" />
+                          <Users className="h-4 w-4 text-green-600" aria-hidden="true" />
                         </span>
-                        Team size: {eventdata?.additional_event_detail.team_min_size} - {eventdata?.additional_event_detail.team_max_size}{" "}
+                        Team size: {eventData.additional_event_detail.team_min_size} - {eventData.additional_event_detail.team_max_size}{" "}
                         members
                       </p>
                     )}
 
-                    {eventdata?.additional_event_detail.registration_cost && (
+                    {eventData.additional_event_detail.registration_cost && (
                       <p className="flex items-center gap-2 text-sm font-medium text-gray-800">
                         <span className="rounded-full bg-green-100 p-1">
-                          <Calendar className="h-4 w-4 text-green-600" />
+                          <Calendar className="h-4 w-4 text-green-600" aria-hidden="true" />
                         </span>
-                        Registration fee: ₹{eventdata?.additional_event_detail.registration_cost}
+                        Registration fee: ₹{eventData.additional_event_detail.registration_cost}
                       </p>
                     )}
                   </div>
 
-                  {eventdata?.additional_event_detail.url && (
+                  {eventData.additional_event_detail.url && (
                     <a
-                      href={eventdata?.additional_event_detail.url}
+                      href={eventData.additional_event_detail.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                      aria-label={`Register for ${eventTitle}`}
                     >
                       Register Now
-                      <ExternalLink className="h-4 w-4" />
+                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
                     </a>
                   )}
                 </motion.div>
@@ -485,11 +408,11 @@ export default function EventPage({ id }) {
                 <div className="space-y-6 rounded-xl border border-green-100 bg-white p-6 shadow-lg">
                   {/* Logo and basic details */}
                   <div className="flex flex-col items-center gap-4 md:flex-row">
-                    {eventdata?.base_event?.logo && (
+                    {eventData.base_event?.logo && (
                       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-full bg-white p-1 shadow-md">
                         <Image
-                          src={eventdata?.base_event?.logo.replace("localhost","127.0.0.1") || "/placeholder.svg"}
-                          alt="Event Logo"
+                          src={fixImageUrl(eventData.base_event.logo) || "/placeholder.svg"}
+                          alt={`${eventTitle} logo`}
                           width={96}
                           height={96}
                           className="h-full w-full object-contain"
@@ -497,17 +420,31 @@ export default function EventPage({ id }) {
                       </div>
                     )}
                     <div>
-                      <h3 className="text-xl font-semibold text-green-800">{eventdata?.base_event?.title}</h3>
-                      {eventdata?.base_event?.short_description && <p className="text-gray-600">{eventdata?.base_event?.short_description}</p>}
+                      <h3 className="text-xl font-semibold text-green-800">{eventData.base_event?.title}</h3>
+                      {eventData.base_event?.short_description && (
+                        <p className="text-gray-600">{eventData.base_event.short_description}</p>
+                      )}
                     </div>
                   </div>
 
                   {/* About event content */}
-                  {eventdata?.event_detail?.about_event && (
+                  {eventData.event_detail?.about_event && (
                     <div
                       className="prose prose-green max-w-none text-gray-700"
-                      >
-                      { eventdata?.event_detail?.about_event }
+                      dangerouslySetInnerHTML={{ __html: eventData.event_detail.about_event }}
+                    />
+                  )}
+
+                  {/* Display event banner in overview section */}
+                  {eventData.event_detail?.banner && (
+                    <div className="mt-6 overflow-hidden rounded-lg">
+                      <Image
+                        src={fixImageUrl(eventData.event_detail.banner) || "/placeholder.svg"}
+                        alt={`${eventTitle} detailed view`}
+                        width={800}
+                        height={450}
+                        className="w-full object-cover"
+                      />
                     </div>
                   )}
                 </div>
@@ -569,11 +506,11 @@ export default function EventPage({ id }) {
                 </motion.section>
               )}
 
-              {/* sponsers Section */}
-              {hassponsers && (
+              {/* Sponsors Section */}
+              {hasSponsors && (
                 <motion.section
-                  id="sponsers"
-                  ref={sectionRefs.sponsers}
+                  id="sponsors"
+                  ref={sectionRefs.sponsors}
                   className="scroll-mt-8"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -581,11 +518,11 @@ export default function EventPage({ id }) {
                   viewport={{ once: true }}
                 >
                   <h2 className="mb-6 inline-block border-b-2 border-green-500 pb-2 text-3xl font-bold text-green-800">
-                    sponsers
+                    Sponsors
                   </h2>
                   <div className="rounded-xl border border-green-100 bg-white p-6 shadow-lg">
                     <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
-                      {sortedsponsers.map((sponsor, index) => (
+                      {sortedSponsors.map((sponsor, index) => (
                         <motion.div
                           key={sponsor.id}
                           initial={{ opacity: 0, scale: 0.9 }}
@@ -597,8 +534,8 @@ export default function EventPage({ id }) {
                         >
                           {sponsor.logo && (
                             <Image
-                              src={sponsor.logo.replace("localhost","127.0.0.1") || "/placeholder.svg"}
-                              alt={sponsor.name || "Sponsor"}
+                              src={fixImageUrl(sponsor.logo) || "/placeholder.svg"}
+                              alt={sponsor.name || "Sponsor logo"}
                               width={120}
                               height={120}
                               className="max-h-24 w-auto max-w-full object-contain"
@@ -633,10 +570,10 @@ export default function EventPage({ id }) {
                     Venue
                   </h2>
                   <div className="overflow-hidden rounded-xl border border-green-100 bg-white shadow-lg">
-                    {eventdata?.venue_detail.gmaps_link && (
+                    {eventData.venue_detail?.gmaps_link && (
                       <div className="aspect-video w-full bg-green-100">
                         <iframe
-                          src={eventdata?.venue_detail.gmaps_link}
+                          src={eventData.venue_detail.gmaps_link}
                           width="100%"
                           height="100%"
                           style={{ border: 0 }}
@@ -644,24 +581,28 @@ export default function EventPage({ id }) {
                           loading="lazy"
                           referrerPolicy="no-referrer-when-downgrade"
                           className="h-full w-full"
+                          title={`${eventData.venue_detail.place || "Event"} location map`}
                         ></iframe>
                       </div>
                     )}
                     <div className="p-6">
-                      {eventdata?.venue_detail.place && (
-                        <h3 className="mb-2 text-xl font-semibold text-green-800">{eventdata?.venue_detail.place}</h3>
+                      {eventData.venue_detail?.place && (
+                        <h3 className="mb-2 text-xl font-semibold text-green-800">{eventData.venue_detail.place}</h3>
                       )}
-                      {eventdata?.venue_detail.address && <p className="mb-4 text-gray-700">{eventdata?.venue_detail.address}</p>}
-                      {eventdata?.venue_detail.gmaps_link && (
+                      {eventData.venue_detail?.address && (
+                        <p className="mb-4 text-gray-700">{eventData.venue_detail.address}</p>
+                      )}
+                      {eventData.venue_detail?.gmaps_link && (
                         <div className="mb-6 space-y-2">
                           <a
-                            href={eventdata?.venue_detail.gmaps_link}
+                            href={eventData.venue_detail.gmaps_link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-green-600 hover:text-green-700"
+                            aria-label="Open venue location in Google Maps"
                           >
                             <span>View on Google Maps</span>
-                            <ExternalLink className="h-4 w-4" />
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
                           </a>
                         </div>
                       )}
@@ -685,7 +626,7 @@ export default function EventPage({ id }) {
                     Prizes
                   </h2>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {eventdata.prizes.map((prize, index) => (
+                    {eventData.prizes.map((prize, index) => (
                       <motion.div
                         key={prize.id}
                         initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
@@ -698,8 +639,8 @@ export default function EventPage({ id }) {
                         {prize.image ? (
                           <div className="relative h-48 w-full bg-green-100">
                             <Image
-                              src={prize.image.replace("localhost","127.0.0.1") || "/placeholder.svg"}
-                              alt={prize.title || "Prize"}
+                              src={fixImageUrl(prize.image) || "/placeholder.svg"}
+                              alt={`${prize.title || "Prize"} image`}
                               width={400}
                               height={200}
                               className="h-full w-full object-cover"
@@ -744,7 +685,7 @@ export default function EventPage({ id }) {
                   </h2>
                   <div className="rounded-xl border border-green-100 bg-white p-6 shadow-lg">
                     <div className="space-y-4">
-                      {eventdata.faqs.map((faq, index) => (
+                      {eventData.faqs.map((faq, index) => (
                         <motion.div
                           key={faq.id}
                           initial={{ opacity: 0, y: 20 }}
@@ -756,18 +697,22 @@ export default function EventPage({ id }) {
                           <button
                             onClick={() => setOpenFaqId(openFaqId === faq.id ? null : faq.id)}
                             className="flex w-full items-center justify-between p-5 text-left font-semibold text-green-800 hover:bg-green-50"
+                            aria-expanded={openFaqId === faq.id ? "true" : "false"}
+                            aria-controls={`faq-content-${faq.id}`}
                           >
                             <span>{faq.question}</span>
                             <ChevronDown
                               className={`h-5 w-5 text-green-600 transition-transform duration-200 ${
                                 openFaqId === faq.id ? "rotate-180" : ""
                               }`}
+                              aria-hidden="true"
                             />
                           </button>
 
                           <AnimatePresence>
                             {openFaqId === faq.id && (
                               <motion.div
+                                id={`faq-content-${faq.id}`}
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: "auto", opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
@@ -809,57 +754,64 @@ export default function EventPage({ id }) {
                         </p>
 
                         <ul className="space-y-4">
-                          {eventdata?.contact_detail.email && (
+                          {eventData.contact_detail?.email && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
-                                <Mail className="h-5 w-5 text-green-600" />
+                                <Mail className="h-5 w-5 text-green-600" aria-hidden="true" />
                               </span>
                               <a
-                                href={`mailto:${eventdata?.contact_detail.email}`}
+                                href={`mailto:${eventData.contact_detail.email}`}
                                 className="text-gray-700 hover:text-green-600"
+                                aria-label={`Email us at ${eventData.contact_detail.email}`}
                               >
-                                {eventdata?.contact_detail.email}
+                                {eventData.contact_detail.email}
                               </a>
                             </li>
                           )}
 
-                          {eventdata?.contact_detail.phone && (
+                          {eventData.contact_detail?.phone && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
-                                <Phone className="h-5 w-5 text-green-600" />
-                              </span>
-                              <a href={`tel:${eventdata?.contact_detail.phone}`} className="text-gray-700 hover:text-green-600">
-                                {eventdata?.contact_detail.phone}
-                              </a>
-                            </li>
-                          )}
-
-                          {eventdata?.contact_detail.instagram_url && (
-                            <li className="flex items-center gap-3">
-                              <span className="rounded-full bg-green-100 p-2">
-                                <Instagram className="h-5 w-5 text-green-600" />
+                                <Phone className="h-5 w-5 text-green-600" aria-hidden="true" />
                               </span>
                               <a
-                                href={eventdata?.contact_detail.instagram_url}
+                                href={`tel:${eventData.contact_detail.phone}`}
+                                className="text-gray-700 hover:text-green-600"
+                                aria-label={`Call us at ${eventData.contact_detail.phone}`}
+                              >
+                                {eventData.contact_detail.phone}
+                              </a>
+                            </li>
+                          )}
+
+                          {eventData.contact_detail?.instagram_url && (
+                            <li className="flex items-center gap-3">
+                              <span className="rounded-full bg-green-100 p-2">
+                                <Instagram className="h-5 w-5 text-green-600" aria-hidden="true" />
+                              </span>
+                              <a
+                                href={eventData.contact_detail.instagram_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-700 hover:text-green-600"
+                                aria-label="Visit our Instagram page"
                               >
                                 Instagram
                               </a>
                             </li>
                           )}
 
-                          {eventdata?.contact_detail.other_url && (
+                          {eventData.contact_detail?.other_url && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
-                                <Globe className="h-5 w-5 text-green-600" />
+                                <Globe className="h-5 w-5 text-green-600" aria-hidden="true" />
                               </span>
                               <a
-                                href={eventdata?.contact_detail.other_url}
+                                href={eventData.contact_detail.other_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-700 hover:text-green-600"
+                                aria-label="Visit our website"
                               >
                                 Website
                               </a>
@@ -880,6 +832,7 @@ export default function EventPage({ id }) {
                               id="name"
                               className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                               placeholder="Your name"
+                              aria-required="true"
                             />
                           </div>
                           <div>
@@ -891,6 +844,7 @@ export default function EventPage({ id }) {
                               id="email"
                               className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                               placeholder="Your email"
+                              aria-required="true"
                             />
                           </div>
                           <div>
@@ -902,11 +856,13 @@ export default function EventPage({ id }) {
                               rows={4}
                               className="w-full rounded-md border border-gray-300 p-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                               placeholder="Your message"
+                              aria-required="true"
                             ></textarea>
                           </div>
                           <button
                             type="submit"
                             className="w-full rounded-md bg-green-600 py-2 text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                            aria-label="Send your message"
                           >
                             Send Message
                           </button>
@@ -923,4 +879,3 @@ export default function EventPage({ id }) {
     </div>
   )
 }
-
