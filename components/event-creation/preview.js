@@ -23,28 +23,28 @@ export default function EventPage({ id }) {
   const [activeSection, setActiveSection] = useState("overview")
   const [isScrolled, setIsScrolled] = useState(false)
   const [openFaqId, setOpenFaqId] = useState(null)
-  const [eventData, setEventData] = useState(null);
+  const [eventdata, seteventdata] = useState(null);
   useEffect(() =>{
-    const fetchEventData = async () => {
+    const fetcheventdata = async () => {
       try {
         const response = await fetchWithAuth(`/event/host/preview/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        setEventData(data);
+        seteventdata(data);
       } catch (error) {
         console.error("Error fetching event data:", error);
       }
     };
 
-    fetchEventData();
+    fetcheventdata();
   },[])
 
   const sectionRefs = {
     overview: useRef(null),
     schedule: useRef(null),
-    sponsors: useRef(null),
+    sponsers: useRef(null),
     venue: useRef(null),
     prizes: useRef(null),
     faq: useRef(null),
@@ -94,7 +94,7 @@ export default function EventPage({ id }) {
   }, [])
 
   // Event data
-  const eventdata = {
+  const eventdata1 = {
     title: "basic details sdafsadf dsafsd",
     logo: "http://127.0.0.1:8000/media/event/logo/cropped_image_1_zWJHtwA.png",
     short_description: "nice event this is going to be",
@@ -105,7 +105,7 @@ export default function EventPage({ id }) {
     start_date: "2025-04-17T07:30:00+05:30",
     end_date: "2025-04-18T00:00:00+05:30",
     registration_end_date: "2025-04-10T10:45:00+05:30",
-    sponsors: [
+    sponsers: [
       {
         id: "ba094040-6190-4844-b6dd-19a71c2d1f21",
         name: "fdasfdsaf",
@@ -235,7 +235,7 @@ export default function EventPage({ id }) {
   }
 
   // Group schedule by date
-  const scheduleByDate = eventData.schedule?.reduce((acc, event) => {
+  const scheduleByDate = eventdata?.timelines?.reduce((acc, event) => {
     const date = format(new Date(event.start_at), "yyyy-MM-dd")
     if (!acc[date]) {
       acc[date] = []
@@ -244,27 +244,27 @@ export default function EventPage({ id }) {
     return acc
   }, {})
 
-  // Sort sponsors by priority
-  const sortedSponsors = [...(eventData.sponsors || [])].sort((a, b) => b.priority - a.priority)
+  // Sort sponsers by priority
+  const sortedsponsers = [...(eventdata?.sponsers || [])].sort((a, b) => b.priority - a.priority)
 
   // Check if sections have data
-  const hasSchedule = eventData.schedule && eventData.schedule.length > 0
-  const hasSponsors = eventData.sponsors && eventData.sponsors.length > 0
-  const hasVenue = eventData.venue && (eventData.venue.place || eventData.venue.address || eventData.venue.gmaps_link)
-  const hasPrizes = eventData.prizes && eventData.prizes.length > 0
-  const hasFaqs = eventData.faqs && eventData.faqs.length > 0
+  const hasSchedule = eventdata?.timelines && eventdata?.timelines.length > 0
+  const hassponsers = eventdata?.sponsers && eventdata?.sponsers.length > 0
+  const hasVenue = eventdata?.venue_detail && (eventdata?.venue_detail.place || eventdata?.venue_detail.address || eventdata?.venue_detail.gmaps_link)
+  const hasPrizes = eventdata?.prizes && eventdata.prizes.length > 0
+  const hasFaqs = eventdata?.faqs && eventdata.faqs.length > 0
   const hasContact =
-    eventData.contact &&
-    (eventData.contact.email ||
-      eventData.contact.phone ||
-      eventData.contact.instagram_url ||
-      eventData.contact.other_url)
+    eventdata?.contact_detail &&
+    (eventdata?.contact_detail.email ||
+      eventdata?.contact_detail.phone ||
+      eventdata?.contact_detail.instagram_url ||
+      eventdata?.contact_detail.other_url)
 
   // Filter out sections without data
   const availableSections = {
     overview: true, // Always show overview
     schedule: hasSchedule,
-    sponsors: hasSponsors,
+    sponsers: hassponsers,
     venue: hasVenue,
     prizes: hasPrizes,
     faq: hasFaqs,
@@ -277,8 +277,8 @@ export default function EventPage({ id }) {
       <div className="relative  m-auto w-full overflow-hidden">
         <div className="max-h-screen inset-0">
           <Image
-            src={eventData.banner || "/placeholder.svg?height=600&width=1200"}
-            alt={eventData.title}
+            src={eventdata?.event_detail?.banner.replace("localhost","127.0.0.1") || "/placeholder.svg?height=600&width=1200"}
+            alt={eventdata?.base_event?.title}
             width={1920}
             height={1080}
             className="h-full w-full object-cover"
@@ -296,7 +296,7 @@ export default function EventPage({ id }) {
         className="bg-green-700 py-6 text-white shadow-lg"
       >
         <div className="container mx-auto grid grid-cols-1 gap-6 px-4 sm:grid-cols-2 md:grid-cols-4">
-          {eventData.start_date && eventData.end_date && (
+          {eventdata?.event_detail?.start_date && eventdata?.event_detail?.end_date && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -307,14 +307,14 @@ export default function EventPage({ id }) {
               <div>
                 <p className="text-sm text-green-200">Date</p>
                 <p className="font-medium">
-                  {format(new Date(eventData.start_date), "MMM dd")} -{" "}
-                  {format(new Date(eventData.end_date), "MMM dd, yyyy")}
+                  {format(new Date(eventdata?.event_detail?.start_date), "MMM dd")} -{" "}
+                  {format(new Date(eventdata?.event_detail?.end_date), "MMM dd, yyyy")}
                 </p>
               </div>
             </motion.div>
           )}
 
-          {eventData.mode && (
+          {eventdata?.mode && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -324,12 +324,12 @@ export default function EventPage({ id }) {
               <Clock className="h-6 w-6 text-green-200" />
               <div>
                 <p className="text-sm text-green-200">Mode</p>
-                <p className="font-medium">{eventData.mode}</p>
+                <p className="font-medium">{eventdata.mode}</p>
               </div>
             </motion.div>
           )}
 
-          {eventData.venue && eventData.venue.place && (
+          {eventdata?.venue_detail && eventdata?.venue_detail.place && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -339,12 +339,12 @@ export default function EventPage({ id }) {
               <MapPin className="h-6 w-6 text-green-200" />
               <div>
                 <p className="text-sm text-green-200">Location</p>
-                <p className="font-medium">{eventData.venue.place}</p>
+                <p className="font-medium">{eventdata?.venue_detail.place}</p>
               </div>
             </motion.div>
           )}
 
-          {eventData.registration && eventData.registration.team_min_size && eventData.registration.team_max_size && (
+          {eventdata?.additional_event_detail && eventdata?.additional_event_detail.team_min_size && eventdata?.additional_event_detail.team_max_size && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -355,7 +355,7 @@ export default function EventPage({ id }) {
               <div>
                 <p className="text-sm text-green-200">Team Size</p>
                 <p className="font-medium">
-                  {eventData.registration.team_min_size} - {eventData.registration.team_max_size} Members
+                  {eventdata?.additional_event_detail.team_min_size} - {eventdata?.additional_event_detail.team_max_size} Members
                 </p>
               </div>
             </motion.div>
@@ -403,7 +403,7 @@ export default function EventPage({ id }) {
                 </nav>
               </div>
 
-              {eventData.registration && (
+              {eventdata?.additional_event_detail && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -412,47 +412,47 @@ export default function EventPage({ id }) {
                 >
                   <h3 className="mb-2 text-lg font-semibold text-green-800">Registration</h3>
                   <div className="space-y-3">
-                    {eventData.registration_end_date && (
+                    {eventdata?.event_detail?.registration_end_date && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
                           <Calendar className="h-4 w-4 text-green-600" />
                         </span>
-                        Registration ends: {formatDate(eventData.registration_end_date)}
+                        Registration ends: {formatDate(eventdata?.event_detail?.registration_end_date)}
                       </p>
                     )}
 
-                    {eventData.mode && (
+                    {eventdata.mode && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
                           <Clock className="h-4 w-4 text-green-600" />
                         </span>
-                        Event type: {eventData.mode}
+                        Event type: {eventdata.mode}
                       </p>
                     )}
 
-                    {eventData.registration.team_min_size && eventData.registration.team_max_size && (
+                    {eventdata?.additional_event_detail.team_min_size && eventdata?.additional_event_detail.team_max_size && (
                       <p className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="rounded-full bg-green-100 p-1">
                           <Users className="h-4 w-4 text-green-600" />
                         </span>
-                        Team size: {eventData.registration.team_min_size} - {eventData.registration.team_max_size}{" "}
+                        Team size: {eventdata?.additional_event_detail.team_min_size} - {eventdata?.additional_event_detail.team_max_size}{" "}
                         members
                       </p>
                     )}
 
-                    {eventData.registration.registration_cost && (
+                    {eventdata?.additional_event_detail.registration_cost && (
                       <p className="flex items-center gap-2 text-sm font-medium text-gray-800">
                         <span className="rounded-full bg-green-100 p-1">
                           <Calendar className="h-4 w-4 text-green-600" />
                         </span>
-                        Registration fee: ₹{eventData.registration.registration_cost}
+                        Registration fee: ₹{eventdata?.additional_event_detail.registration_cost}
                       </p>
                     )}
                   </div>
 
-                  {eventData.registration.url && (
+                  {eventdata?.additional_event_detail.url && (
                     <a
-                      href={eventData.registration.url}
+                      href={eventdata?.additional_event_detail.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
@@ -485,10 +485,10 @@ export default function EventPage({ id }) {
                 <div className="space-y-6 rounded-xl border border-green-100 bg-white p-6 shadow-lg">
                   {/* Logo and basic details */}
                   <div className="flex flex-col items-center gap-4 md:flex-row">
-                    {eventData.logo && (
+                    {eventdata?.base_event?.logo && (
                       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-full bg-white p-1 shadow-md">
                         <Image
-                          src={eventData.logo || "/placeholder.svg"}
+                          src={eventdata?.base_event?.logo.replace("localhost","127.0.0.1") || "/placeholder.svg"}
                           alt="Event Logo"
                           width={96}
                           height={96}
@@ -497,17 +497,18 @@ export default function EventPage({ id }) {
                       </div>
                     )}
                     <div>
-                      <h3 className="text-xl font-semibold text-green-800">{eventData.title}</h3>
-                      {eventData.short_description && <p className="text-gray-600">{eventData.short_description}</p>}
+                      <h3 className="text-xl font-semibold text-green-800">{eventdata?.base_event?.title}</h3>
+                      {eventdata?.base_event?.short_description && <p className="text-gray-600">{eventdata?.base_event?.short_description}</p>}
                     </div>
                   </div>
 
                   {/* About event content */}
-                  {eventData.about_event && (
+                  {eventdata?.event_detail?.about_event && (
                     <div
                       className="prose prose-green max-w-none text-gray-700"
-                      dangerouslySetInnerHTML={{ __html: eventData.about_event }}
-                    />
+                      >
+                      { eventdata?.event_detail?.about_event }
+                    </div>
                   )}
                 </div>
               </motion.section>
@@ -568,11 +569,11 @@ export default function EventPage({ id }) {
                 </motion.section>
               )}
 
-              {/* Sponsors Section */}
-              {hasSponsors && (
+              {/* sponsers Section */}
+              {hassponsers && (
                 <motion.section
-                  id="sponsors"
-                  ref={sectionRefs.sponsors}
+                  id="sponsers"
+                  ref={sectionRefs.sponsers}
                   className="scroll-mt-8"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -580,11 +581,11 @@ export default function EventPage({ id }) {
                   viewport={{ once: true }}
                 >
                   <h2 className="mb-6 inline-block border-b-2 border-green-500 pb-2 text-3xl font-bold text-green-800">
-                    Sponsors
+                    sponsers
                   </h2>
                   <div className="rounded-xl border border-green-100 bg-white p-6 shadow-lg">
                     <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-5">
-                      {sortedSponsors.map((sponsor, index) => (
+                      {sortedsponsers.map((sponsor, index) => (
                         <motion.div
                           key={sponsor.id}
                           initial={{ opacity: 0, scale: 0.9 }}
@@ -596,7 +597,7 @@ export default function EventPage({ id }) {
                         >
                           {sponsor.logo && (
                             <Image
-                              src={sponsor.logo || "/placeholder.svg"}
+                              src={sponsor.logo.replace("localhost","127.0.0.1") || "/placeholder.svg"}
                               alt={sponsor.name || "Sponsor"}
                               width={120}
                               height={120}
@@ -632,10 +633,10 @@ export default function EventPage({ id }) {
                     Venue
                   </h2>
                   <div className="overflow-hidden rounded-xl border border-green-100 bg-white shadow-lg">
-                    {eventData.venue.gmaps_link && (
+                    {eventdata?.venue_detail.gmaps_link && (
                       <div className="aspect-video w-full bg-green-100">
                         <iframe
-                          src={eventData.venue.gmaps_link}
+                          src={eventdata?.venue_detail.gmaps_link}
                           width="100%"
                           height="100%"
                           style={{ border: 0 }}
@@ -647,14 +648,14 @@ export default function EventPage({ id }) {
                       </div>
                     )}
                     <div className="p-6">
-                      {eventData.venue.place && (
-                        <h3 className="mb-2 text-xl font-semibold text-green-800">{eventData.venue.place}</h3>
+                      {eventdata?.venue_detail.place && (
+                        <h3 className="mb-2 text-xl font-semibold text-green-800">{eventdata?.venue_detail.place}</h3>
                       )}
-                      {eventData.venue.address && <p className="mb-4 text-gray-700">{eventData.venue.address}</p>}
-                      {eventData.venue.gmaps_link && (
+                      {eventdata?.venue_detail.address && <p className="mb-4 text-gray-700">{eventdata?.venue_detail.address}</p>}
+                      {eventdata?.venue_detail.gmaps_link && (
                         <div className="mb-6 space-y-2">
                           <a
-                            href={eventData.venue.gmaps_link}
+                            href={eventdata?.venue_detail.gmaps_link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-green-600 hover:text-green-700"
@@ -684,7 +685,7 @@ export default function EventPage({ id }) {
                     Prizes
                   </h2>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {eventData.prizes.map((prize, index) => (
+                    {eventdata.prizes.map((prize, index) => (
                       <motion.div
                         key={prize.id}
                         initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
@@ -697,7 +698,7 @@ export default function EventPage({ id }) {
                         {prize.image ? (
                           <div className="relative h-48 w-full bg-green-100">
                             <Image
-                              src={prize.image || "/placeholder.svg"}
+                              src={prize.image.replace("localhost","127.0.0.1") || "/placeholder.svg"}
                               alt={prize.title || "Prize"}
                               width={400}
                               height={200}
@@ -743,7 +744,7 @@ export default function EventPage({ id }) {
                   </h2>
                   <div className="rounded-xl border border-green-100 bg-white p-6 shadow-lg">
                     <div className="space-y-4">
-                      {eventData.faqs.map((faq, index) => (
+                      {eventdata.faqs.map((faq, index) => (
                         <motion.div
                           key={faq.id}
                           initial={{ opacity: 0, y: 20 }}
@@ -808,38 +809,38 @@ export default function EventPage({ id }) {
                         </p>
 
                         <ul className="space-y-4">
-                          {eventData.contact.email && (
+                          {eventdata?.contact_detail.email && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
                                 <Mail className="h-5 w-5 text-green-600" />
                               </span>
                               <a
-                                href={`mailto:${eventData.contact.email}`}
+                                href={`mailto:${eventdata?.contact_detail.email}`}
                                 className="text-gray-700 hover:text-green-600"
                               >
-                                {eventData.contact.email}
+                                {eventdata?.contact_detail.email}
                               </a>
                             </li>
                           )}
 
-                          {eventData.contact.phone && (
+                          {eventdata?.contact_detail.phone && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
                                 <Phone className="h-5 w-5 text-green-600" />
                               </span>
-                              <a href={`tel:${eventData.contact.phone}`} className="text-gray-700 hover:text-green-600">
-                                {eventData.contact.phone}
+                              <a href={`tel:${eventdata?.contact_detail.phone}`} className="text-gray-700 hover:text-green-600">
+                                {eventdata?.contact_detail.phone}
                               </a>
                             </li>
                           )}
 
-                          {eventData.contact.instagram_url && (
+                          {eventdata?.contact_detail.instagram_url && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
                                 <Instagram className="h-5 w-5 text-green-600" />
                               </span>
                               <a
-                                href={eventData.contact.instagram_url}
+                                href={eventdata?.contact_detail.instagram_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-700 hover:text-green-600"
@@ -849,13 +850,13 @@ export default function EventPage({ id }) {
                             </li>
                           )}
 
-                          {eventData.contact.other_url && (
+                          {eventdata?.contact_detail.other_url && (
                             <li className="flex items-center gap-3">
                               <span className="rounded-full bg-green-100 p-2">
                                 <Globe className="h-5 w-5 text-green-600" />
                               </span>
                               <a
-                                href={eventData.contact.other_url}
+                                href={eventdata?.contact_detail.other_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-700 hover:text-green-600"
