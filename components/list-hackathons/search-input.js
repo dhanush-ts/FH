@@ -1,7 +1,4 @@
 "use client"
-
-import React from "react"
-
 import { Search } from "lucide-react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useState, useTransition, useEffect, useRef } from "react"
@@ -52,17 +49,17 @@ export function SearchInput({ defaultValue = "" }) {
   }, [])
 
   return (
-    <form onSubmit={handleSearch} className="relative">
-      <div className="relative flex items-center">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    <form onSubmit={handleSearch} className="relative w-full">
+      <div className="relative flex items-center w-full">
+        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
         <Input
           ref={inputRef}
           placeholder="Search for hackathons... (Ctrl+K)"
           className={cn(
-            "pl-10 pr-24 h-12 bg-white dark:bg-gray-900 border-2 transition-all duration-200",
+            "pl-10 pr-24 h-12 bg-white dark:bg-gray-900 border-2 transition-all duration-200 rounded-md shadow-sm",
             isSearchFocused
               ? "border-green-600 dark:border-green-700 ring-2 ring-green-600/20"
-              : "border-gray-200 dark:border-gray-700",
+              : "border-gray-200 dark:border-gray-800",
           )}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -70,10 +67,10 @@ export function SearchInput({ defaultValue = "" }) {
           onBlur={() => setIsSearchFocused(false)}
         />
         <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 dark:bg-gray-800 px-1.5 font-mono text-[10px] font-medium text-gray-600 dark:text-gray-400">
             <span className="text-xs">CTRL</span>K
           </kbd>
-          <Button type="submit" className="h-10" disabled={isPending}>
+          <Button type="submit" className="h-10 bg-green-600 hover:bg-green-700" disabled={isPending}>
             {isPending ? "Searching..." : "Search"}
           </Button>
         </div>
