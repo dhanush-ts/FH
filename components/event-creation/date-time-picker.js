@@ -20,7 +20,7 @@ function generateTimeSlots() {
 
 function Picker() {
   const today = new Date();
-  const [date, setDate] = useState<Date>(today);
+  const [date, setDate] = useState(today);
   const [time, setTime] = useState(null);
   const [search, setSearch] = useState("");
 
