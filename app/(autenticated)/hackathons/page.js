@@ -26,11 +26,12 @@ export const metadata = {
   }
 }
 
-export default function Home({ searchParams }) {
+export default async function Home({ searchParams }) {
+    const data = (await searchParams)
   return (
     <main className="min-h-screen pb-24 bg-[#f8faf8] dark:bg-gray-950">
       <Suspense fallback={<EventsSkeleton />}>
-        <EventsPage searchParams={searchParams} />
+        <EventsPage searchParams={data} />
       </Suspense>
     </main>
   )

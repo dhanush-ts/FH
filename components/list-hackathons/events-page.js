@@ -68,7 +68,7 @@ export default function EventsPage({ searchParams }) {
     }
 
     fetchData()
-  }, [pagef, statusf, typef, modef, isTeamEventf, registrationCostf, queryf])
+  }, [searchParams])
 
   if (isLoading) {
     return <EventSkeleton />
