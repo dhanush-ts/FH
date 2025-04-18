@@ -44,8 +44,7 @@ export function MobileHeader({ defaultQuery = "", currentFilters, isScrolled }) 
   return (
     <div
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-950 p-3 transition-all duration-300",
-        isScrolled ? "shadow-md" : "",
+        "fixed top-20 left-0 right-0 z-50 dark:bg-gray-950 p-3 transition-all duration-300"
       )}
     >
       <div className="flex items-center gap-2">
@@ -59,7 +58,7 @@ export function MobileHeader({ defaultQuery = "", currentFilters, isScrolled }) 
               className="flex-1 flex items-center"
               onSubmit={handleSearch}
             >
-              <div className="relative flex-1">
+              <div className="relative flex-1 bg-gray-100">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                 <Input
                   placeholder="Search hackathons..."
