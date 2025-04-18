@@ -257,7 +257,6 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
           FAQs
         </TabsTrigger>
       </TabsList>
-
       <TabsContent value="timeline" className="mt-2 space-y-6">
         <Card className="border-green-100">
           <CardHeader className="flex flex-row items-center justify-between bg-green-50 rounded-t-lg">
@@ -295,7 +294,7 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                   >
                     {timeline.isEditing ? (
                       // Edit mode
-                      <>
+                      (<>
                         <div className="flex justify-between items-center mb-4">
                           <h3 className="text-lg font-medium text-green-800">Edit Event</h3>
                           <div className="flex gap-2">
@@ -317,7 +316,6 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             </Button>
                           </div>
                         </div>
-
                         <div className="grid gap-5">
                           <div>
                             <Label htmlFor={`timeline-title-${index}`} className="text-green-800">
@@ -396,10 +394,10 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             </p>
                           </div>
                         </div>
-                      </>
+                      </>)
                     ) : (
                       // View mode
-                      <>
+                      (<>
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
@@ -437,7 +435,6 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-
                         <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 text-sm">
                           <div className="flex items-center text-green-700 bg-green-50 px-3 py-1.5 rounded-full">
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -449,7 +446,7 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             <span>Ends: {formatDate(timeline.end_at)}</span>
                           </div>
                         </div>
-                      </>
+                      </>)
                     )}
                   </div>
                 ))}
@@ -468,7 +465,6 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
           </CardContent>
         </Card>
       </TabsContent>
-
       <TabsContent value="faqs" className="mt-2 space-y-6">
         <Card className="border-green-100">
           <CardHeader className="flex flex-row items-center justify-between bg-green-50 rounded-t-lg">
@@ -506,7 +502,7 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                   >
                     {faq.isEditing ? (
                       // Edit mode
-                      <>
+                      (<>
                         <div className="flex justify-between items-center mb-4">
                           <h3 className="text-lg font-medium text-green-800">Edit FAQ</h3>
                           <div className="flex gap-2">
@@ -528,7 +524,6 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             </Button>
                           </div>
                         </div>
-
                         <div className="space-y-5">
                           <div>
                             <Label htmlFor={`faq-question-${index}`} className="text-green-800">
@@ -557,10 +552,10 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             />
                           </div>
                         </div>
-                      </>
+                      </>)
                     ) : (
                       // View mode
-                      <>
+                      (<>
                         <div className="flex justify-between items-start">
                           <h3 className="text-lg font-medium text-green-800">{faq.question || "Untitled Question"}</h3>
                           <DropdownMenu>
@@ -584,11 +579,9 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-
                         <Separator className="my-3" />
-
                         <div className="text-muted-foreground">{faq.answer || "No answer provided yet."}</div>
-                      </>
+                      </>)
                     )}
                   </div>
                 ))}
@@ -607,7 +600,6 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
           </CardContent>
         </Card>
       </TabsContent>
-
       <div className="mt-8 flex justify-between">
         <Button
           type="button"
@@ -622,5 +614,5 @@ export function ScheduleForm({ initialTimeline, initialFaq = [], eventId }) {
         </Button>
       </div>
     </Tabs>
-  )
+  );
 }

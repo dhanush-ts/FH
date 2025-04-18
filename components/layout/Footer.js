@@ -18,7 +18,6 @@ export default function Footer() {
           ></path>
         </svg>
       </div>
-
       <div className="container mx-auto px-6 pt-12 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Column - Quote and Email */}
@@ -39,11 +38,17 @@ export default function Footer() {
 
             {/* Social Media Links - Stacked vertically */}
             <div className="flex flex-col items-start space-y-3">
-              <Link href="https://instagram.com" className="flex items-center hover:text-emerald-300 transition-colors">
+              <Link
+                href="https://instagram.com"
+                className="flex items-center hover:text-emerald-300 transition-colors"
+                >
                 <Instagram className="mr-2 h-5 w-5" />
                 <span>Instagram</span>
               </Link>
-              <Link href="https://linkedin.com" className="flex items-center hover:text-emerald-300 transition-colors">
+              <Link
+                href="https://linkedin.com"
+                className="flex items-center hover:text-emerald-300 transition-colors"
+                >
                 <Linkedin className="mr-2 h-5 w-5" />
                 <span>LinkedIn</span>
               </Link>
@@ -70,6 +75,6 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 

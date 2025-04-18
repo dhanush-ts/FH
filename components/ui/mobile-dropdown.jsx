@@ -29,13 +29,12 @@ export function MobileDropdown({ bio, skills }) {
           <Link
             href="/profile/settings"
             className="hover:bg-gray-100 p-1 border mx-auto w-fit transition rounded-md flex items-center gap-2 text-sm"
-          >
+            >
             <Plus className="w-4 h-4" />
             {missingLabel}
           </Link>
         </div>
       )}
-
       {(hasBio || hasSkills) && (
         <>
           <button
@@ -61,5 +60,5 @@ export function MobileDropdown({ bio, skills }) {
         </>
       )}
     </div>
-  )
+  );
 }

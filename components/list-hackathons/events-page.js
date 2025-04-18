@@ -87,11 +87,10 @@ export default function EventsPage({ searchParams }) {
           content="hackathons, coding competitions, tech events, programming challenges, developer events"
         />
       </Head>
-
       <div className="container mx-auto py-3 md:py-5 px-3 md:px-8">
         {isMobile ? (
           // Mobile layout with expandable search/filter
-          <MobileHeader
+          (<MobileHeader
             defaultQuery={queryf}
             currentFilters={{
               status: statusf,
@@ -101,10 +100,10 @@ export default function EventsPage({ searchParams }) {
               registration_cost: registrationCostf,
             }}
             isScrolled={isScrolled}
-          />
+          />)
         ) : (
           // Desktop layout with side-by-side search and filters
-          <div className="flex flex-col gap-5">
+          (<div className="flex flex-col gap-5">
             <div className="flex gap-5 items-start">
               <div
                 className={`w-1/4 sticky ${isScrolled ? "top-24" : "top-5"} transition-all duration-300 ease-in-out`}
@@ -156,7 +155,7 @@ export default function EventsPage({ searchParams }) {
                 </motion.div>
               </div>
             </div>
-          </div>
+          </div>)
         )}
 
         {/* Mobile content area */}
@@ -191,7 +190,7 @@ export default function EventsPage({ searchParams }) {
         )}
       </div>
     </>
-  )
+  );
 }
 
 function EventSkeleton() {

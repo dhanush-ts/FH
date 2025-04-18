@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function MediaPage({ params }) {
   const id = (await params).id
-  const eventDetails = await serverSideFetch(`/event/host/base-event-detail/${id}/`) || [];
+  const eventDetails = (await serverSideFetch(`/event/host/base-event-detail/${id}/`)) || [];
 
   return (
     <div className="mx-auto max-w-3xl">

@@ -23,7 +23,7 @@ export default function AuthLayout({ children }) {
           <Link
             href="/profile"
             className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
+            >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Profile
           </Link>

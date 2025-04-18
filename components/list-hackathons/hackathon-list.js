@@ -48,7 +48,7 @@ function HackathonCard({ event, index }) {
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
       className="h-full"
     >
-      <Link href={`/hackathon/${event.slug}`} className="block h-full">
+      <Link href={`/hackathon/${event.slug}`} className="block h-full" >
         <Card className="overflow-hidden border-2 hover:border-green-600 dark:hover:border-green-700 transition-colors h-full group relative bg-white dark:bg-gray-900 shadow-sm hover:shadow-md">
           <div className="p-3 flex flex-col h-full">
             <div className="flex items-start gap-3 mb-2">
@@ -123,5 +123,5 @@ function HackathonCard({ event, index }) {
         </Card>
       </Link>
     </motion.div>
-  )
+  );
 }

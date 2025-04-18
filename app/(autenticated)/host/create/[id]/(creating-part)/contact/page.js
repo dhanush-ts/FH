@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function ContactDetailsPage({ params }) {
   const id = (await params).id
-  const additionalDetails = await serverSideFetch(`/event/host/contact-detail/${id}/`) || [];
+  const additionalDetails = (await serverSideFetch(`/event/host/contact-detail/${id}/`)) || [];
 
   return (
     <div className="mx-auto max-w-3xl">

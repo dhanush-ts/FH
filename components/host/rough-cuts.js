@@ -138,7 +138,6 @@ export default async function RoughCutsPage() {
 
   return (
     <main className="py-10 w-full px-4 mx-auto">
-
       <div className="w-full grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {events.length > 0 ? (
           events.map((event) => (
@@ -146,7 +145,7 @@ export default async function RoughCutsPage() {
               key={event.id}
               href={`/host/create/${event.id}`}
               className="group block w-full h-[160px] rounded-xl border bg-white dark:bg-gray-950 hover:shadow-lg transition-all relative overflow-hidden"
-            >
+              >
               {/* Small Logo top-left as badge */}
               <div className="absolute top-4 left-4 z-10 h-12 w-12 rounded-md overflow-hidden border bg-white dark:bg-gray-900 shadow-sm">
                 <Image
@@ -203,5 +202,5 @@ export default async function RoughCutsPage() {
         )}
       </div>
     </main>
-  )
+  );
 }

@@ -131,7 +131,11 @@ export function Header() {
             <SheetContent side="right" className="p-6">
               <DialogDescription></DialogDescription>
               <div className="flex flex-col gap-8 py-2">
-                <Link href="/" className="flex items-center" onClick={closeSheet}>
+                <Link
+                  href="/"
+                  className="flex items-center"
+                  onClick={closeSheet}
+                  >
                   <span className={`${acme.className} text-2xl font-bold bg-gradient-to-r text-black bg-clip-text`}>
                     FIND<span className="text-green-600">H</span>ACKS
                   </span>
@@ -202,7 +206,7 @@ export function Header() {
                       >
                         Create a hackathon
                       </Link>
-                      <Link
+                      <Link 
                         href="/host/create"
                         className="block py-1.5 transition-colors duration-200 hover:text-green-600"
                         onClick={closeSheet}
@@ -257,7 +261,7 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="flex items-center lg:mr-8">
+          <Link href="/" className="flex items-center lg:mr-8" >
             <span
               className={`${acme.className} text-2xl flex mx-6 lg:mx-0 font-bold bg-gradient-to-r text-black bg-clip-text transition-all duration-300`}
             >
@@ -268,11 +272,9 @@ export function Header() {
           <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList className="gap-1">
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-md rounded-md")}>
+                  <NavigationMenuLink href="/"  className={cn(navigationMenuTriggerStyle(), "text-md rounded-md")}>
                     Home
                   </NavigationMenuLink>
-                </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="transition-all duration-200 text-md hover:bg-accent/80 rounded-md">
@@ -376,7 +378,7 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
 const ListItem = React.forwardRef(
@@ -392,7 +394,7 @@ const ListItem = React.forwardRef(
 
     return (
       <li>
-        <button>
+
           <a
             ref={ref}
             href={href}
@@ -406,7 +408,6 @@ const ListItem = React.forwardRef(
             <div className="text-sm font-medium leading-none">{title}</div>
             <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-2">{children}</p>
           </a>
-        </button>
 
         {showCreateDialog && (
           <CreateHackathonDialog open={dialogOpen} onOpenChange={setDialogOpen} />

@@ -9,10 +9,13 @@ export function UICard({ id, title, description, imageUrl, status, tags = [], li
   const CardWrapper = ({ children }) => {
     if (link) {
       return (
-        <Link href={link} className="group block transition-all hover:shadow-md">
+        <Link
+          href={link}
+          className="group block transition-all hover:shadow-md"
+          >
           {children}
         </Link>
-      )
+      );
     }
     return <>{children}</>
   }

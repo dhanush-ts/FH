@@ -7,9 +7,9 @@ export function ProfileSkillTags({ skills }) {
     <div className="flex flex-wrap gap-2 justify-center md:justify-start">
       {skills.length===0 &&
         <Link
-        href="/profile/settings"
-        className="hover:bg-gray-100 w-fit transition rounded-md flex items-center gap-2 text-sm"
-        >
+          href="/profile/settings"
+          className="hover:bg-gray-100 w-fit transition rounded-md flex items-center gap-2 text-sm"
+          >
           <Plus className="w-4 h-4" />
           Add Skills
         </Link>
@@ -23,5 +23,5 @@ export function ProfileSkillTags({ skills }) {
         </div>
       ))}
     </div>
-  )
+  );
 }

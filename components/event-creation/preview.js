@@ -206,7 +206,6 @@ export default function EventPage({ id }) {
         </div> */}
         <div className="absolute inset-0" />
       </div>
-
       {/* Event Quick Info */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -283,7 +282,6 @@ export default function EventPage({ id }) {
           )}
         </div>
       </motion.div>
-
       {/* Main Content with Sidebar */}
       <div className="container px-2 py-12 md:px-8">
         <div className="flex flex-col gap-6 lg:flex-row">
@@ -443,7 +441,7 @@ export default function EventPage({ id }) {
                     //   className="prose prose-green max-w-none text-gray-700"
                     //   dangerouslySetInnerHTML={{ __html: eventData.event_detail.about_event }}
                     // />
-                    <MarkdownViewer content={eventData.event_detail.about_event} /> 
+                    (<MarkdownViewer content={eventData.event_detail.about_event} />) 
                   )}
 
                 </div>
@@ -876,5 +874,5 @@ export default function EventPage({ id }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -54,7 +54,7 @@ export async function ProfileBanner() {
 
               {/* Edit Profile Button */}
               <div className="mt-4 md:mt-0 select-none flex justify-center md:justify-end">
-                <Link href="/profile/settings">
+                <Link href="/profile/settings" >
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -84,9 +84,9 @@ export async function ProfileBanner() {
 
               {!profileData.bio && (
                 <Link
-                      href="/profile/settings"
-                      className="hover:bg-gray-100 mt-4 w-fit transition rounded-md flex items-center gap-2 text-sm"
-                      >
+                  href="/profile/settings"
+                  className="hover:bg-gray-100 mt-4 w-fit transition rounded-md flex items-center gap-2 text-sm"
+                  >
                   <Plus className="w-4 h-4" />
                   Add bio
                 </Link>
@@ -109,5 +109,5 @@ export async function ProfileBanner() {
         </div>
       </div>
     </div>
-  )
+  );
 }

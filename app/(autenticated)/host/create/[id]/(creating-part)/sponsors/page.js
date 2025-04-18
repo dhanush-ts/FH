@@ -8,8 +8,8 @@ export const metadata = {
 
 export default async function SponsorsPage({ params }) {
   const id = (await params).id;
-  const sponsors = await serverSideFetch(`/event/host/sponser/${id}/`) || [];
-  const prizes = await serverSideFetch(`/event/host/prize/${id}/`) || [];
+  const sponsors = (await serverSideFetch(`/event/host/sponser/${id}/`)) || [];
+  const prizes = (await serverSideFetch(`/event/host/prize/${id}/`)) || [];
 
   return (
     <div className="mx-auto max-w-3xl">

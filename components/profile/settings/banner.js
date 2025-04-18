@@ -22,7 +22,6 @@ export default async function Banner3() {
 
         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent" />
       </div>
-
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="relative">
@@ -109,7 +108,7 @@ export default async function Banner3() {
             )}
 
             <div className="mt-6">
-              <Link href="/profile/settings">
+              <Link href="/profile/settings" >
                 <Button variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/20">
                   Edit Profile
                 </Button>
@@ -119,6 +118,6 @@ export default async function Banner3() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
