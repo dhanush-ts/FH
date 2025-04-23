@@ -21,7 +21,6 @@ export async function fetchWithAuth(url, options = {},key = false) {
     let response = await fetch(`${api}${url}`, options);
     const cloned = response.clone();
     const data = await cloned.json();
-
     toast(JSON.stringify(data));
     // console.log(data)
 
