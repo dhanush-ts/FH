@@ -7,6 +7,11 @@ export function getChangedFields(original, current) {
     if (!original || !current) return changes
 
     for (const key in current) {
+
+      if(key==="organization_id"){
+        // Skip organization_id as it is not a field to be compared
+        continue
+      }
       // Skip if the property doesn't exist in the original
       if (!(key in original)) {
         changes[key] = current[key]
