@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import CreateHackathonButton from "@/components/host/create-popup"
 import RoughCuts from "@/components/host/rough-cuts"
 
