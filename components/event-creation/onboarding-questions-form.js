@@ -233,7 +233,7 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
 
       // If it's an existing question (has an ID), add to deleted list
       if (questionToRemove.id && typeof questionToRemove.id === "number") {
-        setDeletedQuestions((prev) => [...prev, { id: questionToRemove.id, question: "None" }])
+        setDeletedQuestions((prev) => [...prev, { id: questionToRemove.id, question: null }])
 
         // Also remove from modified list if it was there
         setModifiedQuestions((prev) => prev.filter((q) => q.id !== questionToRemove.id))
@@ -436,32 +436,38 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
     }
   }
 
+  const removeDuplicates = (questions) => {
+    const seen = new Set();
+    return questions.filter(q => {
+      if (seen.has(q.id)) return false;
+      seen.add(q.id);
+      return true;
+    });
+  };
+  
   const prepareSubmissionData = () => {
     // Prepare new questions for submission (without tempId and isNew flag)
-    const formattedNewQuestions = newQuestions.map((q) => ({
+    const formattedNewQuestions = newQuestions.map(q => ({
+      id: q.id,  // Ensure ID exists for deduplication
       question: q.question,
       keyword: q.keyword,
       question_type: q.question_type,
       options: q.options,
-    }))
-    const seen = new Set();
-    const uniqueQuestions = [];
-
-    for (const question of modifiedQuestions) {
-      if (!seen.has(question.id)) {
-        seen.add(question.id);
-        uniqueQuestions.push(question);
-      }
-    }
-
+    }));
+  
+    // Remove duplicates from modified & deleted questions
+    const uniqueQuestions = removeDuplicates(modifiedQuestions);
+    const uniqueDeletedQuestions = removeDuplicates(deletedQuestions);
+  
     // Combine all changes
-    const allChanges = [...formattedNewQuestions, ...uniqueQuestions, ...deletedQuestions]
-
+    const allChanges = [...formattedNewQuestions, ...uniqueQuestions, ...uniqueDeletedQuestions];
+  
     return {
       default_questions: formData.default_questions,
       custom_questions: allChanges,
-    }
-  }
+    };
+  };
+  
 
   const onSubmit = async () => {
     setIsSubmitting(true)
@@ -658,6 +664,7 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                       <span className="font-medium text-green-800">Question {index + 1}</span>
                                     </div>
                                     <Button
+                                      type="button"
                                       variant="ghost"
                                       size="icon"
                                       onClick={() => removeQuestion(index)}
