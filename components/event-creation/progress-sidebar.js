@@ -13,7 +13,7 @@ import { useAuth } from "@/app/providers"
 import { useEventContext } from "./event-context"
 
 const SECTIONS = [
-  {
+      {
         id: "basic",
         name: "Basic Details",
         weight: 25,
@@ -62,7 +62,14 @@ const SECTIONS = [
         path: "venue",
         description: "Set the location details for your event",
       },
-]
+      {
+        id: "data-collection",
+        name: "Data Collection",
+        weight: 5,
+        path: "data",
+        description: "Select the data you want to collect from participants",
+      }
+];
 
 export function ProgressSidebar({ currentSection = "basic" }) {
   const router = useRouter()

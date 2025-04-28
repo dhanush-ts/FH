@@ -39,11 +39,10 @@ export default function Banner() {
       />
       <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText>
       <WhySection  ref={sectionRefs[1]} scrollToNextSection={() => scrollToNextSection(1)} />
-      <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText>
+      {/* <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText> */}
       <CodingSection  ref={sectionRefs[2]} scrollToNextSection={() => scrollToNextSection(2)} />
-      <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText>
+      {/* <ParallaxText className={cn(acme.className,"text-xl md:text-5xl bg-green-400 py-2")} baseVelocity={-5}>FindHacks</ParallaxText> */}
       <ProjectSection ref={sectionRefs[3]} />
     </div>
   )
 }
-

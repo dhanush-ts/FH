@@ -1,8 +1,6 @@
 import { Metadata } from "next"
 import EventPage from "@/components/event-creation/preview"
-// import { fetchWithAuth } from "@/app/api";
 import serverSideFetch from "@/app/service";
-// import { fetchEventData } from "@/lib/api"
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({ params }) {
