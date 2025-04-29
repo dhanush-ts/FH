@@ -1,4 +1,5 @@
 import serverSideFetch from "@/app/service";
+import EventPage from "@/components/event-creation/preview";
 
 // app/[slug]/metadata.js
 export async function generateMetadata({ params }) {
@@ -33,5 +34,5 @@ export async function generateMetadata({ params }) {
 export default async function HackHomePage({params}) {
   const { slug } = (await params)
 
-  return <div className="h-screen">Welcome to {slug}'s Hackathon!</div>
+  return <EventPage plin={`/event/${slug}`} />
 }

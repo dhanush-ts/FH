@@ -23,7 +23,7 @@ import { fetchWithAuth } from "@/app/api"
 import MarkdownViewer from "./mdviewer"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
-export default function EventPage({ id }) {
+export default function EventPage({ plin }) {
   const [activeSection, setActiveSection] = useState("overview")
   const [isScrolled, setIsScrolled] = useState(false)
   const [openFaqId, setOpenFaqId] = useState(null)
@@ -33,14 +33,13 @@ export default function EventPage({ id }) {
 
   // Define media query breakpoints outside the component
   const isMobile = useMediaQuery("(max-width: 768px)")
-  const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1023px)")
 
   // Fetch event data
   useEffect(() => {
     const getEventData = async () => {
       try {
         setIsLoading(true)
-        const response = await fetchWithAuth(`/event/host/preview/${id}`)
+        const response = await fetchWithAuth(plin)
         const data = await response.json();
         // const data = {
         //   base_event: {
@@ -129,7 +128,7 @@ export default function EventPage({ id }) {
     }
 
     getEventData()
-  }, [id])
+  }, [plin])
 
   const sectionRefs = {
     overview: useRef(null),
@@ -385,8 +384,8 @@ export default function EventPage({ id }) {
       <div className="container mx-auto px-4 py-12 md:px-8">
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar - Only visible on desktop and tablet */}
-          {!isMobile && (
-            <div className="w-full lg:w-1/4 md:w-1/3">
+          
+            <div className="w-full lg:w-1/4 md:w-1/3 hidden lg:block">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -499,10 +498,9 @@ export default function EventPage({ id }) {
                 )}
               </motion.div>
             </div>
-          )}
 
           {/* Content Sections - Adjust width based on screen size */}
-          <div className={`w-full ${!isMobile ? "lg:w-3/4 md:w-2/3" : ""}`}>
+          <div className={`w-full ${!isMobile ? "lg:w-3/4" : ""}`}>
             <div className="space-y-24">
               {/* Overview Section */}
               <motion.section
@@ -635,7 +633,7 @@ export default function EventPage({ id }) {
 
                       return (
                         <motion.div
-                          key={date}
+                          key={dateIndex}
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.5, delay: dateIndex * 0.1 }}

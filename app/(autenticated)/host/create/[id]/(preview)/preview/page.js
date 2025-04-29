@@ -41,7 +41,7 @@ export default async function EventDetailsPage({ params }) {
 
   return (
     <div className="mx-auto min-h-screen mb-12">
-      <EventPage id={id} />
+      <EventPage plin={`/event/host/preview/${id}`} />
     </div>
   )
 }
