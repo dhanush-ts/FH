@@ -93,8 +93,8 @@ function HackathonCard({ event, index }) {
     >
       {/* Hackathon label positioned outside the card */}
       <div className="absolute -top-7 left-0 z-10">
-        <div className="bg-green-500 text-white font-bold py-1 px-4 text-sm rounded-t-md">HACKATHON</div>
-        <div className="absolute top-0 right-0 h-full w-4 bg-green-500 rounded-tr-md dark:bg-gray-900 transform translate-x-1/2 skew-x-[30deg]"></div>
+        <div className="bg-green-500 text-white font-bold py-1 px-4 text-md rounded-t-md">HACKATHON</div>
+        <div className="absolute top-0 right-0 h-full w-5 bg-green-500 rounded-tr-md dark:bg-gray-900 transform translate-x-1/2 skew-x-[30deg]"></div>
       </div>
 
       <a href={`http://${event.slug}.lvh.me:3000/home`} className="block h-full">
@@ -110,23 +110,23 @@ function HackathonCard({ event, index }) {
         >
           <div className="p-5">
             <div className="mb-4">
-              <h3 className="font-bold text-xl text-gray-900 dark:text-white">{event.title}</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">{event.short_description}</p>
+              <h3 className="font-bold text-2xl text-gray-900 dark:text-white">{event.title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-md">{event.short_description}</p>
             </div>
 
             {/* Theme and participants in two columns */}
             <div className="flex mb-4">
               {/* Left column - Theme */}
               <div className="flex-1 pr-2">
-                <div className="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">THEME</div>
+                <div className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">Theme</div>
                 <div className="flex flex-wrap gap-2">
                   {themes.map((theme, i) => (
                     <Badge
                       key={i}
                       variant="outline"
-                      className="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800 flex items-center gap-1"
+                      className="bg-amber-50 text-sm dark:bg-amber-900/20 p-2 px-4 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800 flex items-center gap-1"
                     >
-                      <Sparkles className="h-3 w-3 text-amber-500" />
+                      <Sparkles className="h-5 w-5 text-amber-500" />
                       {theme}
                     </Badge>
                   ))}
@@ -148,17 +148,17 @@ function HackathonCard({ event, index }) {
             </div>
 
             {/* Info badges */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap pb-2 gap-2 mb-4">
               <Badge
                 variant="outline"
-                className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800"
+                className="bg-blue-50 dark:bg-blue-900/30 text-sm p-2 px-4 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-800"
               >
                 {event.mode || "Online"}
               </Badge>
 
               <Badge
                 variant="outline"
-                className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                className="flex items-center text-sm gap-1 p-2 px-4 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
               >
                 <CalendarDays className="h-3 w-3" />
                 Starts {formatDate(event.start_date)}
@@ -166,7 +166,7 @@ function HackathonCard({ event, index }) {
 
               <Badge
                 variant="outline"
-                className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                className="flex items-center text-sm gap-1 p-2 px-4 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
               >
                 <Users className="h-3 w-3" />
                 {teamSizeText}
