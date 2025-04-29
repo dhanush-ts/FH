@@ -56,19 +56,20 @@ const SECTIONS = [
         description: "Provide contact information for your event",
       },
       {
+        id: "data-collection",
+        name: "Data Collection",
+        weight: 5,
+        path: "data",
+        description: "Select the data you want to collect from participants",
+      },
+      {
         id: "venue",
         name: "Venue",
         weight: 10,
         path: "venue",
         description: "Set the location details for your event",
       },
-      {
-        id: "data-collection",
-        name: "Data Collection",
-        weight: 5,
-        path: "data",
-        description: "Select the data you want to collect from participants",
-      }
+      
 ];
 
 export function ProgressSidebar({ currentSection = "basic" }) {

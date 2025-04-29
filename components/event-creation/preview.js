@@ -41,83 +41,83 @@ export default function EventPage({ id }) {
       try {
         setIsLoading(true)
         const response = await fetchWithAuth(`/event/host/preview/${id}`)
-        // const data = await response.json();
-        const data = {
-          base_event: {
-            id: "da0c0997-fade-43ba-99d2-78580cea12de",
-            is_promoted: true,
-            title: "Smart India Hackathon",
-            logo: "http://localhost:8000/media/event/logo/images_ZF2EoKh.jpeg",
-            type: "Hackathon",
-            slug: "smart-india-hackathon",
-            short_description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry...",
-          },
-          event_detail: {
-            banner: "http://localhost:8000/media/event/banner/images_Zema3oL.jpeg",
-            about_event:
-              '<div><p><span>A unique case study competition where participants analyze a founder’s company website and propose innovative new product lines. Get a chance to present your ideas to a renowned founder!</span></p>\r\n<p><span>InnovQuest is a case study competition aimed at fostering innovation, creativity, and entrepreneurship among students.</span><span><br></span><span> Students will form teams of </span>2-4 members (cross-college teams allowed) and analyze the website of a company founded by a renowned entrepreneur. They will identify potential new product lines and submit a 8-slide presentation explaining their ideas. Shortlisted teams will present their proposals in person to the founder.</p>\r\n<p><strong>Guidelines:</strong></p>\r\n<ul>\r\n<li>Open to undergraduate students from any institution.</li>\r\n<li>Teams of 2-4 members.</li>\r\n<li><span>Cross-college teams are allowed.</span></li>\r\n<li>The final round will be conducted on campus.</li>\r\n<li><strong>Note:</strong> Once the first round goes live, the name of the founder and their startup will be revealed in the "About" section of the competition.</li>\r\n<li>After the founder and startup are revealed, teams can begin working on their presentation (PPT) and must upload it before the submission deadline.</li>\r\n</ul>\r\n<p><strong>Rules:</strong></p>\r\n<ul>\r\n<li><span>All teams are requested to carry their college ID cards on the day of the event.</span></li>\r\n<li><span>Adherence to time limits and event rules is mandatory.</span></li>\r\n<li><span>Exciting prizes and certificates for top-performing teams.</span></li>\r\n<li><span>Judging will be solely based on panel evaluation.</span></li>\r\n<li><span>Selected teams will be informed via phone call or email.</span></li>\r\n<li>Dress code for the offline rounds is Business Casuals or Smart Casuals.</li>\r\n</ul>\r\n<p><strong>Important Dates:</strong></p>\r\n<ul>\r\n<li>Prelims: 18th April 2025 (Online)</li>\r\n<li>Finals: 22nd April 2025 (On-Campus)[tentative]</li>\r\n</ul>\r\n<p><strong>Submission Format</strong></p>\r\n<ul>\r\n<li><span>File type: .PPTX or PDF</span></li>\r\n<li><span>Must include: Introduction slide and Thank You slide</span></li>\r\n<li><span>Max slides: 8</span></li>\r\n<li><span>Naming convention: TeamName_CollegeName</span></li>\r\n</ul></div>',
-            mode: "Online",
-            start_date: "2025-05-10T00:00:00+05:30",
-            end_date: "2025-05-11T00:00:00+05:30",
-            registration_start_date: "2025-04-15T20:56:02+05:30",
-            registration_end_date: "2025-04-20T00:00:00+05:30",
-          },
-          sponsers: [
-            {
-              name: "Google",
-              logo: "http://localhost:8000/media/event/sponser/first_prize.png",
-              priority: 10,
-            },
-          ],
-          venue_detail: null,
-          additional_event_detail: {
-            url: null,
-            file: null,
-            team_min_size: 1,
-            team_max_size: 5,
-            registration_cost: null,
-          },
-          timelines: [
-            {
-              title: "Round 2 - PPT",
-              description:
-                "lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-              start_at: "2025-04-11T09:30:00+05:30",
-              end_at: "2025-04-11T10:30:00+05:30",
-            },
-          ],
-          associated_with: {
-            organization: "Aditi Vikas Ayurved Nursing Training Centre, Sikar",
-            proof_link: null,
-            proof: "http://localhost:8000/media/event/proof/dummy_ZjMvmwp.pdf",
-            contact_email: "santhoshp.official@gmail.com",
-            is_contact_email_verified: true,
-            contact_phone: "9876543210",
-            instagram_url: "https://www.instagram.com/mahi7781/?hl=en",
-            other_url: null,
-          },
-          faqs: [
-            {
-              question: "What is the mode of the hackathon?",
-              answer: "Round 1 is online and Round 2 is offline",
-              priority: 10,
-            },
-          ],
-          prizes: [
-            {
-              title: "Winners",
-              description: "winner of each domain",
-              amount: 10000,
-              image: "http://localhost:8000/media/event/prize/first_prize_mshy8SH.png",
-              priority: 3,
-            },
-          ],
-          registration_detail: {
-            is_eligible: false,
-            not_eligible_reason: "Organizer can't register",
-            is_registered: null,
-          },
-        }
+        const data = await response.json();
+        // const data = {
+        //   base_event: {
+        //     id: "da0c0997-fade-43ba-99d2-78580cea12de",
+        //     is_promoted: true,
+        //     title: "Smart India Hackathon",
+        //     logo: "http://localhost:8000/media/event/logo/images_ZF2EoKh.jpeg",
+        //     type: "Hackathon",
+        //     slug: "smart-india-hackathon",
+        //     short_description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry...",
+        //   },
+        //   event_detail: {
+        //     banner: "http://localhost:8000/media/event/banner/images_Zema3oL.jpeg",
+        //     about_event:
+        //       '<div><p><span>A unique case study competition where participants analyze a founder’s company website and propose innovative new product lines. Get a chance to present your ideas to a renowned founder!</span></p>\r\n<p><span>InnovQuest is a case study competition aimed at fostering innovation, creativity, and entrepreneurship among students.</span><span><br></span><span> Students will form teams of </span>2-4 members (cross-college teams allowed) and analyze the website of a company founded by a renowned entrepreneur. They will identify potential new product lines and submit a 8-slide presentation explaining their ideas. Shortlisted teams will present their proposals in person to the founder.</p>\r\n<p><strong>Guidelines:</strong></p>\r\n<ul>\r\n<li>Open to undergraduate students from any institution.</li>\r\n<li>Teams of 2-4 members.</li>\r\n<li><span>Cross-college teams are allowed.</span></li>\r\n<li>The final round will be conducted on campus.</li>\r\n<li><strong>Note:</strong> Once the first round goes live, the name of the founder and their startup will be revealed in the "About" section of the competition.</li>\r\n<li>After the founder and startup are revealed, teams can begin working on their presentation (PPT) and must upload it before the submission deadline.</li>\r\n</ul>\r\n<p><strong>Rules:</strong></p>\r\n<ul>\r\n<li><span>All teams are requested to carry their college ID cards on the day of the event.</span></li>\r\n<li><span>Adherence to time limits and event rules is mandatory.</span></li>\r\n<li><span>Exciting prizes and certificates for top-performing teams.</span></li>\r\n<li><span>Judging will be solely based on panel evaluation.</span></li>\r\n<li><span>Selected teams will be informed via phone call or email.</span></li>\r\n<li>Dress code for the offline rounds is Business Casuals or Smart Casuals.</li>\r\n</ul>\r\n<p><strong>Important Dates:</strong></p>\r\n<ul>\r\n<li>Prelims: 18th April 2025 (Online)</li>\r\n<li>Finals: 22nd April 2025 (On-Campus)[tentative]</li>\r\n</ul>\r\n<p><strong>Submission Format</strong></p>\r\n<ul>\r\n<li><span>File type: .PPTX or PDF</span></li>\r\n<li><span>Must include: Introduction slide and Thank You slide</span></li>\r\n<li><span>Max slides: 8</span></li>\r\n<li><span>Naming convention: TeamName_CollegeName</span></li>\r\n</ul></div>',
+        //     mode: "Online",
+        //     start_date: "2025-05-10T00:00:00+05:30",
+        //     end_date: "2025-05-11T00:00:00+05:30",
+        //     registration_start_date: "2025-04-15T20:56:02+05:30",
+        //     registration_end_date: "2025-04-20T00:00:00+05:30",
+        //   },
+        //   sponsers: [
+        //     {
+        //       name: "Google",
+        //       logo: "http://localhost:8000/media/event/sponser/first_prize.png",
+        //       priority: 10,
+        //     },
+        //   ],
+        //   venue_detail: null,
+        //   additional_event_detail: {
+        //     url: null,
+        //     file: null,
+        //     team_min_size: 1,
+        //     team_max_size: 5,
+        //     registration_cost: null,
+        //   },
+        //   timelines: [
+        //     {
+        //       title: "Round 2 - PPT",
+        //       description:
+        //         "lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+        //       start_at: "2025-04-11T09:30:00+05:30",
+        //       end_at: "2025-04-11T10:30:00+05:30",
+        //     },
+        //   ],
+        //   associated_with: {
+        //     organization: "Aditi Vikas Ayurved Nursing Training Centre, Sikar",
+        //     proof_link: null,
+        //     proof: "http://localhost:8000/media/event/proof/dummy_ZjMvmwp.pdf",
+        //     contact_email: "santhoshp.official@gmail.com",
+        //     is_contact_email_verified: true,
+        //     contact_phone: "9876543210",
+        //     instagram_url: "https://www.instagram.com/mahi7781/?hl=en",
+        //     other_url: null,
+        //   },
+        //   faqs: [
+        //     {
+        //       question: "What is the mode of the hackathon?",
+        //       answer: "Round 1 is online and Round 2 is offline",
+        //       priority: 10,
+        //     },
+        //   ],
+        //   prizes: [
+        //     {
+        //       title: "Winners",
+        //       description: "winner of each domain",
+        //       amount: 10000,
+        //       image: "http://localhost:8000/media/event/prize/first_prize_mshy8SH.png",
+        //       priority: 3,
+        //     },
+        //   ],
+        //   registration_detail: {
+        //     is_eligible: false,
+        //     not_eligible_reason: "Organizer can't register",
+        //     is_registered: null,
+        //   },
+        // }
         setEventData(data)
         setError(null)
       } catch (err) {

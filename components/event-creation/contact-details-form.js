@@ -161,7 +161,7 @@ export function ContactDetailsForm({ initialData, eventId }) {
 
       if (data.is_contact_email_verified) {
         setShowOtp(false)
-        router.push(`/host/create/${eventId}/venue`)
+        router.push(`/host/create/${eventId}/data`)
       }
     } catch (error) {
       console.error("Error verifying email:", error)

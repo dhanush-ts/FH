@@ -45,7 +45,6 @@ export default function RoughCutsPage() {
   const [loading, setLoading] = useState({})
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
-  // Fetch events on component mount
   useState(() => {
     const fetchEvents = async () => {
       try {
@@ -73,7 +72,6 @@ export default function RoughCutsPage() {
         prevEvents.map((event) => (event.id === id ? { ...event, verification_status: "In progress" } : event)),
       )
     }
-        // Update the event in the local state
     } catch (error) {
       console.error("Error verifying event:", error)
     } finally {
@@ -91,7 +89,7 @@ export default function RoughCutsPage() {
       if(resp.status === 200) {
 
         setEvents((prevEvents) => prevEvents.map((event) => (event.id === id ? { ...event, is_published: true } : event)))
-      }// Update the event in the local state
+      }
     } catch (error) {
       console.error("Error publishing event:", error)
     } finally {
@@ -127,7 +125,6 @@ export default function RoughCutsPage() {
                 />
               </div>
 
-              {/* Verification badge top-right */}
               <div className="absolute top-0 right-0 z-10">
                 <div
                   className={`px-2 py-0.5 rounded-tr rounded-bl text-xs font-semibold flex items-center ${getVerificationStatusColor(
@@ -139,7 +136,6 @@ export default function RoughCutsPage() {
                 </div>
               </div>
 
-              {/* Content */}
               <Link href={`/host/create/${event.id}`} className="flex h-[160px] pl-20 pr-4 py-4">
                 <div className="flex flex-col justify-between w-full">
                   <div>
@@ -158,7 +154,6 @@ export default function RoughCutsPage() {
                 </div>
               </Link>
 
-              {/* Action buttons */}
               <div className="p-3 border-t flex justify-end gap-2">
                 {event.verification_status.toLowerCase() === "not yet submitted" && (
                   <Button

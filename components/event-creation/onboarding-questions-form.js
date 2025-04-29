@@ -491,7 +491,7 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
       setModifiedQuestions([])
       setDeletedQuestions([])
 
-      // router.push(`/host/create/${eventId}/venue`)
+      router.push(`/host/create/${eventId}/venue`)
     } catch (error) {
       console.error("Error saving questions:", error)
     } finally {

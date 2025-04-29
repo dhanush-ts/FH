@@ -174,21 +174,21 @@ export function Header() {
                     <h4 className="font-medium text-lg">Join a hackathon</h4>
                     <div className="pl-4 space-y-2 text-sm">
                       <Link
-                        href="/hackathons/upcoming"
+                        href="/hackathons?status=upcoming"
                         className="block py-1.5 transition-colors duration-200 hover:text-green-600"
                         onClick={closeSheet}
                       >
                         Upcoming
                       </Link>
                       <Link
-                        href="/hackathons/ongoing"
+                        href="/hackathons?status=live"
                         className="block py-1.5 transition-colors duration-200 hover:text-green-600"
                         onClick={closeSheet}
                       >
                         Ongoing
                       </Link>
                       <Link
-                        href="/hackathons/past"
+                        href="/hackathons?status=ended"
                         className="block py-1.5 transition-colors duration-200 hover:text-green-600"
                         onClick={closeSheet}
                       >
@@ -284,24 +284,24 @@ export function Header() {
                   <ul className="grid gap-4 p-6 w-[400px] md:w-[500px] lg:w-[600px] grid-cols-2">
                     <li className="row-span-3">
                       <NavigationMenuLink asChild>
-                        <a
+                        <Link
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-green-500 to-green-600 p-6 no-underline outline-none transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:shadow-md"
-                          href="/"
+                          href="/hackathons"
                         >
                           <div className="mt-4 mb-2 text-lg font-medium text-white">Featured Hackathons</div>
                           <p className="text-sm leading-tight text-white/90">
                             Discover the most popular hackathons happening right now
                           </p>
-                        </a>
+                        </Link>
                       </NavigationMenuLink>
                     </li>
-                    <ListItem href="/hackathons/upcoming" title="Upcoming">
+                    <ListItem href="/hackathons?status=upcoming" title="Upcoming">
                       Browse hackathons that are starting soon
                     </ListItem>
-                    <ListItem href="/hackathons/ongoing" title="Ongoing">
+                    <ListItem href="/hackathons?status=live" title="Ongoing">
                       Join hackathons that are currently active
                     </ListItem>
-                    <ListItem href="/hackathons/past" title="Past">
+                    <ListItem href="/hackathons?status=ended" title="Past">
                       View completed hackathons and winners
                     </ListItem>
                   </ul>
