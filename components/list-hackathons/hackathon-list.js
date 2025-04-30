@@ -59,7 +59,7 @@ function HackathonCard({ event, index }) {
 
   // Default themes if not provided
   const themes = useMemo(() => {
-    const defaultThemes = ["AI", "Machine Learning"]
+    const defaultThemes = ["AI", "ML"]
     if (!event.themes) return defaultThemes
     return Array.isArray(event.themes) ? event.themes : [event.themes]
   }, [event.themes])

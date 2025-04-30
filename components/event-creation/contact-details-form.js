@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -140,7 +139,39 @@ export function ContactDetailsForm({ initialData, eventId }) {
   }
 
   const handleRequestEmailChange = () => {
-    console.log("Request email change")
+    form.setValue("contact_email", "")
+    const emailField = document.querySelector('input[name="contact_email"]')
+    if (emailField) {
+      emailField.disabled = false
+      emailField.focus()
+    }
+
+    // Create a save button that will appear next to the input
+    const saveButton = document.createElement("button")
+    saveButton.textContent = "Save"
+    saveButton.className = "px-3 py-1 bg-green-600 text-white rounded text-sm ml-2"
+    saveButton.onclick = (e) => {
+      e.preventDefault()
+      const newEmail = form.getValues("contact_email")
+      if (newEmail) {
+        fetchWithAuth(`/event/host/associated-with/${eventId}/`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ contact_email: newEmail }),
+        }).then(async (response) => {
+          const responseData = await response.json()
+          if (!responseData.is_contact_email_verified) {
+            setShowOtp(true)
+          }
+          saveButton.remove()
+        })
+      }
+    }
+
+    const emailContainer = emailField.parentElement.parentElement
+    emailContainer.appendChild(saveButton)
   }
 
   const verifyEmail = async () => {
@@ -300,7 +331,7 @@ export function ContactDetailsForm({ initialData, eventId }) {
         originalDataRef.current = { ...responseData }
 
         // Show OTP field if it's the first submission and email is not verified
-        if (isInitialEmpty && !isSameEmail) {
+        if (isInitialEmpty && !isSameEmail && !responseData.is_contact_email_verified) {
           setShowOtp(true)
         } else {
           router.push(`/host/create/${eventId}/venue`)
@@ -339,9 +370,9 @@ export function ContactDetailsForm({ initialData, eventId }) {
   }
 
   useEffect(() => {
-    setChangedFields("contact-detail", getChangedFields(originalDataRef.current, formValues));
+    setChangedFields("contact-detail", getChangedFields(originalDataRef.current, formValues))
     console.log(getChangedFields(originalDataRef.current, formValues))
-  },[formValues])
+  }, [formValues])
 
   return (
     <FormWrapper section="associated-with" initialData={originalDataRef.current}>
@@ -564,7 +595,7 @@ export function ContactDetailsForm({ initialData, eventId }) {
                           <div className="mt-2 flex items-center gap-2">
                             <FileText className="h-4 w-4 text-green-600" />
                             <span className="text-sm text-green-700">Document uploaded</span>
-                            {previewUrl && 
+                            {previewUrl && (
                               <a
                                 href={previewUrl.replace("127.0.0.1", "localhost")}
                                 target="_blank"
@@ -573,7 +604,7 @@ export function ContactDetailsForm({ initialData, eventId }) {
                               >
                                 <Eye className="h-3 w-3" /> View
                               </a>
-                            }
+                            )}
                           </div>
                         )}
                       </div>
@@ -627,7 +658,7 @@ export function ContactDetailsForm({ initialData, eventId }) {
                                 className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
                               />
                             </FormControl>
-                            {isEmailVerified && (
+                            {!isInitialEmpty && (isEmailVerified ? (
                               <Button
                                 type="button"
                                 variant="outline"
@@ -637,13 +668,59 @@ export function ContactDetailsForm({ initialData, eventId }) {
                               >
                                 Request Change
                               </Button>
-                            )}
+                            ) : (
+                              contactEmail &&
+                              !showOtp && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    fetchWithAuth(`/event/host/associated-with/${eventId}/`, {
+                                      method: "PATCH",
+                                      headers: {
+                                        "Content-Type": "application/json",
+                                      },
+                                      body: JSON.stringify({ contact_email: contactEmail }),
+                                    }).then(async (response) => {
+                                      const responseData = await response.json()
+                                      if (!responseData.is_contact_email_verified) {
+                                        setShowOtp(true)
+                                      }
+                                    })
+                                  }}
+                                  className="whitespace-nowrap"
+                                >
+                                  Verify
+                                </Button>
+                              )
+                            ))}
                           </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </motion.div>
+
+                  {showOtp && (
+                    <motion.div variants={itemVariants} className="p-4 bg-green-50 rounded-lg border border-green-200">
+                      <h3 className="text-green-800 font-medium mb-3">Email Verification</h3>
+                      <p className="text-sm text-green-700 mb-4">
+                        A verification code has been sent to your email. Please enter it below to verify your email
+                        address.
+                      </p>
+                      <div className="flex flex-col items-center gap-4">
+                        <OtpInput length={6} value={otpValue} onChange={setOtpValue} />
+                        <Button
+                          type="button"
+                          onClick={verifyEmail}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Verify Email
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
 
                   <motion.div variants={itemVariants}>
                     <FormField
@@ -740,26 +817,6 @@ export function ContactDetailsForm({ initialData, eventId }) {
                       )}
                     />
                   </motion.div>
-
-                  {showOtp && (
-                    <motion.div variants={itemVariants} className="p-4 bg-green-50 rounded-lg border border-green-200">
-                      <h3 className="text-green-800 font-medium mb-3">Email Verification</h3>
-                      <p className="text-sm text-green-700 mb-4">
-                        A verification code has been sent to your email. Please enter it below to verify your email
-                        address.
-                      </p>
-                      <div className="flex flex-col items-center gap-4">
-                        <OtpInput length={6} value={otpValue} onChange={setOtpValue} />
-                        <Button
-                          type="button"
-                          onClick={verifyEmail}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          Verify Email
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
 
                   <motion.div
                     className="flex justify-between space-x-4 pt-4"
