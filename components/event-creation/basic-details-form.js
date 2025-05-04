@@ -220,9 +220,9 @@ export function BasicDetailsForm({ initialData, eventId }) {
                             <Textarea
                               placeholder="Briefly describe your event"
                               {...field}
-                              rows={3}
-                              maxLength={200}
-                              className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                              rows={1}
+                              maxLength={50}
+                              className="border-green-200 focus-visible:ring-green-500 max-h-40 transition-all duration-300 shadow-sm"
                               onChange={(e) => {
                                 field.onChange(e)
                                 setCharCount(e.target.value.length)
@@ -230,12 +230,12 @@ export function BasicDetailsForm({ initialData, eventId }) {
                             />
                             <motion.span
                               className={`absolute bottom-2 right-2 text-xs ${
-                                charCount > 180 ? "text-amber-500" : "text-green-600"
+                                charCount > 25 ? "text-amber-500" : "text-green-600"
                               }`}
-                              animate={charCount > 180 ? { scale: [1, 1.1, 1] } : {}}
-                              transition={{ duration: 0.5, repeat: charCount > 180 ? Number.POSITIVE_INFINITY : 0 }}
+                              animate={charCount > 25 ? { scale: [1, 1.1, 1] } : {}}
+                              transition={{ duration: 0.5, repeat: charCount > 25 ? Number.POSITIVE_INFINITY : 0 }}
                             >
-                              {charCount}/200
+                              {charCount}/50
                             </motion.span>
                           </div>
                         </FormControl>

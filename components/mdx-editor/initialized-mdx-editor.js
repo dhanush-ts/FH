@@ -77,7 +77,7 @@ export default function InitializedMDXEditor({
             <DiffSourceToggleWrapper>
               <BoldItalicUnderlineToggles />
               <Separator />
-              <BlockTypeSelect />
+              {/* <BlockTypeSelect /> */}
               <ListsToggle />
               <InsertImage />
               <InsertTable />

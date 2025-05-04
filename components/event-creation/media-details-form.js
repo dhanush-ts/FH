@@ -92,7 +92,7 @@ export function MediaDetailsForm({ initialData, eventId }) {
       updateFormCache.current = setTimeout(() => {
         const currentFormData = {
           ...values,
-          about_event: markdown,
+          // about_event: markdown,
         }
 
         cacheFormData("media", currentFormData)
@@ -214,8 +214,10 @@ export function MediaDetailsForm({ initialData, eventId }) {
       originalDataRef.current = {
         ...data,
         about_event: markdown,
-        banner: bannerPreview,
+        banner: result.banner,
       }
+
+      setBannerPreview(result.banner)
 
       router.push(`/host/create/${eventId}/sponsors`)
     } catch (error) {
