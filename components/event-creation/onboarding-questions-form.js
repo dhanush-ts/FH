@@ -90,6 +90,12 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
     }
   }
 
+  // Add a check for locked fields in the DEFAULT_QUESTIONS map
+  // Add this after line 77, right after the parseInitialData function
+  const isFieldLocked = (fieldName) => {
+    return initialData?.locked_fields?.includes(fieldName)
+  }
+
   // Initial form data
   const defaultFormData = parseInitialData()
 
@@ -110,8 +116,14 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
     defaultValues: defaultFormData,
   })
 
-  // Handle default questions changes
+  // Modify the handleDefaultQuestionToggle function to check for locked fields
+  // Replace the existing handleDefaultQuestionToggle function with this:
   const handleDefaultQuestionToggle = (questionLabel, isChecked) => {
+    // Don't allow toggling if the field is locked
+    if (isFieldLocked(questionLabel.toLowerCase())) {
+      return
+    }
+
     setFormData((prev) => {
       const updatedDefaultQuestions = Array.isArray(prev.default_questions) ? [...prev.default_questions] : []
 
@@ -162,8 +174,16 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
     ])
   }
 
-  // Update a question field
+  // Modify the updateQuestion function to check for locked fields
+  // Replace the existing updateQuestion function with this:
   const updateQuestion = (index, field, value) => {
+    const question = formData.custom_questions[index]
+
+    // Don't allow updating if the question is locked
+    if (question.id && isFieldLocked(`question_${question.id}`)) {
+      return
+    }
+
     setFormData((prev) => {
       const updatedQuestions = [...prev.custom_questions]
       const questionToUpdate = { ...updatedQuestions[index] }
@@ -225,8 +245,16 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
     })
   }
 
-  // Remove a question
+  // Modify the removeQuestion function to check for locked fields
+  // Replace the existing removeQuestion function with this:
   const removeQuestion = (index) => {
+    const question = formData.custom_questions[index]
+
+    // Don't allow removing if the question is locked
+    if (question.id && isFieldLocked(`question_${question.id}`)) {
+      return
+    }
+
     setFormData((prev) => {
       const updatedQuestions = [...prev.custom_questions]
       const questionToRemove = updatedQuestions[index]
@@ -437,37 +465,36 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
   }
 
   const removeDuplicates = (questions) => {
-    const seen = new Set();
-    return questions.filter(q => {
-      if (seen.has(q.id)) return false;
-      seen.add(q.id);
-      return true;
-    });
-  };
-  
+    const seen = new Set()
+    return questions.filter((q) => {
+      if (seen.has(q.id)) return false
+      seen.add(q.id)
+      return true
+    })
+  }
+
   const prepareSubmissionData = () => {
     // Prepare new questions for submission (without tempId and isNew flag)
-    const formattedNewQuestions = newQuestions.map(q => ({
-      id: q.id,  // Ensure ID exists for deduplication
+    const formattedNewQuestions = newQuestions.map((q) => ({
+      id: q.id, // Ensure ID exists for deduplication
       question: q.question,
       keyword: q.keyword,
       question_type: q.question_type,
       options: q.options,
-    }));
-  
+    }))
+
     // Remove duplicates from modified & deleted questions
-    const uniqueQuestions = removeDuplicates(modifiedQuestions);
-    const uniqueDeletedQuestions = removeDuplicates(deletedQuestions);
-  
+    const uniqueQuestions = removeDuplicates(modifiedQuestions)
+    const uniqueDeletedQuestions = removeDuplicates(deletedQuestions)
+
     // Combine all changes
-    const allChanges = [...formattedNewQuestions, ...uniqueQuestions, ...uniqueDeletedQuestions];
-  
+    const allChanges = [...formattedNewQuestions, ...uniqueQuestions, ...uniqueDeletedQuestions]
+
     return {
       default_questions: formData.default_questions,
       custom_questions: allChanges,
-    };
-  };
-  
+    }
+  }
 
   const onSubmit = async () => {
     setIsSubmitting(true)
@@ -625,11 +652,16 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                 </div>
                               </div>
 
+                              {/* Modify the Checkbox component in the DEFAULT_QUESTIONS map to be disabled when locked */}
+                              {/* Find the Checkbox component around line 358 and replace it with: */}
                               <Checkbox
                                 id={`default-${question.id}`}
                                 checked={formData.default_questions?.includes(question.label)}
                                 onCheckedChange={(checked) => handleDefaultQuestionToggle(question.label, checked)}
-                                className="h-5 w-5 border-green-300 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                className={`h-5 w-5 border-green-300 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 ${
+                                  isFieldLocked(question.label.toLowerCase()) ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                                disabled={isFieldLocked(question.label.toLowerCase())}
                               />
                             </motion.div>
                           ))}
@@ -663,12 +695,19 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                       </div>
                                       <span className="font-medium text-green-800">Question {index + 1}</span>
                                     </div>
+                                    {/* Modify the delete button to be disabled when locked */}
+                                    {/* Find the delete button around line 343 and replace it with: */}
                                     <Button
                                       type="button"
                                       variant="ghost"
                                       size="icon"
                                       onClick={() => removeQuestion(index)}
-                                      className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                      className={`h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 ${
+                                        question.id && isFieldLocked(`question_${question.id}`)
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : ""
+                                      }`}
+                                      disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -679,12 +718,19 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                       <Label htmlFor={`question-${index}`} className="text-green-800 mb-1 block">
                                         Question Text
                                       </Label>
+                                      {/* Modify the Input components in the custom questions section to be disabled when locked */}
+                                      {/* Find the first Input component around line 390 and replace it with: */}
                                       <Input
                                         id={`question-${index}`}
                                         value={question.question || ""}
                                         onChange={(e) => updateQuestion(index, "question", e.target.value)}
                                         placeholder="Enter your question"
-                                        className="border-green-200 focus-visible:ring-green-500"
+                                        className={`border-green-200 focus-visible:ring-green-500 ${
+                                          question.id && isFieldLocked(`question_${question.id}`)
+                                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                            : ""
+                                        }`}
+                                        disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                       />
                                     </div>
 
@@ -703,13 +749,19 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                           </TooltipContent>
                                         </Tooltip>
                                       </Label>
+                                      {/* Find the second Input component around line 414 and replace it with: */}
                                       <Input
                                         id={`keyword-${index}`}
                                         value={question.keyword || ""}
                                         onChange={(e) => updateQuestion(index, "keyword", e.target.value)}
                                         placeholder="e.g., Native, Graduation Year"
                                         maxLength={20}
-                                        className="border-green-200 focus-visible:ring-green-500"
+                                        className={`border-green-200 focus-visible:ring-green-500 ${
+                                          question.id && isFieldLocked(`question_${question.id}`)
+                                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                            : ""
+                                        }`}
+                                        disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                       />
                                     </div>
                                   </div>
@@ -718,13 +770,20 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                     <Label htmlFor={`type-${index}`} className="text-green-800 mb-1 block">
                                       Question Type
                                     </Label>
+                                    {/* Modify the Select component to be disabled when locked */}
+                                    {/* Find the Select component around line 430 and replace it with: */}
                                     <Select
                                       value={question.question_type || "Line"}
                                       onValueChange={(value) => updateQuestion(index, "question_type", value)}
+                                      disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                     >
                                       <SelectTrigger
                                         id={`type-${index}`}
-                                        className="border-green-200 focus:ring-green-500"
+                                        className={`border-green-200 focus:ring-green-500 ${
+                                          question.id && isFieldLocked(`question_${question.id}`)
+                                            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                            : ""
+                                        }`}
                                       >
                                         <SelectValue placeholder="Select question type" />
                                       </SelectTrigger>
@@ -761,12 +820,19 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                     <div className="mt-4">
                                       <div className="flex items-center justify-between mb-2">
                                         <Label className="text-green-800">Options</Label>
+                                        {/* Modify the "Add Option" button to be disabled when locked */}
+                                        {/* Find the "Add Option" button around line 474 and replace it with: */}
                                         <Button
                                           type="button"
                                           variant="outline"
                                           size="sm"
                                           onClick={() => addOption(index)}
-                                          className="text-green-600 border-green-200 hover:bg-green-50"
+                                          className={`text-green-600 border-green-200 hover:bg-green-50 ${
+                                            question.id && isFieldLocked(`question_${question.id}`)
+                                              ? "opacity-50 cursor-not-allowed"
+                                              : ""
+                                          }`}
+                                          disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                         >
                                           <Plus className="h-4 w-4 mr-1" />
                                           Add Option
@@ -786,18 +852,32 @@ export function OnboardingQuestionsForm({ eventId, initialData }) {
                                                 transition={{ duration: 0.2 }}
                                                 className="flex items-center gap-2"
                                               >
+                                                {/* Modify the option input to be disabled when locked */}
+                                                {/* Find the option Input component around line 493 and replace it with: */}
                                                 <Input
                                                   value={option || ""}
                                                   onChange={(e) => updateOption(index, optionIndex, e.target.value)}
                                                   placeholder={`Option ${optionIndex + 1}`}
-                                                  className="border-green-200 focus-visible:ring-green-500"
+                                                  className={`border-green-200 focus-visible:ring-green-500 ${
+                                                    question.id && isFieldLocked(`question_${question.id}`)
+                                                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                                      : ""
+                                                  }`}
+                                                  disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                                 />
+                                                {/* Modify the option delete button to be disabled when locked */}
+                                                {/* Find the option delete button around line 500 and replace it with: */}
                                                 <Button
                                                   type="button"
                                                   variant="ghost"
                                                   size="icon"
                                                   onClick={() => removeOption(index, optionIndex)}
-                                                  className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                                                  className={`h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0 ${
+                                                    question.id && isFieldLocked(`question_${question.id}`)
+                                                      ? "opacity-50 cursor-not-allowed"
+                                                      : ""
+                                                  }`}
+                                                  disabled={question.id && isFieldLocked(`question_${question.id}`)}
                                                 >
                                                   <Trash2 className="h-4 w-4" />
                                                 </Button>

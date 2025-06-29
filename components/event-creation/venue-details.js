@@ -252,7 +252,12 @@ export function VenueForm({ initialData, eventId }) {
                                 <Input
                                   placeholder="e.g., Conference Center, University Hall"
                                   {...field}
-                                  className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                                  disabled={initialData?.locked_fields?.includes("place")}
+                                  className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                    initialData?.locked_fields?.includes("place")
+                                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                      : ""
+                                  }`}
                                 />
                               </FormControl>
                               <FormDescription className="text-green-600">
@@ -279,7 +284,12 @@ export function VenueForm({ initialData, eventId }) {
                                   placeholder="Full address of the venue"
                                   {...field}
                                   rows={3}
-                                  className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm resize-none"
+                                  disabled={initialData?.locked_fields?.includes("address")}
+                                  className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm resize-none ${
+                                    initialData?.locked_fields?.includes("address")
+                                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                      : ""
+                                  }`}
                                 />
                               </FormControl>
                               <FormDescription className="text-green-600">
@@ -305,7 +315,12 @@ export function VenueForm({ initialData, eventId }) {
                                 <Input
                                   placeholder="https://maps.app.goo.gl/..."
                                   {...field}
-                                  className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                                  disabled={initialData?.locked_fields?.includes("gmaps_link")}
+                                  className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                    initialData?.locked_fields?.includes("gmaps_link")
+                                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                      : ""
+                                  }`}
                                 />
                               </FormControl>
                               <FormDescription className="text-green-600">

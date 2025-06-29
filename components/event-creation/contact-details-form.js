@@ -495,7 +495,12 @@ export function ContactDetailsForm({ initialData, eventId }) {
                                   variant="outline"
                                   role="combobox"
                                   aria-expanded={isSearchOpen}
-                                  className="w-full justify-between border-green-200 text-left font-normal"
+                                  disabled={initialData?.locked_fields?.includes("organization")}
+                                  className={`w-full justify-between border-green-200 text-left font-normal ${
+                                    initialData?.locked_fields?.includes("organization")
+                                      ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                      : ""
+                                  }`}
                                 >
                                   {selectedOrganization?.name
                                     ? selectedOrganization.name
@@ -654,47 +659,58 @@ export function ContactDetailsForm({ initialData, eventId }) {
                                 type="email"
                                 placeholder="Enter contact email"
                                 {...field}
-                                disabled={isEmailVerified || isSameEmail}
-                                className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                                disabled={
+                                  isEmailVerified ||
+                                  isSameEmail ||
+                                  initialData?.locked_fields?.includes("contact_email")
+                                }
+                                className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                  isEmailVerified ||
+                                  isSameEmail ||
+                                  initialData?.locked_fields?.includes("contact_email")
+                                    ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                    : ""
+                                }`}
                               />
                             </FormControl>
-                            {!isInitialEmpty && (isEmailVerified ? (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={handleRequestEmailChange}
-                                className="whitespace-nowrap"
-                              >
-                                Request Change
-                              </Button>
-                            ) : (
-                              contactEmail &&
-                              !showOtp && (
+                            {!isInitialEmpty &&
+                              (isEmailVerified ? (
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => {
-                                    fetchWithAuth(`/event/host/associated-with/${eventId}/`, {
-                                      method: "PATCH",
-                                      headers: {
-                                        "Content-Type": "application/json",
-                                      },
-                                      body: JSON.stringify({ contact_email: contactEmail }),
-                                    }).then(async (response) => {
-                                      const responseData = await response.json()
-                                      if (!responseData.is_contact_email_verified) {
-                                        setShowOtp(true)
-                                      }
-                                    })
-                                  }}
+                                  onClick={handleRequestEmailChange}
                                   className="whitespace-nowrap"
                                 >
-                                  Verify
+                                  Request Change
                                 </Button>
-                              )
-                            ))}
+                              ) : (
+                                contactEmail &&
+                                !showOtp && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      fetchWithAuth(`/event/host/associated-with/${eventId}/`, {
+                                        method: "PATCH",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ contact_email: contactEmail }),
+                                      }).then(async (response) => {
+                                        const responseData = await response.json()
+                                        if (!responseData.is_contact_email_verified) {
+                                          setShowOtp(true)
+                                        }
+                                      })
+                                    }}
+                                    className="whitespace-nowrap"
+                                  >
+                                    Verify
+                                  </Button>
+                                )
+                              ))}
                           </div>
                           <FormMessage />
                         </FormItem>
@@ -745,7 +761,12 @@ export function ContactDetailsForm({ initialData, eventId }) {
                               type="text"
                               placeholder="Enter contact phone"
                               {...field}
-                              className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                              disabled={initialData?.locked_fields?.includes("contact_phone")}
+                              className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                initialData?.locked_fields?.includes("contact_phone")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                           </FormControl>
                           <FormMessage />

@@ -193,7 +193,12 @@ export function BasicDetailsForm({ initialData, eventId }) {
                           <Input
                             placeholder="Enter event title"
                             {...field}
-                            className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                            disabled={initialData?.locked_fields?.includes("title")}
+                            className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                              initialData?.locked_fields?.includes("title")
+                                ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                : ""
+                            }`}
                           />
                         </FormControl>
                         <FormDescription className="text-green-600 flex items-center gap-2">
@@ -222,7 +227,12 @@ export function BasicDetailsForm({ initialData, eventId }) {
                               {...field}
                               rows={1}
                               maxLength={50}
-                              className="border-green-200 focus-visible:ring-green-500 max-h-40 transition-all duration-300 shadow-sm"
+                              disabled={initialData?.locked_fields?.includes("short_description")}
+                              className={`border-green-200 focus-visible:ring-green-500 max-h-40 transition-all duration-300 shadow-sm ${
+                                initialData?.locked_fields?.includes("short_description")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
                               onChange={(e) => {
                                 field.onChange(e)
                                 setCharCount(e.target.value.length)

@@ -151,12 +151,14 @@ export function MediaDetailsForm({ initialData, eventId }) {
 
   // Handle markdown changes
   const handleMarkdownChange = (value) => {
-    setMarkdown(value)
+    if (!initialData?.locked_fields?.includes("about_event")) {
+      setMarkdown(value)
+    }
   }
 
   // Handle file upload
   const handleFileUpload = async (file) => {
-    if (!file) return
+    if (!file || initialData?.locked_fields?.includes("banner")) return
 
     try {
       const objectUrl = URL.createObjectURL(file)
@@ -284,8 +286,10 @@ export function MediaDetailsForm({ initialData, eventId }) {
                         </FormLabel>
                         <FormControl>
                           <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            className="relative w-full h-48 border-dashed border-2 border-green-300 rounded-lg flex items-center justify-center overflow-hidden bg-green-50"
+                            whileHover={initialData?.locked_fields?.includes("banner") ? {} : { scale: 1.02 }}
+                            className={`relative w-full h-48 border-dashed border-2 border-green-300 rounded-lg flex items-center justify-center overflow-hidden bg-green-50 ${
+                              initialData?.locked_fields?.includes("banner") ? "opacity-70 cursor-not-allowed" : ""
+                            }`}
                           >
                             {bannerPreview ? (
                               <>
@@ -302,7 +306,11 @@ export function MediaDetailsForm({ initialData, eventId }) {
                                     }}
                                   />
                                 </div>
-                                <div className="absolute inset-0 bg-black/30 z-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div
+                                  className={`absolute inset-0 bg-black/30 z-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center ${
+                                    initialData?.locked_fields?.includes("banner") ? "hidden" : ""
+                                  }`}
+                                >
                                   <p className="text-white font-medium">Click to change banner</p>
                                 </div>
                               </>
@@ -322,10 +330,11 @@ export function MediaDetailsForm({ initialData, eventId }) {
                               type="file"
                               accept="image/*"
                               onChange={(e) => {
-                                if (e.target.files?.[0]) {
+                                if (e.target.files?.[0] && !initialData?.locked_fields?.includes("banner")) {
                                   handleFileUpload(e.target.files[0])
                                 }
                               }}
+                              disabled={initialData?.locked_fields?.includes("banner")}
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
                             />
                           </motion.div>
@@ -362,9 +371,19 @@ export function MediaDetailsForm({ initialData, eventId }) {
                             </TooltipContent>
                           </Tooltip>
                         </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={initialData?.locked_fields?.includes("mode")}
+                        >
                           <FormControl>
-                            <SelectTrigger className="border-green-200 focus:ring-green-500 transition-all duration-300">
+                            <SelectTrigger
+                              className={`border-green-200 focus:ring-green-500 transition-all duration-300 ${
+                                initialData?.locked_fields?.includes("mode")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
+                            >
                               <SelectValue placeholder="Select event mode" />
                             </SelectTrigger>
                           </FormControl>
@@ -414,7 +433,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
                                   <input
                                     type="datetime-local"
                                     {...field}
-                                    className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    disabled={initialData?.locked_fields?.includes("registration_start_date")}
+                                    className={`w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                                      initialData?.locked_fields?.includes("registration_start_date")
+                                        ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                        : ""
+                                    }`}
                                   />
                                   <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                                 </div>
@@ -439,7 +463,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
                                   <input
                                     type="datetime-local"
                                     {...field}
-                                    className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    disabled={initialData?.locked_fields?.includes("registration_end_date")}
+                                    className={`w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                                      initialData?.locked_fields?.includes("registration_end_date")
+                                        ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                        : ""
+                                    }`}
                                   />
                                   <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                                 </div>
@@ -482,7 +511,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
                             <input
                               type="datetime-local"
                               {...field}
-                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              disabled={initialData?.locked_fields?.includes("start_date")}
+                              className={`w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                                initialData?.locked_fields?.includes("start_date")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                             <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                           </div>
@@ -514,7 +548,12 @@ export function MediaDetailsForm({ initialData, eventId }) {
                             <input
                               type="datetime-local"
                               {...field}
-                              className="w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              disabled={initialData?.locked_fields?.includes("end_date")}
+                              className={`w-full rounded-md border border-green-200 p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                                initialData?.locked_fields?.includes("end_date")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                             <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-600" />
                           </div>
@@ -546,11 +585,24 @@ export function MediaDetailsForm({ initialData, eventId }) {
                       </TooltipContent>
                     </Tooltip>
                   </FormLabel>
-                  <div className="border border-green-200 bg-white rounded-md min-h-[200px] focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1 transition-all duration-300">
-                    <MDXEditorTabs markdown={markdown} onChange={handleMarkdownChange} className="min-h-[200px]" />
+                  <div
+                    className={`border border-green-200 bg-white rounded-md min-h-[200px] ${
+                      !initialData?.locked_fields?.includes("about_event")
+                        ? "focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-1"
+                        : "opacity-70"
+                    } transition-all duration-300`}
+                  >
+                    <MDXEditorTabs
+                      markdown={markdown}
+                      onChange={initialData?.locked_fields?.includes("about_event") ? undefined : handleMarkdownChange}
+                      className="min-h-[200px]"
+                      readOnly={initialData?.locked_fields?.includes("about_event")}
+                    />
                   </div>
                   <FormDescription className="text-green-600 mt-2">
-                    Use the tabs to switch between editing markdown and previewing the result
+                    {initialData?.locked_fields?.includes("about_event")
+                      ? "This field is locked and cannot be edited"
+                      : "Use the tabs to switch between editing markdown and previewing the result"}
                   </FormDescription>
                 </motion.div>
 

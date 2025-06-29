@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { HelpCircle, LinkIcon, Users, IndianRupee, ArrowRight, ArrowLeft, Settings } from "lucide-react"
 import { FormWrapper } from "./form-wrapper"
 import { useEventFormContext } from "./event-data-provider"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export function AdditionalDetailsForm({ initialData, eventId }) {
   const router = useRouter()
@@ -26,8 +27,7 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
     url: initialData?.url || "",
     team_min_size: initialData?.team_min_size || 1,
     team_max_size: initialData?.team_max_size || 4,
-    registration_cost: initialData?.registration_cost || 0,
-    mode: initialData?.mode || "Online",
+    registration_cost: initialData?.registration_cost || 0
   })
 
   // Get cached data if available
@@ -41,7 +41,6 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
       team_min_size: cachedData.team_min_size || initialData?.team_min_size || 1,
       team_max_size: cachedData.team_max_size || initialData?.team_max_size || 4,
       registration_cost: cachedData.registration_cost || initialData?.registration_cost || 0,
-      mode: cachedData.mode || initialData?.mode || "Online",
     },
   })
 
@@ -210,7 +209,12 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
                             <Input
                               placeholder="https://yourevent.com"
                               {...field}
-                              className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                              disabled={initialData?.locked_fields?.includes("url")}
+                              className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                initialData?.locked_fields?.includes("url")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                           </FormControl>
                           <FormDescription className="text-green-600">
@@ -246,8 +250,13 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
                                 type="number"
                                 min={1}
                                 {...field}
+                                disabled={initialData?.locked_fields?.includes("team_min_size")}
                                 onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 1)}
-                                className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                                className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                  initialData?.locked_fields?.includes("team_min_size")
+                                    ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                    : ""
+                                }`}
                               />
                             </FormControl>
                             <FormMessage />
@@ -279,8 +288,13 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
                                 type="number"
                                 min={1}
                                 {...field}
+                                disabled={initialData?.locked_fields?.includes("team_max_size")}
                                 onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 1)}
-                                className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                                className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                  initialData?.locked_fields?.includes("team_max_size")
+                                    ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                    : ""
+                                }`}
                               />
                             </FormControl>
                             <FormMessage />
@@ -305,8 +319,13 @@ export function AdditionalDetailsForm({ initialData, eventId }) {
                               type="number"
                               min={0}
                               {...field}
+                              disabled={initialData?.locked_fields?.includes("registration_cost")}
                               onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
-                              className="border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm"
+                              className={`border-green-200 focus-visible:ring-green-500 transition-all duration-300 shadow-sm ${
+                                initialData?.locked_fields?.includes("registration_cost")
+                                  ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : ""
+                              }`}
                             />
                           </FormControl>
                           <FormDescription className="text-green-600">Enter 0 for free events</FormDescription>
